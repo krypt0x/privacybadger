@@ -1,5 +1,4 @@
 /* globals URL_REGEX:false */
-(function() {
 let hangouts_wrapped_link = "a[href^='https://www.google.com/url?']";
 
 // Unwrap a Hangouts tracking link 
@@ -9,7 +8,7 @@ function unwrapLink(a) {
     return;
   }
 
-  // remove all attributes from a link except for href
+  // remove all attributes from a link except for target
   for (let i = a.attributes.length - 1; i >= 0; --i) {
     const attr = a.attributes[i];
     if (attr.name !== "target") {
@@ -29,4 +28,3 @@ function unwrapAll() {
 }
 
 setInterval(unwrapAll, 2000);
-}());

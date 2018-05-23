@@ -18,7 +18,6 @@ function cleanAttrs(elem) {
 function cleanLink(a) {
   let href = new URL(a.href).searchParams.get('u');
 
-  // from https://stackoverflow.com/questions/3809401/what-is-a-good-regular-expression-to-match-a-url
   if (!href || !href.match(URL_REGEX)) {
     // If we can't extract a good URL, abort without breaking the links
     return;
