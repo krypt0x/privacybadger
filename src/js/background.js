@@ -456,9 +456,10 @@ Badger.prototype = {
     learnInIncognito: false,
     migrationLevel: 0,
     seenComic: false,
+    sendDNTSignal: true,
     showCounter: true,
     showTrackingDomains: false,
-    socialWidgetReplacementEnabled: true,
+    socialWidgetReplacementEnabled: true
   },
 
   /**
@@ -592,11 +593,15 @@ Badger.prototype = {
     if (disabledSites && disabledSites.length > 0) {
       for (var i = 0; i < disabledSites.length; i++) {
         var site = disabledSites[i];
+
         if (site.startsWith("*")) {
-          if (window.getBaseDomain(site) === window.getBaseDomain(origin)) {
+          var wildcard = site.slice(1); // remove "*"
+
+          if (origin.endsWith(wildcard)) {
             return false;
           }
         }
+
         if (disabledSites[i] === origin) {
           return false;
         }
@@ -610,6 +615,10 @@ Badger.prototype = {
    */
   isSocialWidgetReplacementEnabled: function() {
     return this.getSettings().getItem("socialWidgetReplacementEnabled");
+  },
+
+  isDNTSignalEnabled: function() {
+    return this.getSettings().getItem("sendDNTSignal");
   },
 
   isCheckingDNTPolicyEnabled: function() {
