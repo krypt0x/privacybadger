@@ -40,7 +40,7 @@ var constants = backgroundPage.constants;
 var htmlUtils = require("htmlutils").htmlUtils;
 var i18n = chrome.i18n;
 var originCache = null;
-var settings = badger.storage.getBadgerStorageObject("settings_map");
+var settings = badger.getSettings();
 
 /*
  * Loads options from pb storage and sets UI elements accordingly.
@@ -52,9 +52,13 @@ function loadOptions() {
   // Add event listeners
   $("#whitelistForm").on("submit", addWhitelistDomain);
   $("#removeWhitelist").on("click", removeWhitelistDomain);
+  $("#cloud-upload").on("click", uploadCloud);
+  $("#cloud-download").on("click", downloadCloud);
   $('#importTrackerButton').on("click", loadFileChooser);
   $('#importTrackers').on("change", importTrackerList);
   $('#exportTrackers').on("click", exportUserData);
+  $('#resetData').on("click", resetData);
+  $('#removeAllData').on("click", removeAllData);
 
   if (settings.getItem("showTrackingDomains")) {
     $('#tracking-domains-overlay').hide();
@@ -97,8 +101,12 @@ function loadOptions() {
   $(".refreshButton").button("option", "icons", {primary: "ui-icon-refresh"});
   $(".addButton").button("option", "icons", {primary: "ui-icon-plus"});
   $(".removeButton").button("option", "icons", {primary: "ui-icon-minus"});
+  $("#cloud-upload").button("option", "icons", {primary: "ui-icon-arrowreturnthick-1-n"});
+  $("#cloud-download").button("option", "icons", {primary: "ui-icon-arrowreturnthick-1-s"});
   $(".importButton").button("option", "icons", {primary: "ui-icon-plus"});
-  $(".exportButton").button("option", "icons", {primary: "ui-icon-extlink"});
+  $("#exportTrackers").button("option", "icons", {primary: "ui-icon-extlink"});
+  $("#resetData").button("option", "icons", {primary: "ui-icon-arrowrefresh-1-w"});
+  $("#removeAllData").button("option", "icons", {primary: "ui-icon-closethick"});
   $("#show_counter_checkbox").on("click", updateShowCounter);
   $("#show_counter_checkbox").prop("checked", badger.showCounter());
   $("#replace_social_widgets_checkbox").on("click", updateSocialWidgetReplacement);
@@ -199,6 +207,56 @@ function parseUserDataFile(storageMapsList) {
     reloadTrackingDomainsTab();
     confirm(i18n.getMessage("import_successful"));
   });
+}
+
+function resetData() {
+  var resetWarn = i18n.getMessage("reset_data_confirm");
+  if (confirm(resetWarn)) {
+    chrome.runtime.sendMessage({type: "resetData"}, () => {
+      // reload page to refresh tracker list
+      location.reload();
+    });
+  }
+}
+
+function removeAllData() {
+  var removeWarn = i18n.getMessage("remove_all_data_confirm");
+  if (confirm(removeWarn)) {
+    chrome.runtime.sendMessage({type: "removeAllData"}, () => {
+      location.reload();
+    });
+  }
+}
+
+function downloadCloud() {
+  chrome.runtime.sendMessage({type: "downloadCloud"},
+    function (status) {
+      if (status.success) {
+        alert(i18n.getMessage("download_cloud_success"));
+        reloadWhitelist();
+      } else {
+        console.error("Cloud sync error:", status.message);
+        if (status.message === i18n.getMessage("download_cloud_no_data")) {
+          alert(status.message);
+        } else {
+          alert(i18n.getMessage("download_cloud_failure"));
+        }
+      }
+    }
+  );
+}
+
+function uploadCloud() {
+  chrome.runtime.sendMessage({type: "uploadCloud"},
+    function (status) {
+      if (status.success) {
+        alert(i18n.getMessage("upload_cloud_success"));
+      } else {
+        console.error("Cloud sync error:", status.message);
+        alert(i18n.getMessage("upload_cloud_failure"));
+      }
+    }
+  );
 }
 
 /**
@@ -477,7 +535,7 @@ function reloadTrackingDomainsTab() {
     $("#options_domain_list_trackers").html(i18n.getMessage(
       "options_domain_list_trackers", [
         allTrackingDomains.length,
-        "<a target='_blank' title='" + _.escape(i18n.getMessage("what_is_a_tracker")) + "' class='tooltip' href='https://www.eff.org/privacybadger#faq-What-is-a-third-party-tracker?'>"
+        "<a target='_blank' title='" + _.escape(i18n.getMessage("what_is_a_tracker")) + "' class='tooltip' href='https://www.eff.org/privacybadger/faq#What-is-a-third-party-tracker'>"
       ]
     )).show();
   }
