@@ -171,8 +171,18 @@ class Shim:
         ffp.set_preference('extensions.webextensions.uuids', '{"%s": "%s"}' %
                            (self.info['extension_id'], self.info['uuid']))
 
-        driver = webdriver.Firefox(firefox_profile=ffp, firefox_binary=self.browser_path)
+        for i in range(5):
+            try:
+                driver = webdriver.Firefox(firefox_profile=ffp, firefox_binary=self.browser_path)
+            except WebDriverException as e:
+                if i == 0: print("")
+                print("Firefox WebDriver initialization failed:")
+                print(str(e) + "Retrying ...")
+            else:
+                break
+
         install_ext_on_ff(driver, self.extension_path)
+
         try:
             yield driver
         finally:
@@ -277,6 +287,11 @@ class PBSeleniumTest(unittest.TestCase):
             try:
                 with self.manager() as driver:
                     self.init(driver)
+
+                    # wait for Badger's storage, listeners, ...
+                    self.load_url(self.bg_url)
+                    self.wait_for_script("return badger.INITIALIZED")
+
                     super(PBSeleniumTest, self).run(result)
 
                     # retry test magic
