@@ -14,8 +14,8 @@
         "description": ""
     },
     "options_remove_origin_confirm": {
-        "message": "Sei sicuro di voler rimuovere questa origine da Privacy Badger?",
-        "description": ""
+        "message": "Sei sicuro di voler rimuovere questo dominio da Privacy Badger?",
+        "description": "Confirmation shown when you click to remove a domain from Privacy Badger's tracking domains list on the options page."
     },
     "badger_status_noaction": {
         "message": "Nessun tracciamento da $DOMAIN$",
@@ -492,7 +492,7 @@
         "description": "Text that comes up when you hover over the social sharing buttons on the intro page."
     },
     "description": {
-        "message": "Privacy Badger ti protegge dai tracker mentre navighi in rete!",
+        "message": "Privacy Badger impara automaticamente a bloccare i tracker invisibili.",
         "description": ""
     },
     "report_fail": {

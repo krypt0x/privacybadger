@@ -14,8 +14,8 @@
         "description": ""
     },
     "options_remove_origin_confirm": {
-        "message": "Ви справді хочете вилучити це джерело з Privacy Badger?",
-        "description": ""
+        "message": "Ви справді хочете вилучити цей домен з Privacy Badger?",
+        "description": "Confirmation shown when you click to remove a domain from Privacy Badger's tracking domains list on the options page."
     },
     "badger_status_noaction": {
         "message": "Немає стеження для $DOMAIN$",
@@ -492,7 +492,7 @@
         "description": "Text that comes up when you hover over the social sharing buttons on the intro page."
     },
     "description": {
-        "message": "Privacy Badger захищає вас від стеження поки ви переглядаєте сторінки в Інтернеті!",
+        "message": "Privacy Badger автоматично навчається блокувати невидимі елементи стеження.",
         "description": ""
     },
     "report_fail": {

@@ -14,8 +14,8 @@
         "description": ""
     },
     "options_remove_origin_confirm": {
-        "message": "Er du sikker på at du vil fjerne denne kilde fra Privacy Badger?",
-        "description": ""
+        "message": "Er du sikker på at du vil fjerne dette domæne fra Privacy Badger?",
+        "description": "Confirmation shown when you click to remove a domain from Privacy Badger's tracking domains list on the options page."
     },
     "badger_status_noaction": {
         "message": "Ingen sporing fra $DOMAIN$",
@@ -492,7 +492,7 @@
         "description": "Text that comes up when you hover over the social sharing buttons on the intro page."
     },
     "description": {
-        "message": "Privacy Badger beskytter dig fra sporinger mens du surfer på nettet!",
+        "message": "Privacy Badger lærer automatisk at blokere usynlige sporinger.",
         "description": ""
     },
     "report_fail": {

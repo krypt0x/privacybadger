@@ -14,8 +14,8 @@
         "description": ""
     },
     "options_remove_origin_confirm": {
-        "message": "您確定要從 Privacy Badger 移除此來源嗎？",
-        "description": ""
+        "message": "您確定要從 Privacy Badger 移除此網域？",
+        "description": "Confirmation shown when you click to remove a domain from Privacy Badger's tracking domains list on the options page."
     },
     "badger_status_noaction": {
         "message": "沒有追蹤 $DOMAIN$",
@@ -492,7 +492,7 @@
         "description": "Text that comes up when you hover over the social sharing buttons on the intro page."
     },
     "description": {
-        "message": "您在網上衝浪的時候，Privacy Badger 會保護您免於被追蹤器追蹤的煩惱！",
+        "message": "Privacy Badger 會自動學習並阻擋不可見的追蹤器。",
         "description": ""
     },
     "report_fail": {
