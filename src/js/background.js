@@ -27,22 +27,22 @@ var pbStorage = require("storage");
 var HeuristicBlocking = require("heuristicblocking");
 var FirefoxAndroid = require("firefoxandroid");
 var webrequest = require("webrequest");
-var socialWidgetLoader = require("socialwidgetloader");
+var widgetLoader = require("widgetloader");
 
 var Migrations = require("migrations").Migrations;
 var incognito = require("incognito");
 
 /**
-* privacy badger initializer
-*/
+ * Privacy Badger initializer.
+ */
 function Badger() {
   var self = this;
 
   self.webRTCAvailable = checkWebRTCBrowserSupport();
 
-  self.socialWidgetList = [];
-  socialWidgetLoader.loadSocialWidgetsFromFile("data/socialwidgets.json", (response) => {
-    self.socialWidgetList = response;
+  self.widgetList = [];
+  widgetLoader.loadWidgetsFromFile("data/socialwidgets.json", (response) => {
+    self.widgetList = response;
   });
 
   self.storage = new pbStorage.BadgerPen(function(thisStorage) {
@@ -185,7 +185,7 @@ Badger.prototype = {
       // launch the new user intro page and unset first-run flag
       if (settings.getItem("showIntroPage")) {
         chrome.tabs.create({
-          url: chrome.extension.getURL("/skin/firstRun.html")
+          url: chrome.runtime.getURL("/skin/firstRun.html")
         });
       } else {
         // don't remind users to look at the intro page either
@@ -203,9 +203,9 @@ Badger.prototype = {
    */
   saveAction: function(userAction, origin) {
     var allUserActions = {
-      'block': constants.USER_BLOCK,
-      'cookieblock': constants.USER_COOKIE_BLOCK,
-      'allow': constants.USER_ALLOW
+      block: constants.USER_BLOCK,
+      cookieblock: constants.USER_COOKIE_BLOCK,
+      allow: constants.USER_ALLOW
     };
     this.storage.setupUserAction(origin, allUserActions[userAction]);
     log("Finished saving action " + userAction + " for " + origin);
@@ -488,7 +488,7 @@ Badger.prototype = {
   }, constants.DNT_POLICY_CHECK_INTERVAL),
 
   /**
-   * Default privacy badger settings
+   * Default Privacy Badger settings
    */
   defaultSettings: {
     checkForDNTPolicy: true,
@@ -627,9 +627,9 @@ Badger.prototype = {
    * Check if privacy badger is enabled, take an origin and
    * check against the disabledSites list
    *
-   * @param {String} origin
+   * @param {String} origin the origin to check
    * @returns {Boolean} true if enabled
-   **/
+   */
   isPrivacyBadgerEnabled: function(origin) {
     var settings = this.getSettings();
     var disabledSites = settings.getItem("disabledSites");
@@ -654,9 +654,9 @@ Badger.prototype = {
   },
 
   /**
-   * Check if social widget replacement functionality is enabled
+   * Check if widget replacement functionality is enabled.
    */
-  isSocialWidgetReplacementEnabled: function() {
+  isWidgetReplacementEnabled: function () {
     return this.getSettings().getItem("socialWidgetReplacementEnabled");
   },
 
@@ -686,7 +686,7 @@ Badger.prototype = {
    * Add an origin to the disabled sites list
    *
    * @param {String} origin The origin to disable the PB for
-   **/
+   */
   disablePrivacyBadgerForOrigin: function(origin) {
     var settings = this.getSettings();
     var disabledSites = settings.getItem('disabledSites');
@@ -709,13 +709,13 @@ Badger.prototype = {
    * Remove an origin from the disabledSites list
    *
    * @param {String} origin The origin to disable the PB for
-   **/
+   */
   enablePrivacyBadgerForOrigin: function(origin) {
     var settings = this.getSettings();
     var disabledSites = settings.getItem("disabledSites");
     var idx = disabledSites.indexOf(origin);
     if (idx >= 0) {
-      utils.removeElementFromArray(disabledSites, idx);
+      disabledSites.splice(idx, 1);
       settings.setItem("disabledSites", disabledSites);
     }
   },
@@ -723,7 +723,7 @@ Badger.prototype = {
   /**
    * Checks if local storage ( in dict) has any high-entropy keys
    *
-   * @param lsItems Local storage dict
+   * @param {Object} lsItems Local storage dict
    * @returns {boolean} true if it seems there are supercookies
    */
   hasLocalStorageSuperCookie: function(lsItems) {
@@ -747,8 +747,8 @@ Badger.prototype = {
   /**
    * check if there seems to be any type of Super Cookie
    *
-   * @param storageItems Dict with storage items
-   * @returns {*} true if there seems to be any Super cookie
+   * @param {Object} storageItems Dict with storage items
+   * @returns {Boolean} true if there seems to be any Super cookie
    */
   hasSuperCookie: function(storageItems) {
     return (
@@ -797,13 +797,13 @@ Badger.prototype = {
     // TODO grab hostname from tabData instead
     if (this.isPrivacyBadgerEnabled(window.extractHostFromURL(tab_url))) {
       iconFilename = {
-        "19": chrome.runtime.getURL("icons/badger-19.png"),
-        "38": chrome.runtime.getURL("icons/badger-38.png")
+        19: chrome.runtime.getURL("icons/badger-19.png"),
+        38: chrome.runtime.getURL("icons/badger-38.png")
       };
     } else {
       iconFilename = {
-        "19": chrome.runtime.getURL("icons/badger-19-disabled.png"),
-        "38": chrome.runtime.getURL("icons/badger-38-disabled.png")
+        19: chrome.runtime.getURL("icons/badger-19-disabled.png"),
+        38: chrome.runtime.getURL("icons/badger-38-disabled.png")
       };
     }
 

@@ -16,10 +16,13 @@ from window_utils import switch_to_window_with_url
 class DNTTest(pbtest.PBSeleniumTest):
     """Tests to make sure DNT policy checking works as expected."""
 
-    CHECK_FOR_DNT_POLICY_JS = """badger.checkForDNTPolicy(
-  arguments[0],
-  r => window.DNT_CHECK_RESULT = r
-);"""
+    CHECK_FOR_DNT_POLICY_JS = (
+        "chrome.extension.getBackgroundPage()."
+        "badger.checkForDNTPolicy("
+        "  arguments[0],"
+        "  r => window.DNT_CHECK_RESULT = r"
+        ");"
+    )
 
     # TODO switch to non-delayed version (see below)
     # once race condition (https://crbug.com/478183) is fixed
@@ -62,23 +65,25 @@ class DNTTest(pbtest.PBSeleniumTest):
         )
 
     def domain_was_detected(self, domain):
-        return self.js("""return (
-  Object.keys(badger.tabData).some(tab_id => {{
-    let origins = badger.tabData[tab_id].origins;
-    return origins.hasOwnProperty('{}');
-  }})
-);""".format(domain))
+        return self.js(
+            "return (Object.keys(chrome.extension.getBackgroundPage().badger.tabData).some(tab_id => {"
+            "  let origins = chrome.extension.getBackgroundPage().badger.tabData[tab_id].origins;"
+            "  return origins.hasOwnProperty(arguments[0]);"
+            "}));",
+            domain
+        )
 
     def domain_was_blocked(self, domain):
-        self.assertTrue(self.domain_was_detected(domain),
-            msg="Domain should have been detected.")
-
-        return self.js("""return (
-  Object.keys(badger.tabData).some(tab_id => {{
-    let origins = badger.tabData[tab_id].origins;
-    return origins.hasOwnProperty('{}') && constants.BLOCKED_ACTIONS.has(origins['{}']);
-  }})
-);""".format(domain, domain))
+        return self.js(
+            "return (Object.keys(chrome.extension.getBackgroundPage().badger.tabData).some(tab_id => {"
+            "  let origins = chrome.extension.getBackgroundPage().badger.tabData[tab_id].origins;"
+            "  return ("
+            "    origins.hasOwnProperty(arguments[0]) &&"
+            "    chrome.extension.getBackgroundPage().constants.BLOCKED_ACTIONS.has(origins[arguments[0]])"
+            "  );"
+            "}));",
+            domain
+        )
 
     @pbtest.repeat_if_failed(3)
     def test_dnt_check_should_happen_for_blocked_domains(self):
@@ -88,25 +93,30 @@ class DNTTest(pbtest.PBSeleniumTest):
             "privacy_badger_dnt_test_fixture.html"
         )
         DNT_DOMAIN = "www.eff.org"
-        BLOCK_DOMAIN_JS = """(function () {{
-  badger.storage.setupHeuristicAction('{}', constants.BLOCK);
-}}());""".format(DNT_DOMAIN)
+        BLOCK_DOMAIN_JS = (
+            "(function () {"
+            "chrome.extension.getBackgroundPage()."
+            "badger.storage.setupHeuristicAction("
+            "  arguments[0],"
+            "  chrome.extension.getBackgroundPage().constants.BLOCK"
+            ");"
+            "}());"
+        )
 
         # mark a DNT-compliant domain for blocking
-        self.load_url(self.bg_url)
-        self.js(BLOCK_DOMAIN_JS)
-
-        # need to keep Badger's background page open for our changes to persist
-        # so, open and switch to a new window
-        self.open_window()
+        self.load_url(self.options_url)
+        self.js(BLOCK_DOMAIN_JS, DNT_DOMAIN)
 
         # visit a page that loads a resource from that DNT-compliant domain
+        self.open_window()
         self.load_url(PAGE_URL)
 
-        # switch back to Badger's background page
-        switch_to_window_with_url(self.driver, self.bg_url)
+        # switch back to Badger's options page
+        switch_to_window_with_url(self.driver, self.options_url)
 
         # verify that the domain is blocked
+        self.assertTrue(self.domain_was_detected(DNT_DOMAIN),
+            msg="Domain should have been detected.")
         self.assertTrue(self.domain_was_blocked(DNT_DOMAIN),
             msg="DNT-compliant resource should have been blocked at first.")
 
@@ -117,10 +127,13 @@ class DNTTest(pbtest.PBSeleniumTest):
             # reload it
             self.load_url(PAGE_URL)
 
-            # switch back to Badger's background page
-            switch_to_window_with_url(self.driver, self.bg_url)
+            # switch back to Badger's options page
+            switch_to_window_with_url(self.driver, self.options_url)
 
-            return self.domain_was_blocked(DNT_DOMAIN)
+            return (
+                self.domain_was_detected(DNT_DOMAIN) and
+                self.domain_was_blocked(DNT_DOMAIN)
+            )
 
         # verify that the domain is allowed
         was_blocked = retry_until(
@@ -128,7 +141,8 @@ class DNTTest(pbtest.PBSeleniumTest):
             tester=lambda x: not x,
             msg="Waiting a bit for DNT check to complete and retrying ...")
 
-        self.assertFalse(was_blocked, msg="DNT-compliant resource should have gotten unblocked.")
+        self.assertFalse(was_blocked,
+            msg="DNT-compliant resource should have gotten unblocked.")
 
     def test_dnt_check_should_not_set_cookies(self):
         TEST_DOMAIN = "dnt-test.trackersimulator.org"
@@ -155,7 +169,7 @@ class DNTTest(pbtest.PBSeleniumTest):
         self.assertEqual(len(self.driver.get_cookies()), 0,
             "No cookies again")
 
-        self.load_url(self.bg_url)
+        self.load_url(self.options_url)
         # perform a DNT policy check
         self.js(DNTTest.CHECK_FOR_DNT_POLICY_JS, TEST_DOMAIN)
         # wait until checkForDNTPolicy completed
@@ -179,14 +193,18 @@ class DNTTest(pbtest.PBSeleniumTest):
         # the DNT policy URL used by this test returns "cookies=X"
         # where X is the number of cookies it got
         # MEGAHACK: make sha1 of "cookies=0" a valid DNT hash
-        self.load_url(self.bg_url)
+        self.load_url(self.options_url)
         # wait for DNT hash update to complete
         # so that it doesn't overwrite our change below
         # TODO wait conditionally; will be able to remove waiting here once
         # badger.INITIALIZED accounts for things that initialize async
         time.sleep(1)
-        self.js("""badger.storage.updateDNTHashes(
-{ "cookies=0 test policy": "f63ee614ebd77f8634b92633c6bb809a64b9a3d7" });""")
+        self.js(
+            "chrome.extension.getBackgroundPage()."
+            "badger.storage.updateDNTHashes({"
+            "  'cookies=0 test policy': 'f63ee614ebd77f8634b92633c6bb809a64b9a3d7'"
+            "});"
+        )
 
         # perform a DNT policy check
         self.js(DNTTest.CHECK_FOR_DNT_POLICY_JS, TEST_DOMAIN)
@@ -227,9 +245,10 @@ class DNTTest(pbtest.PBSeleniumTest):
     def test_first_party_dnt_header(self):
         TEST_URL = "https://httpbin.org/get"
 
-        self.load_url(self.bg_url)
         # wait until DNT-injecting webRequest listeners have been registered
-        self.wait_for_script("return badger.INITIALIZED")
+        self.wait_for_script(
+            "return chrome.extension.getBackgroundPage().badger.INITIALIZED"
+        )
 
         headers = retry_until(partial(self.get_first_party_headers, TEST_URL),
                               times=8)
