@@ -54,6 +54,8 @@ authorize.net
 autoforums.com
 azureedge.net
 bac-assets.com
+api.map.baidu.com
+sapi.map.baidu.com
 bandcamp.com
 bankid.no
 bankrate.com
@@ -460,6 +462,7 @@ openstreetmap.org
 optimizely.com
 oregonlive.com
 outlook.com
+paddle.com
 pandacommerce.net
 parastorage.com
 passwordbox.com
