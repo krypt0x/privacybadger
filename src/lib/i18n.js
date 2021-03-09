@@ -17,30 +17,33 @@
 
 (function () {
 
-const i18n = chrome.i18n;
+const LOCALE = chrome.i18n.getMessage('@@ui_locale'),
+  ON_POPUP = (document.location.pathname == "/skin/popup.html");
+
+function localizeFaqLink() {
+  const LOCALIZED_HOMEPAGE_LOCALES = ['es'];
+  if (ON_POPUP && LOCALIZED_HOMEPAGE_LOCALES.includes(LOCALE)) {
+    // update FAQ link to point to localized version
+    $('#help').prop('href', `https://privacybadger.org/${LOCALE}/#faq`);
+  }
+}
 
 function setTextDirection() {
-  function swap_css_property(selector, from, to) {
-    let $els = $(selector);
-    $els.each(i => {
-      let $el = $($els[i]);
-      $el.css(to, $el.css(from)).css(from, "unset");
-    });
-  }
-
   function toggle_css_value(selector, property, from, to) {
     let $els = $(selector);
     $els.each(i => {
       let $el = $($els[i]);
-      $el.css(property, $el.css(property) === from ? to : from);
+      if ($el.css(property) === from) {
+        $el.css(property, to);
+      }
     });
   }
 
   // https://www.w3.org/International/questions/qa-scripts#examples
   // https://developer.chrome.com/webstore/i18n?csw=1#localeTable
-  const RTL_LANGS = ['ar', 'he', 'fa'];
-
-  if (RTL_LANGS.indexOf(i18n.getMessage('@@ui_locale')) == -1) {
+  // TODO duplicated in src/js/webrequest.js
+  const RTL_LOCALES = ['ar', 'he', 'fa'];
+  if (!RTL_LOCALES.includes(LOCALE)) {
     return;
   }
 
@@ -48,21 +51,13 @@ function setTextDirection() {
   document.body.setAttribute("dir", "rtl");
 
   // popup page
-  if (document.location.pathname == "/skin/popup.html") {
+  if (ON_POPUP) {
     // fix floats
-    ['#privacyBadgerHeader h2', '#privacyBadgerHeader img', '#instruction img', '#version'].forEach((selector) => {
+    ['#privacyBadgerHeader img', '#header-image-stack', '#version'].forEach((selector) => {
       toggle_css_value(selector, "float", "left", "right");
     });
     ['#fittslaw', '#options', '#help', '#share', '.overlay_close'].forEach((selector) => {
       toggle_css_value(selector, "float", "right", "left");
-    });
-
-    // fix padding
-    ['#version'].forEach((selector) => {
-      swap_css_property(selector, "padding-left", "padding-right");
-    });
-    ['#privacyBadgerHeader h2', '#instruction img', '#help', '#share'].forEach((selector) => {
-      swap_css_property(selector, "padding-right", "padding-left");
     });
 
   // options page
@@ -79,42 +74,30 @@ function setTextDirection() {
 `;
     document.body.appendChild(css);
 
-    // fix margins
-    ['#settings-suffix', '#check-dnt-policy-row'].forEach((selector) => {
-      swap_css_property(selector, "margin-left", "margin-right");
-    });
-    ['#whitelistForm > div > div > div'].forEach((selector) => {
-      swap_css_property(selector, "margin-right", "margin-left");
-    });
-
     // fix floats
-    ['.btn-silo', '.btn-silo div', '#whitelistForm > div > div > div'].forEach((selector) => {
+    ['.btn-silo', '.btn-silo div', '#allowlist-form > div > div > div', '#widget-site-exceptions-select-div', '#widget-site-exceptions-remove-button'].forEach((selector) => {
       toggle_css_value(selector, "float", "left", "right");
     });
   }
 }
 
-// Loads and inserts i18n strings into matching elements. Any inner HTML already in the
-// element is parsed as JSON and used as parameters to substitute into placeholders in the
-// i18n message.
+/**
+ * Loads and inserts i18n strings into matching elements.
+ */
 function loadI18nStrings() {
-  setTextDirection();
+  let els = document.querySelectorAll("[class^='i18n_']");
 
-  // replace span contents by their class names
-  let nodes = document.querySelectorAll("[class^='i18n_']");
-  for (let i = 0; i < nodes.length; i++) {
-    const args = JSON.parse("[" + nodes[i].textContent + "]");
-    let className = nodes[i].className;
-    if (className instanceof SVGAnimatedString) {
-      className = className.animVal;
-    }
-    const stringName = className.split(/\s/)[0].substring(5);
-    const prop = "innerHTML" in nodes[i] ? "innerHTML" : "textContent";
-    if (args.length > 0) {
-      nodes[i][prop] = i18n.getMessage(stringName, args);
-    } else {
-      nodes[i][prop] = i18n.getMessage(stringName);
-    }
+  // replace element contents by their class names
+  for (let el of els) {
+    const key = el.className.split(/\s/)[0].slice(5),
+      prop = ("innerHTML" in el ? "innerHTML" : "textContent");
+
+    // get chrome.i18n placeholders, if any
+    let placeholders = el.dataset.i18n_contents_placeholders;
+    placeholders = (placeholders ? placeholders.split("@@") : []);
+
+    // replace contents
+    el[prop] = chrome.i18n.getMessage(key, placeholders);
   }
 
   // also replace alt, placeholder and title attributes
@@ -125,40 +108,44 @@ function loadI18nStrings() {
   ];
 
   // get all the elements that contain one or more of these attributes
-  nodes = document.querySelectorAll(
+  els = document.querySelectorAll(
     // for example: "[placeholder^='i18n_'], [title^='i18n_']"
     "[" + ATTRS.join("^='i18n_'], [") + "^='i18n_']"
   );
 
   // for each element
-  for (let i = 0; i < nodes.length; i++) {
+  for (let el of els) {
     // for each attribute
-    ATTRS.forEach(attr_type => {
+    for (let attr_type of ATTRS) {
       // get the translation message key
-      let key = nodes[i].getAttribute(attr_type);
+      let key = el.getAttribute(attr_type);
+
+      // attribute exists
       if (key) {
         // remove the i18n_ prefix
-        key = key.slice(5);
+        key = key.startsWith("i18n_") && key.slice(5);
       }
 
-      // if the attribute exists and looks like i18n_KEY
-      if (key) {
-        // get chrome.i18n placeholders, if any
-        let placeholders = nodes[i].dataset.i18n_placeholders;
-        if (placeholders) {
-          placeholders = placeholders.split("@@");
-        } else {
-          placeholders = [];
-        }
-
-        // update the attribute with the result of a translation lookup by KEY
-        nodes[i].setAttribute(attr_type, i18n.getMessage(key, placeholders));
+      if (!key) {
+        continue;
       }
-    });
+
+      // get chrome.i18n placeholders, if any
+      // TODO multiple attributes are not supported
+      let placeholders = el.dataset.i18n_attribute_placeholders;
+      placeholders = (placeholders ? placeholders.split("@@") : []);
+
+      // update the attribute with the result of a translation lookup by KEY
+      el.setAttribute(attr_type, chrome.i18n.getMessage(key, placeholders));
+    }
   }
 }
 
 // Fill in the strings as soon as possible
-window.addEventListener("DOMContentLoaded", loadI18nStrings, true);
+window.addEventListener("DOMContentLoaded", function () {
+  localizeFaqLink();
+  setTextDirection();
+  loadI18nStrings();
+}, true);
 
 }());

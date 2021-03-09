@@ -336,9 +336,9 @@ ul ul,ol ul,ul ol,ol ol {
   background-color:#F06A0A;
   color:#fefefe;
 }
-button:hover,.button:focus {
-  background-color:#cc5a09;
-  color:#fefefe;
+.button:hover, .button:focus {
+  background-color: #cc5a09;
+  color: #000;
 }
 
 .button.large {
@@ -374,13 +374,13 @@ button:hover,.button:focus {
   }
 }
 .top-bar img {
-  max-width:3rem;
-  margin-right:0.2rem;
+    max-width: 3rem;
+    margin-inline-end: 0.2rem;
 }
 @media print, screen and (min-width: 40em) {
-  .top-bar img {
-    margin-right:1rem;
-  }
+    .top-bar img {
+        margin-inline-end: 1rem;
+    }
 }
 
 @media print, screen and (min-width: 40em) {
@@ -404,6 +404,7 @@ header {
   background-color:#EC9329;
 }
 header img {
+  margin:1rem 0 0;
   width:7rem;
 }
 @media print, screen and (min-width: 40em) {
@@ -497,7 +498,7 @@ header .title-bar h1 {
   display:block;
   margin:2.5rem auto 2rem;
   padding-bottom:3rem;
-  width:146px;
+  width:94px;
   z-index:3;
 }
 .share-links>a {
@@ -549,12 +550,6 @@ header .title-bar h1 {
   background:url("../images/facebook.svg");
 }
 .share-links>a.share-facebook i:hover {
-  opacity:0.7;
-}
-.share-links>a.share-google i {
-  background:url("../images/google.svg");
-}
-.share-links>a.share-google i:hover {
   opacity:0.7;
 }
 .share-links>a {
@@ -621,12 +616,6 @@ header .title-bar h1 {
     background:url("../images/facebook.svg");
   }
   .share-links>a.share-facebook i:hover {
-    opacity:0.7;
-  }
-  .share-links>a.share-google i {
-    background:url("../images/google.svg");
-  }
-  .share-links>a.share-google i:hover {
     opacity:0.7;
   }
   .share-links>a {
@@ -729,13 +718,13 @@ body {
   margin-top:1rem;
 }
 @media print, screen and (min-width: 40em) {
-  [id*="pb-features-"] h3,#pb-settings h3 {
-    text-align:left;
-    font-size:1.9375rem;
-  }
+    [id*="pb-features-"] h3, #pb-settings h3 {
+        text-align: start;
+        font-size: 1.9375rem;
+    }
 }
-[id*="pb-features-"] .text,[id*="pb-features-"] p,#pb-settings .text,#pb-settings p {
-  text-align:left;
+[id*="pb-features-"] .text, [id*="pb-features-"] p, #pb-settings .text, #pb-settings p {
+    text-align: start;
 }
 #pb-settings {
   background-image:linear-gradient(#EC9329, #EC9329 30%, #fff 30%);
@@ -806,5 +795,34 @@ body {
 @media print, screen and (min-width: 40em) {
   #pb-donate-help {
     margin-bottom:5rem;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body, #pb-privacy-policy {
+    background-color: #222;
+    color: #ddd;
+  }
+
+  a:hover, a:focus {
+    color: #ddd;
+  }
+
+  .button:hover, .button:focus {
+    color: #000;
+  }
+
+  #pb-settings {
+    background-image: linear-gradient(#EC9329, #EC9329 30%, #222 30%);
+  }
+
+  #pb-donate {
+    background-image: linear-gradient(#333, #333 45%, #222 45%);
+  }
+
+  .share-links > a span {
+    background-color: #555;
+    border-left: 0.4275rem solid #555;
+    color: #fff;
   }
 }

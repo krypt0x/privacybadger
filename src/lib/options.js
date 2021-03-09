@@ -24,10 +24,12 @@ require.scopes.optionslib = (function () {
  * @param {String} [filter_text] Text to filter origins with.
  * @param {String} [type_filter] Type: user-controlled/DNT-compliant
  * @param {String} [status_filter] Status: blocked/cookieblocked/allowed
+ * @param {Boolean} [show_not_yet_blocked] Whether to show domains your Badger
+ * hasn't yet learned to block.
  *
  * @return {Array} The array of origins.
  */
-function getOriginsArray(origins, filter_text, type_filter, status_filter) {
+function getOriginsArray(origins, filter_text, type_filter, status_filter, show_not_yet_blocked) {
   // Make sure filter_text is lower case for case-insensitive matching.
   if (filter_text) {
     filter_text = filter_text.toLowerCase();
@@ -42,14 +44,25 @@ function getOriginsArray(origins, filter_text, type_filter, status_filter) {
   function matchesFormFilters(origin) {
     const value = origins[origin];
 
+    if (!show_not_yet_blocked) {
+      // hide the not-yet-seen-on-enough-sites potential trackers
+      if (value == "allow") {
+        return false;
+      }
+    }
+
     // filter by type
     if (type_filter) {
       if (type_filter == "user") {
         if (!value.startsWith("user")) {
           return false;
         }
-      } else {
-        if (value != type_filter) {
+      } else if (type_filter == "dnt") {
+        if (value != "dnt") {
+          return false;
+        }
+      } else if (type_filter == "-dnt") {
+        if (value == "dnt") {
           return false;
         }
       }

@@ -22,11 +22,23 @@ function getPageScript() {
   // return a string
   return "(" + function (NAVIGATOR, OBJECT) {
 
-    OBJECT.defineProperty(OBJECT.getPrototypeOf(NAVIGATOR), "doNotTrack", {
-      get: () => {
-        return "1";
+    if (NAVIGATOR.doNotTrack != "1") {
+      OBJECT.defineProperty(OBJECT.getPrototypeOf(NAVIGATOR), "doNotTrack", {
+        get: function doNotTrack() {
+          return "1";
+        }
+      });
+    }
+
+    if (!NAVIGATOR.globalPrivacyControl) {
+      try {
+        OBJECT.defineProperty(NAVIGATOR, "globalPrivacyControl", {
+          value: true
+        });
+      } catch (e) {
+        console.error("Privacy Badger failed to set navigator.globalPrivacyControl, probably because another extension set it in an incompatible way first.");
       }
-    });
+    }
 
   // save locally to keep from getting overwritten by site code
   } + "(window.navigator, Object));";
@@ -50,7 +62,7 @@ if (document instanceof HTMLDocument === false && (
 
 // TODO race condition; fix waiting on https://crbug.com/478183
 chrome.runtime.sendMessage({
-  checkDNT: true
+  type: "checkDNT"
 }, function (enabled) {
   if (enabled) {
     window.injectScript(getPageScript());

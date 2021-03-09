@@ -222,6 +222,7 @@ function extractHostFromURL(/**String*/ url) { // eslint-disable-line no-unused-
   try {
     host = new URI(url).host;
   } catch (e) {
+    console.error("Failed to extract host from %s\n", url, e);
     // Keep the empty string for invalid URIs.
   }
 
@@ -244,8 +245,8 @@ function URI(/**String*/ spec) {
   }
 
   if (spec.substr(this._schemeEnd + 1, 2) != "//") {
-    //Special case for filesystem URIs; scheme becomes 'filesystem:http(s)'
-    if (spec.substring(0, this._schemeEnd) === "filesystem") {
+    // special case for filesystem, blob URIs
+    if (this.scheme === "filesystem" || this.scheme === "blob") {
       this._schemeEnd = spec.indexOf(":", this._schemeEnd + 1);
       if (spec.substr(this._schemeEnd + 1, 2) != "//") {
         throw new Error("Unexpected URI structure");

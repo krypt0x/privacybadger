@@ -32,16 +32,8 @@
         "description": ""
     },
     "options_dnt_policy_setting": {
-        "message": "Kontroli ĉu <a target='_blank' href='https://www.eff.org/privacybadger/faq#What-is-a-third-party-tracker'>eksteraj domajnoj</a> kongruas kun <a target='_blank' href='https://www.eff.org/dnt-policy'>politiko pri nespurado de EFF</a>",
+        "message": "Kontroli ĉu <a target='_blank' href='https://www.eff.org/privacybadger/faq#What-is-a-third-party-tracker'>eksteraj domajnoj</a> kongruas kun la <a target='_blank' href='https://www.eff.org/dnt-policy'>politiko pri nespurado de EFF</a>",
         "description": "Checkbox label on the general settings page"
-    },
-    "intro_learns_paragraph": {
-        "message": "Ju pli longe vi retumas kun Privata Melo, des pli lerta pri protekti vin ĝi iĝas. Ĉu via Melĉjo ankoraŭ blokas nenion? Ne estas malĝuste! Anstataŭ prizorgi listojn de blokataj aĵoj, Privata Melo aŭtomate malkovras spurilojn dum kiam vi foliumas la Teksaĵon. Do ekretumu por ke via Melĉjo instruiĝu.",
-        "description": "Intro page paragraph. Also used on the options page as part of an acknowledgement screen in front of the tracking domains list."
-    },
-    "invalid_domain": {
-        "message": "Bonvolu aldoni ĝustan nomregnon aŭ URL-n.",
-        "description": ""
     },
     "donate_to_eff": {
         "message": "Donaci al EFF",
@@ -63,6 +55,14 @@
         "message": "Tiu ĉi nomregno promesas al vi ne spuri.",
         "description": "Tooltip shown when you hover over a DNT-compliant domain name in the list of domains in the popup or under the Tracking Domains tab on the options page."
     },
+    "breakage_warning_tooltip": {
+        "message": "Per bloki tiun ĉi nomregnon, retejoj povus misfunkcii",
+        "description": "Tooltip for a warning icon that appears when move a domain slider to 'red' (block) for a domain that was automatically set to 'yellow' (block cookies)."
+    },
+    "feed_the_badger_title": {
+        "message": "Klaku por permesi al Privata Melo decidi kiel trakti tiun ĉi nomregnon",
+        "description": "Tooltip shown when you hover over an undo arrow that appears when you move a domain slider away from its automatic setting."
+    },
     "next_section": {
         "message": "antaŭen",
         "description": "Image alt. text on a couple of \"scroll down\" arrow buttons on the intro page."
@@ -79,10 +79,6 @@
         "message": "Raporti eraron",
         "description": ""
     },
-    "whitelist_form_domain_input_placeholder": {
-        "message": "ekz. www.nomregno.com, *.nomregno.net, nomregno.org",
-        "description": "Placeholder text for the Add domain input under the Disabled Sites tab on the options page."
-    },
     "domain_slider_cookieblock_tooltip": {
         "message": "Klaku tie ĉi por bloki tiun ĉi nomregnon de agordi kuketojn",
         "description": "Tooltip shown when you hover over the center part of a slider shown for each domain in the domain list."
@@ -92,7 +88,7 @@
         "description": "Dropdown control setting on the Tracking Domains options page tab."
     },
     "options_webrtc_setting": {
-        "message": "Preventi WebRTC de malkovri lokan IP-adreson *",
+        "message": "Preventi WebRTC de malkovri lokan IP-adreson",
         "description": "Checkbox label on the general settings page"
     },
     "intro_welcome": {
@@ -103,10 +99,6 @@
         "message": "Kio malfunkcias?",
         "description": ""
     },
-    "popup_instructions_no_trackers": {
-        "message": "Neniuj malkovritaj <a target='_blank' title='i18n_what_is_a_tracker' class='tooltip' href='https://www.eff.org/privacybadger#faq-What-is-a-third-party-tracker?'>spuriloj</a>. Vivu la privateco!",
-        "description": "Text shown in the popup when there are no trackers on the page."
-    },
     "options_domain_list_tab": {
         "message": "Spurantaj nomregnoj",
         "description": "This is an options page tab heading."
@@ -116,32 +108,48 @@
         "description": "Text that comes up when you hover over the social sharing buttons on the intro page."
     },
     "first_run_text": {
-        "message": "Sciigi pri kiel Privata Melo protektas vian privatecon.",
+        "message": "Sciiĝi pri kiel Privata Melo protektas vian privatecon",
         "description": "Part of a reminder to visit the intro page. Shown in popup until the user clicks on the reminder link or browses through the intro page."
     },
     "download": {
         "message": "Elŝuti",
         "description": ""
     },
-    "feed_the_badger_title": {
-        "message": "Klaku por permesi al Privata Melo decidi kiel trakti tiun ĉi spurilon",
-        "description": ""
-    },
     "import": {
         "message": "Enporti",
         "description": ""
     },
+    "options_widget_replacement_tab": {
+        "message": "Anstataŭigi ret‑aplikaĵetojn",
+        "description": "Options page tab heading"
+    },
+    "options_widget_replacement_desc": {
+        "message": "Privata Melo povas bloki butonojn de sociaj retejoj kaj aliajn virtuale uzeblajn aplikaĵetojn (filmetojn, aŭdaĵojn, komentojn), tiu ĉi eblaĵo anstataŭigas ilin per klakeblaj (ne aŭtomate montriĝantaj) butonoj.",
+        "description": "Introduction to the Widget Replacement tab on the options page"
+    },
     "options_social_widgets_checkbox": {
-        "message": "Anstataŭigi butonojn de sociaj retejoj",
-        "description": "Checkbox label on the general settings page"
+        "message": "Aktivigi anstataŭigon de ret‑aplikaĵetoj",
+        "description": "Checkbox label on the Widget Replacement tab"
+    },
+    "options_widget_exceptions_header": {
+        "message": "Esceptoj: ret‑aplikaĵetoj",
+        "description": "Header text on the Widget Replacement tab"
+    },
+    "options_hide_social_widgets": {
+        "message": "Ne anstataŭigi la jenajn ret‑aplikaĵetojn:",
+        "description": "Label for a form on the Widget Replacement tab"
+    },
+    "options_widget_site_exceptions_header": {
+        "message": "Esceptoj: retejoj",
+        "description": "Header text on the Widget Replacement tab"
+    },
+    "options_widget_site_exceptions_label": {
+        "message": "Ĉiam permesi ret‑aplikaĵetojn en tiuj ĉi retejoj:",
+        "description": "Label for a form on the Widget Replacement tab"
     },
     "options_show_nontracking_domains_checkbox": {
         "message": "Montri nomregnojn, kiuj verŝajne ne spuras vin",
         "description": "Checkbox label on the general settings page. Should match wording used in the 'non_tracker' message."
-    },
-    "options_incognito_warning": {
-        "message": "** Aktivigo de lernado en privataj fenestroj povas resti spurojn de historio de via privata retumado en via komputilo. Implicite Privata Melo blokos jam-konatajn spurilojn en privataj langetoj, tamen ne lernos pri novaj spuriloj. Vi povas aktivigi tiun ĉi agordon, se vi multe retumas en privataj fenestroj.",
-        "description": "Detailed explanation shown under checkboxes on the general settings page"
     },
     "report_button": {
         "message": "Raporti eraron",
@@ -165,12 +173,36 @@
         "message": "Serĉi nomregnon:",
         "description": "Label for a text input box on the Tracking Domains options page tab."
     },
-    "options_incognito_setting": {
-        "message": "Lerni en privataj fenestroj **",
+    "options_learn_setting": {
+        "message": "Lerni bloki novajn spurilojn surbaze de via retumado",
         "description": "Checkbox label on the general settings page"
     },
+    "local_learning_warning": {
+        "message": "Aktivigo de lernado dum retumado povas igi vin pli identigebla al retejoj",
+        "description": "Tooltip on the general settings page"
+    },
+    "options_incognito_setting": {
+        "message": "Lerni en privataj fenestroj",
+        "description": "Checkbox label on the general settings page"
+    },
+    "options_incognito_warning": {
+        "message": "Aktivigo de lernado en privataj fenestroj povas resti spurojn de historio de via privata retumado en via komputilo. Implicite Privata Melo blokos jam-konatajn spurilojn en privataj langetoj, tamen ne lernos pri novaj spuriloj. Vi povas aktivigi tiun ĉi agordon, se vi multe retumas en privataj fenestroj.",
+        "description": "Tooltip on the general settings page"
+    },
+    "learning_prompt_text1": {
+        "message": "Privata Melo de nun implicite ne lernos surbaze de via retumado.",
+        "description": "First part of a prompt to visit the blog."
+    },
+    "learning_prompt_text2": {
+        "message": "Klaku suben por pli da informo.",
+        "description": "Second part of a prompt to visit the blog."
+    },
+    "learning_prompt_button": {
+        "message": "Sciiĝi pri kiel Privata Malo ŝanĝiĝas",
+        "description": "Button text, part of a prompt to visit the blog."
+    },
     "show_counter_checkbox": {
-        "message": "Montri nombron da spuriloj",
+        "message": "Montri nombron de spuriloj",
         "description": "Checkbox label on the general settings page"
     },
     "what_is_a_tracker": {
@@ -182,20 +214,12 @@
         "description": "Intro page paragraph. The quoted message ('Did Privacy Badger break this site') should match the first part of the translation for the 'report_broken_site' message."
     },
     "options_title": {
-        "message": "Agordoj de Privata Melo",
+        "message": "Agordoj pri Privata Melo",
         "description": ""
     },
     "report_terms": {
-        "message": "Tio ĉi aŭtomate sendos la jenajn datumojn al EFF: la nune vizitatan retpaĝon, version de via retumilo, version de Privata Melo kaj staton de ĉiuj ŝovilojn ĉe tiu ĉi retejo.",
+        "message": "Tio ĉi aŭtomate sendos la jenajn datumojn al EFF: la nune vizitatan retpaĝon, version de via retumilo, version de Privata Melo kaj staton de ĉiuj ŝovilojn por tiu ĉi retpaĝo.",
         "description": ""
-    },
-    "intro_learns": {
-        "message": "Lernas dum kiam vi retumas",
-        "description": "Intro page paragraph heading."
-    },
-    "whitelisted_domains": {
-        "message": "Neblokataj retejoj",
-        "description": "This is an options page tab heading."
     },
     "popup_enable_for_site": {
         "message": "Aktivigi Privatan Melon por tiu ĉi retejo",
@@ -241,17 +265,29 @@
         "message": "Forigu ĉiujn spurantajn nomregnojn por:\n\n • forigi ĉion, kion Privata Melo scias pri spuriloj\n • igi Privatan Melon ne bloki ion ajn ĝis ĝi relernos surbaze de via retumado",
         "description": "Pop-up triggered when the remove_all_data button is clicked"
     },
-    "intro_text": {
-        "message": "Vi nun estas protektata de Privata Melo. Por lerni kiel Privata Melo funkcias, klaku sube por koncizan gvidilon.",
-        "description": "Part of a reminder to visit the intro page. Shown in popup until the user clicks on the reminder link or browses through the intro page."
+    "intro_text1": {
+        "message": "Vi nun estas protektata de Privata Melo.",
+        "description": "First part of a reminder to visit the intro page. Shown in popup until the user clicks on the reminder link or browses through the intro page."
+    },
+    "intro_text2": {
+        "message": "Por lerni kiel Privata Melo funkcias, klaku sube por koncizan gvidilon.",
+        "description": "Second part of a reminder to visit the intro page"
     },
     "options_webrtc_warning": {
-        "message": "* WebRTC povas malkovri vian lokan IP-adreson. Rimarku, ke tio ĉi povas malpliigi rendimenton de aplikaĵoj por retaj konferencoj, ekz. Google Hangouts.",
-        "description": "Detailed explanation shown under checkboxes on the general settings page"
+        "message": "WebRTC povas malkovri vian lokan IP-adreson. Rimarku, ke tio ĉi povas malpliigi rendimenton de aplikaĵoj por retaj konferencoj, ekz. Google Hangouts.",
+        "description": "Tooltip on the general settings page"
     },
     "options_general_settings": {
         "message": "Ĝeneralaj agordoj",
         "description": "This is an options page tab heading."
+    },
+    "options_privacy_settings": {
+        "message": "Privateco",
+        "description": "Subheading on the general settings options page."
+    },
+    "options_advanced_settings": {
+        "message": "Spertulaj",
+        "description": "Subheading on the general settings options page."
     },
     "intro_next_button": {
         "message": "Enkonduko",
@@ -281,10 +317,6 @@
             }
         }
     },
-    "intro_beyond_ads": {
-        "message": "Kaptas trompajn spurilojn",
-        "description": "Intro page paragraph heading."
-    },
     "options_domain_filter_cookieblock": {
         "message": "parte-blokitaj",
         "description": "Dropdown control setting on the Tracking Domains options page tab."
@@ -301,10 +333,6 @@
         "message": "Bonvolu elekti dosieron por enporti.",
         "description": ""
     },
-    "popup_blocked": {
-        "message": "Estas neniuj eksteraj rimedoj sur tiu ĉi retpaĝo.",
-        "description": ""
-    },
     "report_broken_site": {
         "message": "Ĉu Privata Melo difektis tiun ĉi retejon? Sciigu nin!",
         "description": "Button in the popup."
@@ -313,8 +341,20 @@
         "message": "Centrigu la ŝovilon por bloki kuketojn.",
         "description": ""
     },
+    "intro_learns": {
+        "message": "Aŭtomate lernas",
+        "description": "Intro page paragraph heading"
+    },
+    "intro_learns_paragraph": {
+        "message": "Anstataŭ prizorgi liston de blokataj elementoj, Privata Melo aŭtomate malkovras spurilojn surbaze de ilia sinteno.",
+        "description": "Intro page paragraph"
+    },
+    "intro_beyond_ads": {
+        "message": "Kaptas trompajn spurilojn",
+        "description": "Intro page paragraph heading."
+    },
     "intro_beyond_ads_paragraph": {
-        "message": "Nevidebla spurado okazas plurmaniere; reklamoj estas nur videbla parteto de tutaĵo. Privata Melo <a href='https://www.eff.org/issues/do-not-track' target='_blank'>sendas la signalon “Ne Spuri Min” (DNT)</a> por peti spurilojn pri ne spuri. Se ili ignoras vian peton, via Melĉjo lernos pri bloki ilin – ĉu ili estas reklamoj aŭ spuriloj aŭ aliaj aĉaĵoj.",
+        "message": "Nevidebla spurado okazas plurmaniere; reklamoj estas nur videbla parteto de tutaĵo. Privata Melo sendas la <a href='https://globalprivacycontrol.org/' target='_blank'>signalon Global Privacy Control</a> por peti pri ne kunhavigi kaj vendi viajn datumojn, kaj la <a href='https://www.eff.org/issues/do-not-track' target='_blank'>signalon “Ne Spuri Min” (DNT)</a> por peti firmaojn pri ne spuri vin. Se ili ignoros vian peton, Privata Melo lernos pri bloki ilin – ĉu ili estas reklamoj aŭ spuriloj aŭ aliaj aĉaĵoj.",
         "description": "Intro page paragraph."
     },
     "report_close": {
@@ -337,17 +377,13 @@
         "message": "permesitaj",
         "description": "Dropdown control setting on the Tracking Domains options page tab."
     },
-    "share_button_title_google": {
-        "message": "Kunhavigi per Google+",
-        "description": "Text that comes up when you hover over the social sharing buttons on the intro page."
-    },
     "intro_donate_heading": {
         "message": "Privateco estas kunlaboro!",
         "description": "Part of the 'donate' section on the intro page."
     },
     "show_tracking_domains_message": {
         "message": "Vi ne devus bezoni modifi ion ajn tie ĉi.",
-        "description": "Shown above the acknowledgement checkbox required to reveal the tracking domains list on the options page. This is the second paragraph; the first paragraph is the message under the \"intro_learns_paragraph\" key."
+        "description": "Shown above the acknowledgement checkbox required to reveal the tracking domains list on the options page. This is the second paragraph; the first paragraph is the message under the \"intro_not_an_adblocker_paragraph\" key."
     },
     "options_domain_filter_all": {
         "message": "ĉiuj",
@@ -362,45 +398,62 @@
         "description": ""
     },
     "options_enable_dnt_checkbox": {
-        "message": "Sendi al retejoj la signalon <a href='https://www.eff.org/issues/do-not-track' target='_blank'>“Ne Spuri Min” (DNT)</a>",
-        "description": "Checkbox label for enabling/disabling the Do Not Track signal, found on the general settings page"
+        "message": "Sendi al retejoj la signalojn “<a href='https://globalprivacycontrol.org/' target='_blank'>Global Privacy Control</a>” kaj “<a href='https://www.eff.org/issues/do-not-track' target='_blank'>Ne Spuri Min</a>” (DNT)",
+        "description": "Checkbox label for enabling/disabling the Sec-GPC and DNT signals, found on the general settings page"
+    },
+    "options_disable_google_nav_error_service": {
+        "message": "Malaktivigi sendi adresojn de vizitataj retejoj al Google. Tio ĉi malaktivigas sugestojn pri similaj retejoj, kiam la paĝo ne povas esti malfermita.",
+        "description": "Checkbox label found on the general settings page"
+    },
+    "options_disable_hyperlink_auditing": {
+        "message": "Malaktivigi kontroladon de ligiloj",
+        "description": "Checkbox label found on the general settings page"
+    },
+    "options_disable_network_prediction": {
+        "message": "Malaktivigi antaŭlegon",
+        "description": "Checkbox label found on the general settings page"
     },
     "options_domain_filter_user": {
         "message": "uzant-kontrolitaj",
         "description": "Dropdown control setting on the Tracking Domains options page tab."
     },
-    "disabled_for_these_domains": {
-        "message": "<p>Privata Melo estas malaktivigita por la subaj nomregnoj. Tio ĉi signifas, ke Privata Melo blokos nenion, kiam vi vizitos la jenajn retejojn.</p><p>Se viaopinie Privata Melo difektas iun retpaĝon, vi povas entajpi ĝian nomregnon en la kampon sube kaj klaku “aldoni nomregnon”.</p><p>Alimaniere, se langeto de difektita paĝo estas malfermita, klaku la piktogramon de Privata Melo sur la folumila ilarstrio kaj klaku la butonon “malaktivigi”.</p>",
-        "description": ""
-    },
     "popup_instructions": {
-        "message": "Privata Melo malkovris $COUNT$ eblajn $TRACKER_LINK_START$spurilojn$TRACKER_LINK_END$ sur tiu ĉi retpaĝo. Tiuj ĉi ŝoviloj ebligas al vi agordi kiel Privata Melo procedas pri ili. Vi ne devus ŝanĝi ilin escepte se io malfunkcias.",
-        "description": "Popup message that shows the number of trackers. This particular message is used when that number is greater than one.",
+        "message": "Blokitaj eblaj $LINK_START$spuriloj$LINK_END$: $COUNT$",
+        "description": "Popup message shown when at least one tracker was blocked.",
         "placeholders": {
             "count": {
                 "content": "$1",
                 "example": "15"
             },
-            "tracker_link_start": {
+            "link_start": {
                 "content": "$2",
-                "example": "<a title='What is a tracker?' href='https://www.eff.org/privacybadger/faq#What-is-a-third-party-tracker'>"
+                "example": "<a href='https://privacybadger.org/#What-is-a-third-party-tracker'>"
             },
-            "tracker_link_end": {
+            "link_end": {
                 "content": "</a>"
             }
         }
     },
+    "popup_instructions_no_trackers": {
+        "message": "Neniu blokita $LINK_START$spurilo$LINK_END$",
+        "description": "Text shown in the popup when there are no trackers on the page.",
+        "placeholders": {
+            "link_start": {
+                "content": "$1",
+                "example": "<a href='https://privacybadger.org/#What-is-a-third-party-tracker'>"
+            },
+            "link_end": {
+                "content": "</a>"
+            }
+        }
+    },
+    "popup_blocked": {
+        "message": "Estas neniu ekstera rimedo sur tiu ĉi retpaĝo. Vivu la privateco!",
+        "description": "Text shown in the popup when showing non-tracking domains is enabled, and there are no third-party domains on the page."
+    },
     "intro_by_eff": {
         "message": "Projekto de Electronic Frontier Foundation",
         "description": ""
-    },
-    "add_domain_button": {
-        "message": "Aldoni nomregnon",
-        "description": ""
-    },
-    "options_domain_list_one_tracker": {
-        "message": "Privata Melo malkovris unu eblan <a target='_blank' tabindex=-1 title='i18n_what_is_a_tracker' class='tooltip' href='https://www.eff.org/privacybadger#faq-What-is-a-third-party-tracker?'>spurantan nomregnon</a> ĝis nun. Tiu ĉi ŝovilo ebligas al vi agordi kiel Privata Melo procedas pri ĝi.",
-        "description": "Shown on the Tracking Domains options page tab when Privacy Badger learned of exactly one tracker so far."
     },
     "tooltip_allow": {
         "message": "Movu la ŝovilon dekstren por permesi nomregnon.",
@@ -410,21 +463,17 @@
         "message": "Malaktivigi Privatan Melon por tiu ĉi retejo",
         "description": "Button in the popup."
     },
-    "popup_instructions_one_tracker": {
-        "message": "Privata Melo malkovris eblan <a target='_blank' title='i18n_what_is_a_tracker' class='tooltip' href='https://www.eff.org/privacybadger#faq-What-is-a-third-party-tracker?'>spurilon</a> sur tiu ĉi retpaĝo. Tiu ĉi ŝovilo ebligas al vi agordi kiel Privata Melo procedas pri ĝi. Vi ne devus ŝanĝi ĝin escepte se io malfunkcias.",
-        "description": "Text shown in the popup when there is exactly one tracker on the page."
-    },
     "domain_slider_allow_tooltip": {
         "message": "Klaku tie ĉi por permesi tiun ĉi nomregnon",
         "description": "Tooltip shown when you hover over the rightmost part of a slider shown for each domain in the domain list."
     },
     "intro_privacy_note": {
-        "message": "Via Melĉjo lernas loke en via komputilo. Privata Melo NENIAM diskonigos datumojn pri via retumado escepte se vi decidos alie.",
+        "message": "Privata Melo NENIAM diskonigos datumojn pri via retumado escepte se vi decidos alie.",
         "description": "Intro page paragraph."
     },
     "options_domain_list_trackers": {
-        "message": "Privata Melo malkovris $COUNT$ eblajn $TRACKER_LINK_START$spurantajn nomregnojn$TRACKER_LINK_END$ ĝis nun. Tiuj ĉi ŝoviloj ebligas al vi agordi kiel Privata Melo procedas pri ĉiu spurilo.",
-        "description": "Message under the Tracking Domains tab on the options page. Shown after Privacy Badger learned about more than one tracker.",
+        "message": "Privata Melo decidiĝis bloki $COUNT$ eblajn $TRACKER_LINK_START$spurantajn nomregnojn$TRACKER_LINK_END$ ĝis nun",
+        "description": "Shown on the Tracking Domains tab on the options page after Privacy Badger learned to block one or more domains",
         "placeholders": {
             "count": {
                 "content": "$1",
@@ -432,19 +481,23 @@
             },
             "tracker_link_start": {
                 "content": "$2",
-                "example": "<a title='What is a tracker?' href='https://www.eff.org/privacybadger/faq#What-is-a-third-party-tracker'>"
+                "example": "<a href='https://privacybadger.org/#What-is-a-third-party-tracker'>"
             },
             "tracker_link_end": {
                 "content": "</a>"
             }
         }
     },
+    "options_domain_list_no_trackers": {
+        "message": "Privata Melo ne malkovris iun ajn <a target='_blank' tabindex=-1 title='i18n_what_is_a_tracker' class='tooltip' href='https://www.eff.org/privacybadger#faq-What-is-a-third-party-tracker?'>spurantan nomregnon</a> ĝis nun. Pluigu retumi!",
+        "description": "Shown on the Tracking Domains tab on the options page if all tracking domains have been removed."
+    },
     "name": {
         "message": "Privata Melo",
         "description": ""
     },
     "intro_not_an_adblocker_paragraph": {
-        "message": "Privata Melo komencas bloki kiam ĝi rimarkas la saman spurilon ĉe tri diversaj retejoj. Tri aperoj kaj ĝi malaperas! Se vi uzas aliajn privatecajn ilojn kaj reklam-blokiloj, Privata Melo lernos malpli, sed tio ne gravas, ĉar ĝi povas bloki aĵojn evititajn de aliaj blokiloj.",
+        "message": "Privata Melo komencas bloki kiam ĝi rimarkas la saman spurilon ĉe tri diversaj retejoj. Tri aperoj kaj ĝi malaperas!",
         "description": "Intro page paragraph."
     },
     "options_domain_status_filter": {
@@ -455,16 +508,12 @@
         "message": "Koncize priskribu la eraron sube.",
         "description": ""
     },
-    "remove_button": {
-        "message": "Forigi elektitajn",
-        "description": "This is the label for the 'Remove selected' buttons."
-    },
     "intro_donate1": {
         "message": "Kiam vi uzas Privatan Melon vi aniĝas al la <a href='https://www.eff.org/' target='_blank'>Ret-Lima Fondaĵo (EFF)</a> kune kun milionoj da aliaj retanoj en la batalo por privateco. Ni estas ne-profit-cela fondaĵo, kiu batalas por viaj rajtoj en la interreto. Dankon por kuniĝi al ni!",
         "description": "Part of the 'donate' section on the intro page."
     },
     "options_domain_search_tooltip": {
-        "message": "Por escepti nomregnojn, antaŭtajpu via serĉon per “-”. Ekzemplo: “co -.com” montros domajnojn .co kaj .co.uk sed ne .com.",
+        "message": "Por escepti nomregnojn, antaŭskribu vian serĉon per “-”. Ekzemplo: “co -.com” montros domajnojn .co kaj .co.uk sed ne .com.",
         "description": "Tooltip for an \"information\" icon next to the domain search input on the Tracking Domains options page tab."
     },
     "intro_disable_button": {
@@ -475,13 +524,17 @@
         "message": "Privateca politiko",
         "description": "Shown at the bottom of the intro page, links to the EFF software and technology projects privacy policy."
     },
-    "options_domain_list_no_trackers": {
-        "message": "Privata Melo ne malkovris iujn ajn <a target='_blank' tabindex=-1 title='i18n_what_is_a_tracker' class='tooltip' href='https://www.eff.org/privacybadger#faq-What-is-a-third-party-tracker?'>spurantajn nomregnojn</a> ĝis nun. Pluigu retumi!",
-        "description": "Shown on the Tracking Domains tab on the options page for new and recent installations."
-    },
     "report_input_label": {
         "message": "Priskribo",
         "description": ""
+    },
+    "not_yet_blocked_header": {
+        "message": "Via Melĉjo ankoraŭ ne decidiĝis ĉu tiuj ĉi nomregnoj estu blokitaj",
+        "description": "Popup domain list header text; separates blocked from haven't-yet-seen-enough-to-block potential trackers."
+    },
+    "options_show_not_yet_blocked": {
+        "message": "Montri nomregnojn, pri kiuj Privata Melo ne decidiĝis ĉu bloki ilin:",
+        "description": "Label for a checkbox on the Tracking Domains options page tab. Should match wording used in the 'not_yet_blocked_header' message."
     },
     "non_tracker": {
         "message": "La subaj nomregnoj verŝajne ne spuras vin",
@@ -504,8 +557,8 @@
         "description": ""
     },
     "social_tooltip_pb_has_replaced": {
-        "message": "Privata Melo anstataŭigis tiun ĉi butonon de $BUTTON$.",
-        "description": "Tooltip shown over a replaced social button. For example, \"... replaced this Facebook Like button.\"",
+        "message": "Privata Melo anstataŭigis tiun ĉi butonon de $BUTTON$",
+        "description": "Tooltip shown over a replaced social button. For example, \"Privacy Badger has replaced this Facebook Like button\". See also the widget_placeholder_pb_has_replaced message.",
         "placeholders": {
             "button": {
                 "content": "$1",
@@ -513,9 +566,31 @@
             }
         }
     },
+    "widget_placeholder_pb_has_replaced": {
+        "message": "Privata Melo anstataŭigis $START_ANCHOR_TAG$tiun ĉi ret‑aplikaĵeton $WIDGET$ $END_ANCHOR_TAG$",
+        "description": "Text shown inside a replaced widget's placeholder. For example, \"Privacy Badger has replaced this Google reCAPTCHA widget\". See also the social_tooltip_pb_has_replaced message.",
+        "placeholders": {
+            "widget": {
+                "content": "$1",
+                "example": "Google reCAPTCHA"
+            },
+            "start_anchor_tag": {
+                "content": "$2",
+                "example": "<a href='https://vimeo.com/76979871'>"
+            },
+            "end_anchor_tag": {
+                "content": "$3",
+                "example": "</a>"
+            }
+        }
+    },
     "allow_once": {
         "message": "Permesi unufoje",
         "description": "Button in the placeholder shown in place of certain third-party (video, audio, commenting) widgets. Clicking it will allow the third-party widget to load this one time only."
+    },
+    "allow_on_site": {
+        "message": "Ĉiam permesi en tiu ĉi retejo",
+        "description": "Button in the placeholder shown in place of certain third-party (video, audio, commenting) widgets. Clicking this button will always allow the widget to load on this particular site."
     },
     "sync_intro": {
         "message": "Samtempigo en servilo:\n<ul>\n<li>postulas Firefox Spegulado/Chrome Sync</li>\n<li>alŝuto anstataŭigas ĉiujn ekzistajn datumojn de Privata Melo en la servilo</li>\n<li>elŝuto kunigas listojn de retejoj kun malaktiva Privata Melo</li>\n</ul>",
@@ -542,11 +617,11 @@
         "description": "Message displayed to the user after failing to download cloud data."
     },
     "upload_cloud_success": {
-        "message": "Sukcese alŝutis datumojn.",
+        "message": "Sukcese alŝutis datumojn",
         "description": "Message displayed to the user after successfully uploading local data."
     },
     "upload_cloud_failure": {
-        "message": "Ne povas alŝuti datumojn al servilo.",
+        "message": "Ne povas alŝuti datumojn al servilo",
         "description": "Message displayed to the user after failing to upload local data."
     },
     "download_cloud_no_data": {
@@ -562,7 +637,7 @@
         "description": "Tooltip that comes up when you hover over the share button in the upper right corner of the popup."
     },
     "share_tracker_header": {
-        "message": "Privata Melo trovis $COUNT$ eblajn spurilojn ĉe $DOMAIN$:",
+        "message": "Privata Melo blokis $COUNT$ eblajn spurilojn ĉe $DOMAIN$:",
         "description": "Header above the list of tracking domains in the share message.",
         "placeholders": {
             "count": {
@@ -576,7 +651,7 @@
         }
     },
     "share_base_message": {
-        "message": "Privata Melo (www.eff.org/privacybadger) estas retumila etendaĵo, kiu aŭtomate lernas kiel bloki nevideblajn spurilojn. Privata Melo estas farita de Electronic Frontier Foundation, ne-profit-cela fondaĵo, kiu batalas por viaj rajtoj en la interreto.",
+        "message": "Privata Melo (privacybadger.org) estas retumila etendaĵo, kiu aŭtomate lernas kiel bloki nevideblajn spurilojn. Privata Melo estas farita de Electronic Frontier Foundation, ne-profit-cela fondaĵo, kiu batalas por viaj rajtoj en la interreto.",
         "description": "The base message that is always included in the share message."
     },
     "copy_button_initial": {
@@ -586,5 +661,41 @@
     "copy_button_copied": {
         "message": "Kopiita",
         "description": "On-click text of the copy button on the share overlay."
+    },
+    "popup_special_page_header": {
+        "message": "Estas nenio por fari sur tiu ĉi paĝo",
+        "description": "Heading for popup_special_page_paragraph"
+    },
+    "popup_special_page_paragraph": {
+        "message": "Privata Melo ne funkcias sur specialaj paĝoj kiel tiu ĉi. Provu malfermi alian paĝon.",
+        "description": "Shown in the popup for special browser pages such as the New Tab page and 'about:' pages."
+    },
+    "popup_disabled_site_header": {
+        "message": "Privata Melo estas malaktivigita por tiu ĉi retejo",
+        "description": "Shown in the popup on disabled sites."
+    },
+    "disabled_sites": {
+        "message": "Neblokataj retejoj",
+        "description": "Options page tab heading"
+    },
+    "disabled_for_these_domains": {
+        "message": "<p>Privata Melo estas malaktivigita por la subaj nomregnoj. Tio ĉi signifas, ke Privata Melo blokos nenion, kiam vi vizitos la jenajn retejojn kaj ne sendos al ili la signalojn “Global Privacy Control” kaj “Ne Spuri Min” (DNT).</p><p>Se viaopinie Privata Melo difektas iun retpaĝon aŭ volas permesi al ĝi kunhavigi aŭ vendi viajn datumojn, vi povas enigu ĝian nomregnon en la kampon sube kaj klaku “aldoni nomregnon”.</p><p>Alimaniere, se langeto de difektita paĝo estas malfermita, klaku la emblemon de Privata Melo sur la folumila ilarstrio kaj sekve klaku la butonon “malaktivigi”.</p>",
+        "description": "'Add domain' should match the 'add_domain_button' message. 'Disable' should match the start of the 'popup_disable_for_site' message."
+    },
+    "allowlist_domain_input_placeholder": {
+        "message": "ekz. www.example.com, *.example.net, example.org",
+        "description": "Placeholder for a text input under the Disabled Sites tab on the options page"
+    },
+    "add_domain_button": {
+        "message": "Aldoni nomregnon",
+        "description": "Button found under the Disabled Sites tab on the options page"
+    },
+    "remove_button": {
+        "message": "Forigi elektitajn",
+        "description": "Button found under the Disabled Sites tab on the options page"
+    },
+    "invalid_domain": {
+        "message": "Bonvolu aldoni ĝustan nomregnon aŭ URL-n",
+        "description": "Error shown when attempting to add an invalid domain to the list of disabled sites"
     }
 }

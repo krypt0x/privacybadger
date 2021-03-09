@@ -10,9 +10,27 @@ QUnit.test("getOriginsArray", (assert) => {
     "blocked.org": "block",
     "alsoblocked.org": "block",
     "cookieblocked.biz": "cookieblock",
-    "userAllowed.net": "user_allow",
+    "UserAllowed.net": "user_allow",
+    "uuuserblocked.nyc": "user_block",
     "dntDomain.co.uk": "dnt",
+    "another.allowed.domain.example": "allow",
   };
+  const originsSansAllowed = _.reduce(
+    origins, (memo, val, key) => {
+      if (val != "allow") {
+        memo[key] = val;
+      }
+      return memo;
+    }, {}
+  );
+  const originsSansAllowedSansDnt = _.reduce(
+    originsSansAllowed, (memo, val, key) => {
+      if (val != "dnt") {
+        memo[key] = val;
+      }
+      return memo;
+    }, {}
+  );
 
   const tests = [
     {
@@ -21,19 +39,34 @@ QUnit.test("getOriginsArray", (assert) => {
       expected: []
     },
     {
-      msg: "No filters",
+      msg: "No filters (allowed domains are filtered out)",
       args: [origins,],
+      expected: Object.keys(originsSansAllowed)
+    },
+    {
+      msg: "Not-yet-blocked domains are shown",
+      args: [origins, null, null, null, true],
       expected: Object.keys(origins)
     },
     {
-      msg: "Type filter",
+      msg: "Type filter (user-controlled)",
       args: [origins, "", "user"],
-      expected: ["userAllowed.net"]
+      expected: ["UserAllowed.net", "uuuserblocked.nyc"]
+    },
+    {
+      msg: "Type filter (DNT)",
+      args: [origins, "", "dnt"],
+      expected: ["dntDomain.co.uk"]
+    },
+    {
+      msg: "Type filter (non-DNT)",
+      args: [origins, "", "-dnt"],
+      expected: Object.keys(originsSansAllowedSansDnt)
     },
     {
       msg: "Status filter",
       args: [origins, "", "", "allow"],
-      expected: ["allowed.com", "userAllowed.net", "dntDomain.co.uk"]
+      expected: ["UserAllowed.net", "dntDomain.co.uk"]
     },
     {
       msg: "Text filter",
@@ -41,9 +74,9 @@ QUnit.test("getOriginsArray", (assert) => {
       expected: ["blocked.org", "alsoblocked.org"]
     },
     {
-      msg: "Text filter case sensitivity",
-      args: [origins, "ALLowed"],
-      expected: ["allowed.com", "userAllowed.net"]
+      msg: "Text filter and domain case insensitivity",
+      args: [origins, "uSER"],
+      expected: ["UserAllowed.net", "uuuserblocked.nyc"]
     },
     {
       msg: "Text filter with extra space",
@@ -54,16 +87,16 @@ QUnit.test("getOriginsArray", (assert) => {
       msg: "Negative text filter",
       args: [origins, "-.org"],
       expected: [
-        "allowed.com",
         "cookieblocked.biz",
-        "userAllowed.net",
+        "UserAllowed.net",
+        "uuuserblocked.nyc",
         "dntDomain.co.uk",
       ]
     },
     {
       msg: "Multiple negative text filter",
       args: [origins, "-.net -cookie -.co.uk"],
-      expected: ["allowed.com", "blocked.org", "alsoblocked.org"]
+      expected: ["blocked.org", "alsoblocked.org", "uuuserblocked.nyc"]
     },
     {
       msg: "Multiple text filters",
@@ -72,8 +105,8 @@ QUnit.test("getOriginsArray", (assert) => {
     },
     {
       msg: "All filters together",
-      args: [origins, ".net", "user", "allow"],
-      expected: ["userAllowed.net"]
+      args: [origins, ".net", "user", "allow", true],
+      expected: ["UserAllowed.net"]
     },
   ];
 
