@@ -1,6 +1,7 @@
 /*
- * This file is part of Privacy Badger <https://www.eff.org/privacybadger>
+ * This file is part of Privacy Badger <https://privacybadger.org/>
  * Copyright (C) 2014 Electronic Frontier Foundation
+ *
  * Derived from Adblock Plus
  * Copyright (C) 2006-2013 Eyeo GmbH
  *
@@ -126,7 +127,7 @@ function showNagMaybe() {
   if (POPUP_DATA.showLearningPrompt) {
     _showLearningPrompt();
 
-  } else if (!POPUP_DATA.seenComic) {
+  } else if (!POPUP_DATA.settings.seenComic) {
     chrome.tabs.query({active: true, currentWindow: true}, function (focusedTab) {
       // Show the popup instruction if the active tab is not firstRun.html page
       if (!focusedTab[0].url.startsWith(intro_page_url)) {
@@ -192,6 +193,18 @@ function init() {
   $("#version").text(
     chrome.i18n.getMessage("version", chrome.runtime.getManifest().version)
   );
+
+  // add event listeners for click-to-expand blocked resources popup section
+  $('#tracker-list-header').on('click', toggleBlockedResourcesHandler);
+
+  // add event listeners for click-to-expand first party protections popup section
+  $('#firstparty-protections-header').on('click', toggleFirstPartyInfoHandler);
+
+  // show firstparty protections message if current tab is in our content scripts
+  if (POPUP_DATA.enabled && POPUP_DATA.isOnFirstParty) {
+    $("#firstparty-protections-container").show();
+    $('#expand-firstparty-popup').show();
+  }
 
   // improve on Firefox's built-in options opening logic
   if (typeof browser == "object" && typeof browser.runtime.getBrowserInfo == "function") {
@@ -436,6 +449,48 @@ function share() {
 }
 
 /**
+ * Click handlers for showing/hiding the blocked resources section
+ */
+function toggleBlockedResourcesHandler(e) {
+  if (e.target.nodeName.toLowerCase() == 'a') {
+    // don't toggle contents when clicking links in the header
+    return;
+  }
+  if ($("#expand-blocked-resources").is(":visible")) {
+    $("#collapse-blocked-resources").show();
+    $("#expand-blocked-resources").hide();
+    $("#blockedResources").slideDown();
+    chrome.runtime.sendMessage({
+      type: "updateSettings",
+      data: { showExpandedTrackingSection: true }
+    });
+  } else {
+    $("#collapse-blocked-resources").hide();
+    $("#expand-blocked-resources").show();
+    $("#blockedResources").slideUp();
+    chrome.runtime.sendMessage({
+      type: "updateSettings",
+      data: { showExpandedTrackingSection: false }
+    });
+  }
+}
+
+/**
+ * Click handler for showing/hiding the firstparty popup info text
+ */
+function toggleFirstPartyInfoHandler() {
+  if ($('#collapse-firstparty-popup').is(":visible")) {
+    $("#collapse-firstparty-popup").hide();
+    $("#expand-firstparty-popup").show();
+    $("#instructions-firstparty-description").slideUp();
+  } else {
+    $("#collapse-firstparty-popup").show();
+    $("#expand-firstparty-popup").hide();
+    $("#instructions-firstparty-description").slideDown();
+  }
+}
+
+/**
  * Handler to undo user selection for a tracker
  */
 function revertDomainControl(event) {
@@ -499,6 +554,22 @@ function refreshPopup() {
     $("#error_input").val(POPUP_DATA.errorText);
   }
 
+  // show sliders when sliders were shown last
+  // or when there is at least one breakage warning
+  if (POPUP_DATA.settings.showExpandedTrackingSection || (
+    POPUP_DATA.cookieblocked && Object.keys(POPUP_DATA.cookieblocked).some(
+      d => POPUP_DATA.origins[d] == constants.USER_BLOCK)
+  )) {
+    $('#expand-blocked-resources').hide();
+    $('#collapse-blocked-resources').show();
+    $('#blockedResources').show();
+
+  } else {
+    $('#expand-blocked-resources').show();
+    $('#collapse-blocked-resources').hide();
+    $('#blockedResources').hide();
+  }
+
   let origins = POPUP_DATA.origins;
   let originsArr = [];
   if (origins) {
@@ -506,14 +577,10 @@ function refreshPopup() {
   }
 
   if (!originsArr.length) {
-    // hide the number of trackers and slider instructions message
-    // if no sliders will be displayed
-    $("#instructions-many-trackers").hide();
-
     // show "no trackers" message
     $("#instructions-no-trackers").show();
 
-    if (POPUP_DATA.learnLocally && POPUP_DATA.showNonTrackingDomains) {
+    if (POPUP_DATA.settings.learnLocally && POPUP_DATA.settings.showNonTrackingDomains) {
       // show the "no third party resources on this site" message
       $("#no-third-parties").show();
     }
@@ -526,7 +593,8 @@ function refreshPopup() {
     return;
   }
 
-  let printable = [];
+  let printable = [],
+    printableWarningSliders = [];
   let unblockedTrackers = [];
   let nonTracking = [];
   originsArr = htmlUtils.sortDomains(originsArr);
@@ -543,13 +611,19 @@ function refreshPopup() {
         action == constants.USER_BLOCK &&
         POPUP_DATA.cookieblocked.hasOwnProperty(origin)
       );
-      printable.push(
-        htmlUtils.getOriginHtml(origin, action, show_breakage_warning)
-      );
+      let slider_html = htmlUtils.getOriginHtml(origin, action, show_breakage_warning);
+      if (show_breakage_warning) {
+        printableWarningSliders.push(slider_html);
+      } else {
+        printable.push(slider_html);
+      }
     }
   }
 
-  if (POPUP_DATA.learnLocally && unblockedTrackers.length) {
+  // show breakage warning sliders at the top of the list
+  printable = printableWarningSliders.concat(printable);
+
+  if (POPUP_DATA.settings.learnLocally && unblockedTrackers.length) {
     printable.push(
       '<div class="clicker tooltip" id="not-yet-blocked-header" title="' +
       chrome.i18n.getMessage("intro_not_an_adblocker_paragraph") +
@@ -562,12 +636,9 @@ function refreshPopup() {
         htmlUtils.getOriginHtml(domain, constants.ALLOW)
       );
     });
-
-    // reduce margin if we have hasn't-decided-yet-to-block domains to show
-    $("#instructions-no-trackers").css("margin", "10px 0");
   }
 
-  if (POPUP_DATA.learnLocally && POPUP_DATA.showNonTrackingDomains && nonTracking.length) {
+  if (POPUP_DATA.settings.learnLocally && POPUP_DATA.settings.showNonTrackingDomains && nonTracking.length) {
     printable.push(
       '<div class="clicker tooltip" id="non-trackers-header" title="' +
       chrome.i18n.getMessage("non_tracker_tip") +
@@ -580,9 +651,6 @@ function refreshPopup() {
         htmlUtils.getOriginHtml(nonTracking[i], constants.NO_TRACKING)
       );
     }
-
-    // reduce margin if we have non-tracking domains to show
-    $("#instructions-no-trackers").css("margin", "10px 0");
   }
 
   if (printable.length) {
@@ -594,17 +662,21 @@ function refreshPopup() {
   $('.tooltip').tooltipster();
 
   if (POPUP_DATA.trackerCount === 0) {
-    // hide multiple trackers message
-    $("#instructions-many-trackers").hide();
-
     // show "no trackers" message
     $("#instructions-no-trackers").show();
 
+    if (printable.length) {
+      // make sure to show domain list
+      // (there is no toggle button when nothing was blocked)
+      $('#blockedResources').show();
+    }
+
   } else {
+    $('#tracker-list-header').show();
     $('#instructions-many-trackers').html(chrome.i18n.getMessage(
       "popup_instructions", [
         POPUP_DATA.trackerCount,
-        "<a target='_blank' title='" + _.escape(chrome.i18n.getMessage("what_is_a_tracker")) + "' class='tooltip' href='https://privacybadger.org/#What-is-a-third-party-tracker'>"
+        "<a target='_blank' title='" + htmlUtils.escape(chrome.i18n.getMessage("what_is_a_tracker")) + "' class='tooltip' href='https://privacybadger.org/#What-is-a-third-party-tracker'>"
       ]
     )).find(".tooltip").tooltipster();
   }

@@ -403,19 +403,39 @@
     },
     "options_disable_google_nav_error_service": {
         "message": "Отключить отправление адресов посещаемых веб-страниц в Google (это отключит предложение вариантов когда страница не найдена)",
-        "description": "Checkbox label found on the general settings page"
+        "description": "(Chrome only) Checkbox label found on the general settings page"
     },
     "options_disable_hyperlink_auditing": {
-        "message": "Отключить аудит гиперссылок",
+        "message": "Запретить сайтам следить, на какие ссылки вы нажимаете («аудит гиперссылок»)",
         "description": "Checkbox label found on the general settings page"
     },
     "options_disable_network_prediction": {
         "message": "Отключить предзагрузку",
         "description": "Checkbox label found on the general settings page"
     },
+    "options_disable_floc": {
+        "message": "Отключить Federated Learning of Cohorts (FLoC) от Google",
+        "description": "(Chrome only) Checkbox label on the general settings page."
+    },
     "options_domain_filter_user": {
         "message": "измененные пользователем",
         "description": "Dropdown control setting on the Tracking Domains options page tab."
+    },
+    "popup_info_firstparty_protections": {
+        "message": "Защита от отслеживания ссылок активна",
+        "description": "Clickable status header text in the popup. Shown when Privacy Badger's link tracking protection is active (for example, on facebook.com)."
+    },
+    "popup_info_firstparty_description": {
+        "message": "Некоторые веб-сайты $LINK_START$используют слежения ссылок$LINK_END$, чтобы следить за вами при переходе по ссылке на другой веб-сайт. Privacy Badger удаляет слежения из таких ссылок на этом сайте.",
+        "description": "Text revealed by clicking on the link tracking protection header in the popup",
+        "placeholders": {
+            "link_start": {
+                "content": "<a href='https://privacybadger.org/#What-about-tracking-by-the-sites-I-actively-visit%2c-like-NYTimes.com-or-Facebook.com' target='_blank'>"
+            },
+            "link_end": {
+                "content": "</a>"
+            }
+        }
     },
     "popup_instructions": {
         "message": "Заблокировано $COUNT$ потенциальных $LINK_START$трекеров$LINK_END$",
@@ -517,7 +537,7 @@
         "description": "Tooltip for an \"information\" icon next to the domain search input on the Tracking Domains options page tab."
     },
     "intro_disable_button": {
-        "message": "Если вы думаете, что Privacy Badger портит веб-страницу (например, не воспроизводится видео), вы можете нажать кнопку 'Отключить', чтобы выключить Privacy Badger для этого сайта.",
+        "message": "Если вы думаете, что Privacy Badger портит веб-страницу (например, не воспроизводится видео), вы можете нажать кнопку «Отключить», чтобы выключить Privacy Badger для этого сайта.",
         "description": "Intro page paragraph. The quoted string ('Disable') should match the verb used for the 'popup_disable_for_site' message."
     },
     "intro_link_policy": {

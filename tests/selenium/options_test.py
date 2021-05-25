@@ -7,8 +7,6 @@ import unittest
 import pbtest
 
 from selenium.common.exceptions import (
-    ElementNotInteractableException,
-    ElementNotVisibleException,
     NoSuchElementException,
     TimeoutException,
 )
@@ -49,11 +47,6 @@ class OptionsTest(pbtest.PBSeleniumTest):
 
     def select_domain_list_tab(self):
         self.find_el_by_css('a[href="#tab-tracking-domains"]').click()
-        try:
-            self.driver.find_element_by_id('show-tracking-domains-checkbox').click()
-        except (ElementNotInteractableException, ElementNotVisibleException):
-            # The list will be loaded directly if we're opening the tab for the second time in this test
-            pass
 
     def select_manage_data_tab(self):
         self.find_el_by_css('a[href="#tab-manage-data"]').click()
@@ -296,12 +289,13 @@ class OptionsTest(pbtest.PBSeleniumTest):
     # early-warning check for the open_in_tab attribute of options_ui
     # https://github.com/EFForg/privacybadger/pull/1775#pullrequestreview-76940251
     def test_options_ui_open_in_tab(self):
-        # open options page manually, keeping the new user intro page
+        # open options page manually
         self.open_window()
         self.load_options_page()
 
-        # switch to new user intro page
-        self.switch_to_window_with_url(self.first_run_url)
+        # open the new user intro page
+        self.open_window()
+        self.load_url(self.first_run_url)
 
         # save open windows
         handles_before = set(self.driver.window_handles)

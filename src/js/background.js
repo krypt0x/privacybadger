@@ -1,5 +1,5 @@
 /*
- * This file is part of Privacy Badger <https://www.eff.org/privacybadger>
+ * This file is part of Privacy Badger <https://privacybadger.org/>
  * Copyright (C) 2014 Electronic Frontier Foundation
  *
  * Derived from Adblock Plus
@@ -67,6 +67,9 @@ function Badger() {
     let ylistPromise = self.initializeYellowlist().catch(console.error),
       dntHashesPromise = self.initializeDnt().catch(console.error),
       tabDataPromise = self.updateTabList().catch(console.error);
+
+    // async load known CNAME domain aliases (but don't wait on them)
+    self.initializeCnames().catch(console.error);
 
     // seed data depends on the yellowlist
     await ylistPromise;
@@ -231,6 +234,10 @@ Badger.prototype = {
    */
   tabData: {},
 
+  /**
+   * Mapping of known CNAME domain aliases
+   */
+  cnameDomains: {},
 
   // Methods
 
@@ -552,6 +559,14 @@ Badger.prototype = {
     return null;
   },
 
+  initializeCnames: function () {
+    return fetch(constants.CNAME_DOMAINS_LOCAL_URL)
+      .then(response => response.json())
+      .then(data => {
+        badger.cnameDomains = data;
+      });
+  },
+
   /**
    * Initializes the yellowlist from disk.
    *
@@ -750,7 +765,7 @@ Badger.prototype = {
 
     // update timestamp first;
     // avoids queuing the same domain multiple times
-    var recheckTime = _.random(
+    var recheckTime = utils.random(
       utils.oneDayFromNow(),
       utils.nDaysFromNow(7)
     );
@@ -804,6 +819,7 @@ Badger.prototype = {
   defaultSettings: {
     checkForDNTPolicy: true,
     disabledSites: [],
+    disableFloc: true,
     disableGoogleNavErrorService: true,
     disableHyperlinkAuditing: true,
     disableNetworkPrediction: true,
@@ -815,9 +831,9 @@ Badger.prototype = {
     seenComic: false,
     sendDNTSignal: true,
     showCounter: true,
+    showExpandedTrackingSection: false,
     showIntroPage: true,
     showNonTrackingDomains: false,
-    showTrackingDomains: false,
     socialWidgetReplacementEnabled: true,
     widgetReplacementExceptions: [],
     widgetSiteAllowlist: {},
@@ -865,6 +881,13 @@ Badger.prototype = {
 
     if (!privateStore.hasItem("showLearningPrompt")) {
       privateStore.setItem("showLearningPrompt", false);
+    }
+
+    if (self.isUpdate) {
+      // remove obsolete settings
+      if (settings.hasItem("showTrackingDomains")) {
+        settings.deleteItem("showTrackingDomains");
+      }
     }
   },
 
@@ -1044,6 +1067,13 @@ Badger.prototype = {
 
   isCheckingDNTPolicyEnabled: function() {
     return this.getSettings().getItem("checkForDNTPolicy");
+  },
+
+  isFlocOverwriteEnabled: function() {
+    if (document.interestCohort) {
+      return this.getSettings().getItem("disableFloc");
+    }
+    return false;
   },
 
   /**

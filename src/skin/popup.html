@@ -1,25 +1,24 @@
 <!DOCTYPE html>
 
 <!--
-  - This file was part of Adblock Plus <http://adblockplus.org/>,
-  - Copyright (C) 2006-2013 Eyeo GmbH
-
-  - Modified for Privacy Badger
-  - Copyright (C) 2013- Electronic Frontier Foundation & others
-
-  -
-  - Adblock Plus is free software: you can redistribute it and/or modify
-  - it under the terms of the GNU General Public License version 3 as
-  - published by the Free Software Foundation.
-  -
-  - Adblock Plus is distributed in the hope that it will be useful,
-  - but WITHOUT ANY WARRANTY; without even the implied warranty of
-  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  - GNU General Public License for more details.
-  -
-  - You should have received a copy of the GNU General Public License
-  - along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
-  -->
+ - This file is part of Privacy Badger <https://privacybadger.org/>
+ - Copyright (C) 2014 Electronic Frontier Foundation
+ -
+ - Derived from Adblock Plus
+ - Copyright (C) 2006-2013 Eyeo GmbH
+ -
+ - Privacy Badger is free software: you can redistribute it and/or modify
+ - it under the terms of the GNU General Public License version 3 as
+ - published by the Free Software Foundation.
+ -
+ - Privacy Badger is distributed in the hope that it will be useful,
+ - but WITHOUT ANY WARRANTY; without even the implied warranty of
+ - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ - GNU General Public License for more details.
+ -
+ - You should have received a copy of the GNU General Public License
+ - along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
+ -->
 
 <html>
 <head>
@@ -32,10 +31,8 @@
 
 <script type="text/javascript" src="/lib/vendor/jquery-3.5.1.js"></script>
 <script type="text/javascript" src="/lib/vendor/tooltipster-4.2.6/tooltipster.bundle.js"></script>
-<script type="text/javascript" src="/lib/vendor/underscore-1.9.1.js"></script>
 
 <!-- required because of window.getBaseDomain() in htmlutils.js -->
-<script type="text/javascript" src="/lib/vendor/punycode-1.4.1.js"></script>
 <script type="text/javascript" src="/lib/publicSuffixList.js"></script>
 <script type="text/javascript" src="/lib/basedomain.js"></script>
 
@@ -104,7 +101,7 @@
   <div id="share_overlay" class="overlay">
     <h1 id="share_title" class="i18n_share_title overlay_title"></h1>
     <a href="" id="share_close" class="i18n_report_close overlay_close"></a>
-    <textarea id="share_output" name="share_output"></textarea>
+    <textarea id="share_output" name="share_output" spellcheck="false"></textarea>
     <button id="copy-button" class="i18n_copy_button_initial pbButton"></button>
   </div>
 
@@ -122,16 +119,34 @@
   <div class='clear'></div>
 </div>
 
+<div id="firstparty-protections-container" style="display:none">
+  <button class="toggle-header" id="firstparty-protections-header">
+    <div class="toggle-header-title">
+      <span class="i18n_popup_info_firstparty_protections popup_info"></span>
+    </div>
+    <span class="toggle-header-icon">
+      <span id="expand-firstparty-popup" class="ui-icon ui-icon-caret-d" style="display:none"></span>
+      <span id="collapse-firstparty-popup" class="ui-icon ui-icon-caret-u" style="display:none"></span>
+    </span>
+  </button>
+  <div id="instructions-firstparty-description" class="i18n_popup_info_firstparty_description" style="display:none"></div>
+</div>
+
 <div id="blockedResourcesContainer">
-  <p id="pbInstructions">
-    <span id="instructions-many-trackers"></span>
-    <span id="instructions-no-trackers" style="display:none">
+  <div id="pbInstructions">
+    <button class="toggle-header" id="tracker-list-header" style="display:none">
+      <span class="toggle-header-title" id="instructions-many-trackers"></span>
+      <span class="toggle-header-icon">
+        <span id="expand-blocked-resources" class="ui-icon ui-icon-caret-d" style="display:none"></span>
+        <span id="collapse-blocked-resources" class="ui-icon ui-icon-caret-u" style="display:none"></span>
+      </span>
+    </button>
+    <div class="basic-header" id="instructions-no-trackers" style="display:none">
       <span class="i18n_popup_instructions_no_trackers" data-i18n_contents_placeholders="<a target='_blank' title='i18n_what_is_a_tracker' class='tooltip' href='https://privacybadger.org/#What-is-a-third-party-tracker'>"></span>
       <span id="no-third-parties" class="i18n_popup_blocked" style="display:none"></span>
-    </span>
-  </p>
-  <div class="spacer"></div>
-  <div id="blockedResources"></div>
+    </div>
+  </div>
+  <div id="blockedResources" style="display:none"></div>
 </div>
 
 <div id="special-browser-page" style="display:none">

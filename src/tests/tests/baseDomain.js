@@ -1,15 +1,21 @@
-/* * This file is part of Adblock Plus <http://adblockplus.org/>, * Copyright (C) 2006-2013 Eyeo GmbH *
- * Adblock Plus is free software: you can redistribute it and/or modify
+/*
+ * This file is part of Privacy Badger <https://privacybadger.org/>
+ * Copyright (C) 2014 Electronic Frontier Foundation
+ *
+ * Derived from Adblock Plus
+ * Copyright (C) 2006-2013 Eyeo GmbH
+ *
+ * Privacy Badger is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
- * Adblock Plus is distributed in the hope that it will be useful,
+ * Privacy Badger is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /* global
@@ -63,7 +69,6 @@ QUnit.test("URI parsing", function (assert) {
     ["http://example.com/", {
       scheme: "http",
       host: "example.com",
-      asciiHost: "example.com",
       hostPort: "example.com",
       port: -1,
       path: "/",
@@ -72,7 +77,6 @@ QUnit.test("URI parsing", function (assert) {
     ["http://example.com:8000/", {
       scheme: "http",
       host: "example.com",
-      asciiHost: "example.com",
       hostPort: "example.com:8000",
       port: 8000,
       path: "/",
@@ -81,7 +85,6 @@ QUnit.test("URI parsing", function (assert) {
     ["http://foo:bar@\u0440\u043E\u0441\u0441\u0438\u044F.\u0440\u0444:8000/foo:bar/bas", {
       scheme: "http",
       host: "\u0440\u043E\u0441\u0441\u0438\u044F.\u0440\u0444",
-      asciiHost: "xn--h1alffa9f.xn--p1ai",
       hostPort: "\u0440\u043E\u0441\u0441\u0438\u044F.\u0440\u0444:8000",
       port: 8000,
       path: "/foo:bar/bas",
@@ -90,7 +93,6 @@ QUnit.test("URI parsing", function (assert) {
     ["ftp://m\xFCller.de/", {
       scheme: "ftp",
       host: "m\xFCller.de",
-      asciiHost: "xn--mller-kva.de",
       hostPort: "m\xFCller.de",
       port: -1,
       path: "/",
@@ -99,7 +101,6 @@ QUnit.test("URI parsing", function (assert) {
     ["http://1.2.3.4:8000/", {
       scheme: "http",
       host: "1.2.3.4",
-      asciiHost: "1.2.3.4",
       hostPort: "1.2.3.4:8000",
       port: 8000,
       path: "/",
@@ -108,7 +109,6 @@ QUnit.test("URI parsing", function (assert) {
     ["http://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]/", {
       scheme: "http",
       host: "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
-      asciiHost: "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
       hostPort: "[2001:0db8:85a3:0000:0000:8a2e:0370:7334]",
       port: -1,
       path: "/",
@@ -117,7 +117,6 @@ QUnit.test("URI parsing", function (assert) {
     ["http://[2001::7334]:8000/test@foo.example.com/bar", {
       scheme: "http",
       host: "2001::7334",
-      asciiHost: "2001::7334",
       hostPort: "[2001::7334]:8000",
       port: 8000,
       path: "/test@foo.example.com/bar",
@@ -126,7 +125,6 @@ QUnit.test("URI parsing", function (assert) {
     ["filesystem:http://example.com/temporary/myfile.png", {
       scheme: "filesystem:http",
       host: "example.com",
-      asciiHost: "example.com",
       hostPort: "example.com",
       port: -1,
       path: "/temporary/myfile.png",
@@ -135,7 +133,6 @@ QUnit.test("URI parsing", function (assert) {
     ["blob:https://www.daringgourmet.com/69587cd0-01e1-417b-819d-8e2ecbefc1f9", {
       scheme: "blob:https",
       host: "www.daringgourmet.com",
-      asciiHost: "www.daringgourmet.com",
       hostPort: "www.daringgourmet.com",
       port: -1,
       path: "/69587cd0-01e1-417b-819d-8e2ecbefc1f9",
@@ -173,7 +170,7 @@ QUnit.test("Determining base domain", function (assert) {
     ["2001::7334", "2001::7334"],
     ["::ffff:1.2.3.4", "::ffff:1.2.3.4"],
     ["foo.bar.2001::7334", "bar.2001::7334"],
-    ["test.xn--e1aybc.xn--p1ai", "тест.рф"],
+    ["test.xn--e1aybc.xn--p1ai", "xn--e1aybc.xn--p1ai"],
   ];
 
   for (var i = 0; i < tests.length; i++) {
@@ -245,6 +242,13 @@ QUnit.test("Third party checks", function (assert) {
     ["foo.co.uk", "bar.co.uk", true],
     ["foo.example.co.uk", "bar.example.co.uk", false],
     ["1.2.3.4", "2.2.3.4", true],
+    [null, "example.com", true],
+    [undefined, "example.com", true],
+    [null, null, true],
+    ["example.com", null, true],
+    ["example.com", undefined, true],
+    ["example.com.", "example.com", false], // first param has trailing dot
+    ["example.com", "example.com.", false], // second param has trailing dot
   ];
 
   for (var i = 0; i < tests.length; i++) {

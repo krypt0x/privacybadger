@@ -1,6 +1,6 @@
 /*
  * This file is part of Privacy Badger <https://privacybadger.org/>
- * Copyright (C) 2014 Electronic Frontier Foundation
+ * Copyright (C) 2021 Electronic Frontier Foundation
  *
  * Privacy Badger is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
@@ -15,6 +15,8 @@
  * along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// END FUNCTION DEFINITIONS ///////////////////////////////////////////////////
+
 (function () {
 
 // don't inject into non-HTML documents (such as XML documents)
@@ -26,35 +28,16 @@ if (document instanceof HTMLDocument === false && (
   return;
 }
 
-// don't bother asking to run when trivially in first-party context
-if (window.top == window) {
-  return;
-}
-
 // TODO race condition; fix waiting on https://crbug.com/478183
 chrome.runtime.sendMessage({
-  type: "checkLocation",
-  frameUrl: window.FRAME_URL
-}, function (blocked) {
-  if (blocked) {
-    var code = '('+ function() {
-      document.__defineSetter__("cookie", function(/*value*/) { });
-      document.__defineGetter__("cookie", function() { return ""; });
-
-      // trim referrer down to origin
-      let referrer = document.referrer;
-      if (referrer) {
-        referrer = referrer.slice(
-          0,
-          referrer.indexOf('/', referrer.indexOf('://') + 3)
-        ) + '/';
-      }
-      document.__defineGetter__("referrer", function () { return referrer; });
-    } +')();';
-
-    window.injectScript(code);
+  type: "checkFloc"
+}, function (enabled) {
+  if (enabled) {
+    window.injectScript("(" +
+      function () { delete Document.prototype.interestCohort; }
+      + "());"
+    );
   }
-  return true;
 });
 
 }());

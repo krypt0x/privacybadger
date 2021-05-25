@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 
 <!--
-  - This file is part of Adblock Plus <http://adblockplus.org/>,
-  - Copyright (C) 2006-2013 Eyeo GmbH
-  -
-  - Adblock Plus is free software: you can redistribute it and/or modify
-  - it under the terms of the GNU General Public License version 3 as
-  - published by the Free Software Foundation.
-  -
-  - Adblock Plus is distributed in the hope that it will be useful,
-  - but WITHOUT ANY WARRANTY; without even the implied warranty of
-  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  - GNU General Public License for more details.
-  -
-  - You should have received a copy of the GNU General Public License
-  - along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
-  -->
+ - This file is part of Privacy Badger <https://privacybadger.org/>
+ - Copyright (C) 2014 Electronic Frontier Foundation
+ -
+ - Derived from Adblock Plus
+ - Copyright (C) 2006-2013 Eyeo GmbH
+ -
+ - Privacy Badger is free software: you can redistribute it and/or modify
+ - it under the terms of the GNU General Public License version 3 as
+ - published by the Free Software Foundation.
+ -
+ - Privacy Badger is distributed in the hope that it will be useful,
+ - but WITHOUT ANY WARRANTY; without even the implied warranty of
+ - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ - GNU General Public License for more details.
+ -
+ - You should have received a copy of the GNU General Public License
+ - along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
+ -->
 
 <html style="visibility:hidden; overflow:hidden">
 <head>
@@ -34,11 +37,9 @@
 <script type="text/javascript" src="/lib/vendor/jquery-3.5.1.js"></script>
 <script type="text/javascript" src="/lib/vendor/jquery-ui-1.12.1.custom/jquery-ui.js"></script>
 <script type="text/javascript" src="/lib/vendor/tooltipster-4.2.6/tooltipster.bundle.js"></script>
-<script type="text/javascript" src="/lib/vendor/underscore-1.9.1.js"></script>
 <script type="text/javascript" src="/lib/vendor/select2-4.0.11/select2-4.0.11.js"></script>
 
 <!-- required because of window.getBaseDomain() in htmlutils.js -->
-<script type="text/javascript" src="/lib/vendor/punycode-1.4.1.js"></script>
 <script type="text/javascript" src="/lib/publicSuffixList.js"></script>
 <script type="text/javascript" src="/lib/basedomain.js"></script>
 
@@ -76,17 +77,6 @@
   </ul>
 
   <div id="tab-tracking-domains">
-    <div id="tracking-domains-overlay">
-        <p class="i18n_description"></p>
-        <p class="i18n_intro_not_an_adblocker_paragraph"></p>
-        <p class="i18n_show_tracking_domains_message"></p>
-        <p>
-        <label>
-          <input type="checkbox" id="show-tracking-domains-checkbox">
-          <span class="i18n_show_tracking_domains_acknowledgement"></span>
-        </label>
-        </p>
-    </div>
     <div id="blockedResourcesContainer">
       <p id="pbInstructions">
         <span id="options_domain_list_trackers"></span>
@@ -211,6 +201,15 @@
           <span>
             <span class="i18n_options_disable_google_nav_error_service"></span>
             <a href="https://www.google.com/chrome/privacy/#how-chrome-handles-your-information" target="_blank"><span class="ui-icon ui-icon-circle-b-help"></span></a>
+          </span>
+        </label>
+      </div>
+      <div class="checkbox" id="disable-floc" style="display:none">
+        <label>
+          <input type="checkbox" id="disable-floc-checkbox">
+          <span>
+            <span class="i18n_options_disable_floc"></span>
+            <a href="https://www.eff.org/deeplinks/2021/03/googles-floc-terrible-idea" target="_blank"><span class="ui-icon ui-icon-circle-b-help"></span></a>
           </span>
         </label>
       </div>

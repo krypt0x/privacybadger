@@ -1,18 +1,21 @@
 /*
- * This file is part of Adblock Plus <http://adblockplus.org/>,
+ * This file is part of Privacy Badger <https://privacybadger.org/>
+ * Copyright (C) 2014 Electronic Frontier Foundation
+ *
+ * Derived from Adblock Plus
  * Copyright (C) 2006-2013 Eyeo GmbH
  *
- * Adblock Plus is free software: you can redistribute it and/or modify
+ * Privacy Badger is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
- * Adblock Plus is distributed in the hope that it will be useful,
+ * Privacy Badger is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 window.OPTIONS_INITIALIZED = false;
@@ -50,23 +53,6 @@ function loadOptions() {
   $('#resetData').on("click", resetData);
   $('#removeAllData').on("click", removeAllData);
   $('#widget-site-exceptions-remove-button').on("click", removeWidgetSiteExceptions);
-
-  if (OPTIONS_DATA.settings.showTrackingDomains) {
-    $('#tracking-domains-overlay').hide();
-  } else {
-    $('#blockedResourcesContainer').hide();
-
-    $('#show-tracking-domains-checkbox').on("click", () => {
-      $('#tracking-domains-overlay').hide();
-      $('#blockedResourcesContainer').show();
-      chrome.runtime.sendMessage({
-        type: "updateSettings",
-        data: {
-          showTrackingDomains: true
-        }
-      });
-    });
-  }
 
   // Set up input for searching through tracking domains.
   $("#trackingDomainSearch").on("input", filterTrackingDomains);
@@ -164,6 +150,21 @@ function loadOptions() {
           "disableHyperlinkAuditing",
           $("#disable-hyperlink-auditing-checkbox").prop("checked")
         );
+      });
+  }
+
+  // only show the FLoC override if browser supports it
+  if (document.interestCohort) {
+    $("#disable-floc").show();
+    $("#disable-floc-checkbox")
+      .prop("checked", OPTIONS_DATA.settings.disableFloc)
+      .on("click", function () {
+        const disableFloc = $("#disable-floc-checkbox").prop("checked");
+
+        chrome.runtime.sendMessage({
+          type: "updateSettings",
+          data: { disableFloc }
+        });
       });
   }
 
@@ -328,10 +329,7 @@ function parseUserDataFile(storageMapsList) {
   }
 
   // validate by checking we have the same keys in the import as in the export
-  if (!_.isEqual(
-    Object.keys(lists).sort(),
-    USER_DATA_EXPORT_KEYS.sort()
-  )) {
+  if (JSON.stringify(Object.keys(lists).sort()) != JSON.stringify(USER_DATA_EXPORT_KEYS.sort())) {
     return alert(i18n.getMessage("invalid_json"));
   }
 
@@ -676,7 +674,7 @@ function updateSummary() {
   $("#options_domain_list_trackers").html(i18n.getMessage(
     "options_domain_list_trackers", [
       baseDomains.size,
-      "<a target='_blank' title='" + _.escape(i18n.getMessage("what_is_a_tracker")) + "' class='tooltip' href='https://privacybadger.org/#What-is-a-third-party-tracker'>"
+      "<a target='_blank' title='" + htmlUtils.escape(i18n.getMessage("what_is_a_tracker")) + "' class='tooltip' href='https://privacybadger.org/#What-is-a-third-party-tracker'>"
     ]
   )).show();
 }

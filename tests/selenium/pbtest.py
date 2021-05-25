@@ -400,7 +400,6 @@ class PBSeleniumTest(unittest.TestCase):
                     time.sleep(2 ** i)
                     continue
                 raise e
-        self.driver.switch_to.window(self.driver.current_window_handle)
 
         if wait_for_body_text:
             # wait for document.body.textContent to become truthy
@@ -484,7 +483,7 @@ class PBSeleniumTest(unittest.TestCase):
             "(function (domain) {"
             "  let bg = chrome.extension.getBackgroundPage();"
             "  let base_domain = window.getBaseDomain(domain);"
-            "  bg.badger.heuristicBlocking.blocklistOrigin(domain, base_domain);"
+            "  bg.badger.heuristicBlocking.blocklistOrigin(base_domain, domain);"
             "}(arguments[0]));"
         ), domain)
 

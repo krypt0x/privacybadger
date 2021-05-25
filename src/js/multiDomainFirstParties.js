@@ -2642,7 +2642,6 @@ let multiDomainFirstPartiesArray = [
     "github.com",
     "githubapp.com",
     "githubassets.com",
-    "github.dev",
 
     "avatars0.githubusercontent.com",
     "avatars1.githubusercontent.com",
@@ -3658,6 +3657,23 @@ let multiDomainFirstPartiesArray = [
   ],
   ["sprint.com", "sprintpcs.com", "nextel.com"],
   ["squareup.com", "cash.app", "mkt.com", "squarecdn.com"],
+  [
+    "stackexchange.com",
+
+    "askubuntu.com",
+    "blogoverflow.com",
+    "mathoverflow.net",
+    "serverfault.com",
+    "stackapps.com",
+    "stackoverflow.blog",
+    "stackoverflow.com",
+    "superuser.com",
+
+    "sstatic.net",
+    "stackauth.com",
+    "stackoverflow.email",
+    "stacksnippets.net",
+  ],
   ["steampowered.com", "steamstatic.com", "steamcommunity.com"],
   ["suning.com", "suning.cn", "hksuning.com"],
   [
@@ -4141,6 +4157,7 @@ let multiDomainFirstPartiesArray = [
     "espnfc.us",
 
     "fivethirtyeight.com",
+    "nationalgeographic.com",
 
     "babble.com",
     "d23.com",

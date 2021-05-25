@@ -403,19 +403,39 @@
     },
     "options_disable_google_nav_error_service": {
         "message": "Senden besuchter Web-Adressen an Google deaktivieren. Dies deaktiviert Vorschläge für ähnliche Seiten, wenn eine Seite nicht gefunden werden kann.",
-        "description": "Checkbox label found on the general settings page"
+        "description": "(Chrome only) Checkbox label found on the general settings page"
     },
     "options_disable_hyperlink_auditing": {
-        "message": "Hyperlink-Auditing deaktivieren",
+        "message": "Prevent sites from tracking which links you click (\"hyperlink auditing\")",
         "description": "Checkbox label found on the general settings page"
     },
     "options_disable_network_prediction": {
         "message": "Prefetching deaktivieren",
         "description": "Checkbox label found on the general settings page"
     },
+    "options_disable_floc": {
+        "message": "Disable Google's Federated Learning of Cohorts (FLoC)",
+        "description": "(Chrome only) Checkbox label on the general settings page."
+    },
     "options_domain_filter_user": {
         "message": "benutzergesteuert",
         "description": "Dropdown control setting on the Tracking Domains options page tab."
+    },
+    "popup_info_firstparty_protections": {
+        "message": "Link-Tracking-Schutz aktiv",
+        "description": "Clickable status header text in the popup. Shown when Privacy Badger's link tracking protection is active (for example, on facebook.com)."
+    },
+    "popup_info_firstparty_description": {
+        "message": "Manche Websites $LINK_START$verwenden Link-Tracking, um dich zu verfolgen$LINK_END$, sobald du auf eine Link zum Verlassen der Website klickst. Privacy Badger entfernt auf dieser Website das Tracking solcher Links.",
+        "description": "Text revealed by clicking on the link tracking protection header in the popup",
+        "placeholders": {
+            "link_start": {
+                "content": "<a href='https://privacybadger.org/#What-about-tracking-by-the-sites-I-actively-visit%2c-like-NYTimes.com-or-Facebook.com' target='_blank'>"
+            },
+            "link_end": {
+                "content": "</a>"
+            }
+        }
     },
     "popup_instructions": {
         "message": "$COUNT$ mögliche $LINK_START$Tracker$LINK_END$ geblockt",

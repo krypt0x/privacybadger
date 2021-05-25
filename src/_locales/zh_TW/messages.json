@@ -403,19 +403,39 @@
     },
     "options_disable_google_nav_error_service": {
         "message": "停用將您造訪的網址傳送給 Google 的功能。這會在找不到網頁時停用相似頁面的建議。",
-        "description": "Checkbox label found on the general settings page"
+        "description": "(Chrome only) Checkbox label found on the general settings page"
     },
     "options_disable_hyperlink_auditing": {
-        "message": "停用超連結審核",
+        "message": "阻止網站追蹤您點擊的連結（「超連結審核」）",
         "description": "Checkbox label found on the general settings page"
     },
     "options_disable_network_prediction": {
         "message": "停用預讀功能",
         "description": "Checkbox label found on the general settings page"
     },
+    "options_disable_floc": {
+        "message": "停用 Google 的同類群組聯合學習 (FLoC)",
+        "description": "(Chrome only) Checkbox label on the general settings page."
+    },
     "options_domain_filter_user": {
         "message": "使用者控制",
         "description": "Dropdown control setting on the Tracking Domains options page tab."
+    },
+    "popup_info_firstparty_protections": {
+        "message": "連結追蹤保護作用中",
+        "description": "Clickable status header text in the popup. Shown when Privacy Badger's link tracking protection is active (for example, on facebook.com)."
+    },
+    "popup_info_firstparty_description": {
+        "message": "每當您點擊連結離開網站時，部份網站就會$LINK_START$使用連結追蹤來追蹤您$LINK_END$。Privacy Badger 移除了網站上這類連結的追蹤。",
+        "description": "Text revealed by clicking on the link tracking protection header in the popup",
+        "placeholders": {
+            "link_start": {
+                "content": "<a href='https://privacybadger.org/#What-about-tracking-by-the-sites-I-actively-visit%2c-like-NYTimes.com-or-Facebook.com' target='_blank'>"
+            },
+            "link_end": {
+                "content": "</a>"
+            }
+        }
     },
     "popup_instructions": {
         "message": "$COUNT$ 個潛在的 $LINK_START$追蹤器$LINK_END$ 已封鎖",

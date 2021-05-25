@@ -403,19 +403,39 @@
     },
     "options_disable_google_nav_error_service": {
         "message": "Schakel het naar Google verzenden van webadressen die je bezoekt uit. Hierdoor worden ook suggesties voor vergelijkbare pagina's als een pagina niet kan worden gevonden uitgeschakeld.",
-        "description": "Checkbox label found on the general settings page"
+        "description": "(Chrome only) Checkbox label found on the general settings page"
     },
     "options_disable_hyperlink_auditing": {
-        "message": "‘Hyperlink auditing’ blokkeren",
+        "message": "Voorkom dat websites volgen op welke verwijzingen je klikt (\"hyperlink auditing\")",
         "description": "Checkbox label found on the general settings page"
     },
     "options_disable_network_prediction": {
         "message": "Vooraf ophalen uitschakelen",
         "description": "Checkbox label found on the general settings page"
     },
+    "options_disable_floc": {
+        "message": "Googles Federated Learning of Cohorts (FLoC) uitschakelen",
+        "description": "(Chrome only) Checkbox label on the general settings page."
+    },
     "options_domain_filter_user": {
         "message": "ingesteld door gebruiker",
         "description": "Dropdown control setting on the Tracking Domains options page tab."
+    },
+    "popup_info_firstparty_protections": {
+        "message": "Bescherming tegen volgen op welke verwijzing je klikt is ingeschakeld",
+        "description": "Clickable status header text in the popup. Shown when Privacy Badger's link tracking protection is active (for example, on facebook.com)."
+    },
+    "popup_info_firstparty_description": {
+        "message": "Sommige websites $LINK_START$volgen op welke verwijzing je klikt$LINK_END$ waarmee je hun website verlaat. Privacy Badger verwijdert die mogelijkheid waardoor de website niet kan zien naar welke andere website jij doorklikt.",
+        "description": "Text revealed by clicking on the link tracking protection header in the popup",
+        "placeholders": {
+            "link_start": {
+                "content": "<a href='https://privacybadger.org/#What-about-tracking-by-the-sites-I-actively-visit%2c-like-NYTimes.com-or-Facebook.com' target='_blank'>"
+            },
+            "link_end": {
+                "content": "</a>"
+            }
+        }
     },
     "popup_instructions": {
         "message": "$COUNT$ potentiele $LINK_START$volgers$LINK_END$ geblokkeerd",

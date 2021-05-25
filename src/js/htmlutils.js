@@ -1,5 +1,5 @@
 /*
- * This file is part of Privacy Badger <https://www.eff.org/privacybadger>
+ * This file is part of Privacy Badger <https://privacybadger.org/>
  * Copyright (C) 2014 Electronic Frontier Foundation
  *
  * Privacy Badger is free software: you can redistribute it and/or modify
@@ -15,10 +15,19 @@
  * along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require.scopes.htmlutils = (function() {
+require.scopes.htmlutils = (function () {
 
 const i18n = chrome.i18n;
 const constants = require("constants");
+
+function escape_html(unsafe) {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 let htmlUtils = {
 
@@ -132,7 +141,6 @@ let htmlUtils = {
     <img src="/icons/UI-icons-red.svg" class="tooltip" title="${i18n.getMessage("tooltip_block")}"><img src="/icons/UI-icons-yellow.svg" class="tooltip" title="${i18n.getMessage("tooltip_cookieblock")}"><img src="/icons/UI-icons-green.svg" class="tooltip" title="${i18n.getMessage("tooltip_allow")}">
   </div>
 </div>
-<div class="spacer"></div>
 <div id="blockedResourcesInner" class="clickerContainer"></div>
     `.trim();
   },
@@ -152,8 +160,8 @@ let htmlUtils = {
       dnt_icon_url = chrome.runtime.getURL('/icons/dnt-16.png');
 
     return function (origin, action, show_breakage_warning) {
-      action = _.escape(action);
-      origin = _.escape(origin);
+      action = escape_html(action);
+      origin = escape_html(origin);
 
       // Get classes for main div.
       let classes = ['clicker'];
@@ -274,6 +282,8 @@ let htmlUtils = {
   },
 
 };
+
+htmlUtils.escape = escape_html;
 
 let exports = {
   htmlUtils,

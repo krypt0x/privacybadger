@@ -403,19 +403,39 @@
     },
     "options_disable_google_nav_error_service": {
         "message": "Вимкнути надсилання відвідуваних веб адрес в Google. Ця дія вимикає пропозиції для схожих сторінок, коли сторінку не вдається знайти.",
-        "description": "Checkbox label found on the general settings page"
+        "description": "(Chrome only) Checkbox label found on the general settings page"
     },
     "options_disable_hyperlink_auditing": {
-        "message": "Вимкнути аудит гіперпосилань",
+        "message": "Не дозволяти сайтам стежити, на які посилання ви натискаєте (\"аудит гіперпосилань\")",
         "description": "Checkbox label found on the general settings page"
     },
     "options_disable_network_prediction": {
         "message": "Вимкнути попереднє завантаження",
         "description": "Checkbox label found on the general settings page"
     },
+    "options_disable_floc": {
+        "message": "Вимкнути Federated Learning of Cohorts (FLoC) від Google",
+        "description": "(Chrome only) Checkbox label on the general settings page."
+    },
     "options_domain_filter_user": {
         "message": "контрольовані користувачем",
         "description": "Dropdown control setting on the Tracking Domains options page tab."
+    },
+    "popup_info_firstparty_protections": {
+        "message": "Захист від стеження посилань активний",
+        "description": "Clickable status header text in the popup. Shown when Privacy Badger's link tracking protection is active (for example, on facebook.com)."
+    },
+    "popup_info_firstparty_description": {
+        "message": "Деякі вебсайти $LINK_START$використовують стеження посилань, щоб стежити за вами$LINK_END$ при переході за такими посиланнями. Privacy Badger вилучає стеження з таких посилань на цьому вебсайті.",
+        "description": "Text revealed by clicking on the link tracking protection header in the popup",
+        "placeholders": {
+            "link_start": {
+                "content": "<a href='https://privacybadger.org/#What-about-tracking-by-the-sites-I-actively-visit%2c-like-NYTimes.com-or-Facebook.com' target='_blank'>"
+            },
+            "link_end": {
+                "content": "</a>"
+            }
+        }
     },
     "popup_instructions": {
         "message": "Заблоковано $COUNT$ потенційних $LINK_START$елементів стеження$LINK_END$",

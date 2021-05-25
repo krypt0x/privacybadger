@@ -1,5 +1,5 @@
 /*
- * This file is part of Privacy Badger <https://www.eff.org/privacybadger>
+ * This file is part of Privacy Badger <https://privacybadger.org/>
  * Copyright (C) 2014 Electronic Frontier Foundation
  *
  * Privacy Badger is free software: you can redistribute it and/or modify
@@ -50,7 +50,7 @@ exports.Migrations= {
     for (var domain in action_map.getItemClones()) {
       if (badger.storage.getNextUpdateForDomain(domain) === 0) {
         // Recheck at a random time in the next week
-        var recheckTime = _.random(Date.now(), utils.nDaysFromNow(7));
+        var recheckTime = utils.random(Date.now(), utils.nDaysFromNow(7));
         badger.storage.touchDNTRecheckTime(domain, recheckTime);
       }
     }
@@ -63,7 +63,7 @@ exports.Migrations= {
     var action_map = badger.storage.getStore('action_map');
     for (var domain in action_map.getItemClones()) {
       // Recheck at a random time in the next week
-      var recheckTime = _.random(utils.oneDayFromNow(), utils.nDaysFromNow(7));
+      var recheckTime = utils.random(utils.oneDayFromNow(), utils.nDaysFromNow(7));
       badger.storage.touchDNTRecheckTime(domain, recheckTime);
     }
   },
