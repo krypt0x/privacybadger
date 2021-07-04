@@ -17,6 +17,7 @@ akamaihd.net
 akamaized.net
 alexa.com
 alicdn.com
+aliyuncs.com
 ally.com
 amazon.com
 s3.amazonaws.com
@@ -97,6 +98,7 @@ players.brightcove.net
 bungie.net
 buzzfed.com
 buzzfeed.com
+byteoversea.com
 cachefly.net
 calendly.com
 cardinalcommerce.com
@@ -151,6 +153,7 @@ delicious.com
 delvenetworks.com
 deviantart.com
 deviantart.net
+digitaloceanspaces.com
 digitalriver.com
 digitalrivercontent.net
 cdn.discourse.org
@@ -166,6 +169,7 @@ dotsub.com
 dl.dropboxusercontent.com
 dumpert.nl
 duosecurity.com
+dynamics.com
 cdn.dynamicyield.com
 cdn-eu.dynamicyield.com
 rcom.dynamicyield.com
@@ -256,6 +260,7 @@ giphy.com
 gitbook.com
 github.com
 githubusercontent.com
+gleam.io
 gmodules.com
 godatafeed.com
 gogousenet.com
@@ -372,6 +377,7 @@ instructure.com
 intellicast.com
 intensedebate.com
 intercom.io
+intercomcdn.com
 members.internetdefenseleague.org
 investingchannel.com
 script.ioam.de
@@ -397,6 +403,7 @@ cdnsecakmi.kaltura.com
 cfvod.kaltura.com
 www.kaltura.com
 kampyle.com
+ssl.kaptcha.com
 kataweb.it
 kickapps.com
 kickstarter.com
@@ -430,6 +437,7 @@ llnwd.net
 loggly.com
 logos.com
 lphbs.com
+lpsnmedia.net
 mail.ru
 mailchimp.com
 mapbox.com
@@ -587,6 +595,7 @@ redefine.pl
 cdngeneral.rentcafe.com
 resultspage.com
 rewardstyle.com
+rfksrv.com
 rpxnow.com
 rssinclude.com
 sagepay.com
@@ -615,6 +624,7 @@ shopping.com
 shop-pro.jp
 shoprunner.com
 sidearmsports.com
+simplecast.com
 siteimprove.com
 shield.sitelock.com
 sketchfab.com
@@ -663,12 +673,15 @@ taleo.net
 uploads.tapatalk-cdn.com
 targetimg1.com
 targetimg2.com
+tarteaucitron.io
 tawk.to
 technorati.com
 tegna-media.com
 textalk.se
+tfaforms.net
 theplatform.com
 tile.thunderforest.com
+tiktokcdn.com
 timeinc.net
 tinypass.com
 tinypic.com

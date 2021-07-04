@@ -59,6 +59,18 @@
         "message": "Bloquear este dominio es conocido por romper sitios web",
         "description": "Tooltip for a warning icon that appears when move a domain slider to 'red' (block) for a domain that was automatically set to 'yellow' (block cookies)."
     },
+    "domain_slider_block_tooltip": {
+        "message": "Bloquear todo",
+        "description": "Tooltip shown when you hover over the leftmost part of a domain slider"
+    },
+    "domain_slider_cookieblock_tooltip": {
+        "message": "Bloquear cookies",
+        "description": "Tooltip shown when you hover over the center part of a domain slider"
+    },
+    "domain_slider_allow_tooltip": {
+        "message": "Permitir",
+        "description": "Tooltip shown when you hover over the rightmost part of a domain slider"
+    },
     "feed_the_badger_title": {
         "message": "Haz clic para devolver el control de este dominio a Privacy Badger",
         "description": "Tooltip shown when you hover over an undo arrow that appears when you move a domain slider away from its automatic setting."
@@ -78,10 +90,6 @@
     "report_title": {
         "message": "Reportar un error",
         "description": ""
-    },
-    "domain_slider_cookieblock_tooltip": {
-        "message": "Haz clic aquí para impedir que este dominio cree cookies",
-        "description": "Tooltip shown when you hover over the center part of a slider shown for each domain in the domain list."
     },
     "options_domain_filter_block": {
         "message": "bloqueado",
@@ -293,10 +301,6 @@
         "message": "Hacer el recorrido",
         "description": "Intro page welcome button."
     },
-    "domain_slider_block_tooltip": {
-        "message": "Haz clic aquí para bloquear por completo este dominio",
-        "description": "Tooltip shown when you hover over the leftmost part of a slider shown for each domain in the domain list."
-    },
     "version": {
         "message": "versión $VERSION_STRING$",
         "description": "Shows Privacy Badger's version in the popup. For example, \"version 2018.8.1\".",
@@ -320,10 +324,6 @@
     "options_domain_filter_cookieblock": {
         "message": "parcialmente bloqueado",
         "description": "Dropdown control setting on the Tracking Domains options page tab."
-    },
-    "show_tracking_domains_acknowledgement": {
-        "message": "Entiendo; por favor, muéstrame la lista de dominios de rastreo de todos modos",
-        "description": "Acknowledgement shown next to the checkbox required to reveal the tracking domains list on the options page."
     },
     "firstRun_title": {
         "message": "¡Gracias por instalar Privacy Badger!",
@@ -381,10 +381,6 @@
         "message": "¡La privacidad es un deporte de equipo!",
         "description": "Part of the 'donate' section on the intro page."
     },
-    "show_tracking_domains_message": {
-        "message": "No deberías necesitar modificar nada aquí.",
-        "description": "Shown above the acknowledgement checkbox required to reveal the tracking domains list on the options page. This is the second paragraph; the first paragraph is the message under the \"intro_not_an_adblocker_paragraph\" key."
-    },
     "options_domain_filter_all": {
         "message": "todo",
         "description": "Dropdown control setting on the Tracking Domains options page tab."
@@ -406,7 +402,7 @@
         "description": "(Chrome only) Checkbox label found on the general settings page"
     },
     "options_disable_hyperlink_auditing": {
-        "message": "Prevent sites from tracking which links you click (\"hyperlink auditing\")",
+        "message": "Impedir que sitios web rastreen enlaces a los que se haces clic (\"auditoría de hipervínculos\")",
         "description": "Checkbox label found on the general settings page"
     },
     "options_disable_network_prediction": {
@@ -414,7 +410,7 @@
         "description": "Checkbox label found on the general settings page"
     },
     "options_disable_floc": {
-        "message": "Disable Google's Federated Learning of Cohorts (FLoC)",
+        "message": "Deshabilitar aprendizaje federado de cohortes de Google (FLoC)",
         "description": "(Chrome only) Checkbox label on the general settings page."
     },
     "options_domain_filter_user": {
@@ -426,7 +422,7 @@
         "description": "Clickable status header text in the popup. Shown when Privacy Badger's link tracking protection is active (for example, on facebook.com)."
     },
     "popup_info_firstparty_description": {
-        "message": "Algunos sitios web $LINK_START$utilizan el rastreo de enlaces para seguirte$LINK_END$ cada vez que haces clic en un enlace para salir de un sitio web. Privacy Badger elimina el rastreo de dichos enlaces en este sitio web.",
+        "message": "Algunos sitios web $LINK_START$utilizan el rastreo de enlaces para seguirte$LINK_END$ cada vez que haces clic en un enlace para salir del sitio web. Privacy Badger elimina el rastreo de dichos enlaces en este sitio web.",
         "description": "Text revealed by clicking on the link tracking protection header in the popup",
         "placeholders": {
             "link_start": {
@@ -482,10 +478,6 @@
     "popup_disable_for_site": {
         "message": "Deshabilitar Privacy Badger en este sitio",
         "description": "Button in the popup."
-    },
-    "domain_slider_allow_tooltip": {
-        "message": "Haz clic aquí para permitir este dominio",
-        "description": "Tooltip shown when you hover over the rightmost part of a slider shown for each domain in the domain list."
     },
     "intro_privacy_note": {
         "message": "Privacy Badger NUNCA comparte datos sobre tu navegación a menos que elijas compartirlos.",
@@ -699,8 +691,8 @@
         "description": "Options page tab heading"
     },
     "disabled_for_these_domains": {
-        "message": "<p>Privacy Badger está deshabilitado en los siguientes sitios. Esto significa que Privacy Badger no bloqueará nada cuando visites los sitios listados aquí, y no enviará las señales No rastrear o Control de privacidad global.</p><p>Si crees que Privacy Badger está rompiendo una página o deseas permitir que un sitio en particular comparta o venda tus datos, puedes escribir el dominio de dicha página en el cuadro de abajo y hacer clic en el botón «Añadir dominio».</p><p>Alternativamente, cuando ya tengas seleccionada la pestaña de la página, simplemente haz clic en el botón de Privacy Badger en la barra de herramientas del navegador y luego haz clic en el botón «Deshabilitar».</p>",
-        "description": "'Add domain' should match the 'add_domain_button' message. 'Disable' should match the start of the 'popup_disable_for_site' message."
+        "message": "<p>Privacy Badger está deshabilitado en los siguientes sitios. Esto significa que Privacy Badger no bloqueará nada cuando visites los sitios listados aquí, y no enviará las señales No rastrear o Control de privacidad global.</p><p>Si crees que Privacy Badger está rompiendo una página o deseas permitir que un sitio en particular comparta o venda tus datos, puedes escribir el dominio de dicha página en el cuadro de abajo y hacer clic en el botón «Añadir dominio».</p>",
+        "description": "Shown on the options page under the Disabled Sites tab. 'Add domain' should match the 'add_domain_button' message."
     },
     "allowlist_domain_input_placeholder": {
         "message": "p. ej., www.example.com, *.example.net, example.org",
