@@ -1,4 +1,34 @@
 {
+    "name": {
+        "message": "Privacy Badger",
+        "description": ""
+    },
+    "description": {
+        "message": "Privacy Badger leert automatisch onzichtbare volgers te blokkeren.",
+        "description": ""
+    },
+    "popup_disable_for_site": {
+        "message": "Uitschakelen op deze website",
+        "description": "Button in the popup."
+    },
+    "popup_enable_for_site": {
+        "message": "Inschakelen op deze website",
+        "description": "Button in the popup, visible if Privacy Badger is disabled on the current site"
+    },
+    "report_broken_site": {
+        "message": "Defect voor deze site rapporteren",
+        "description": "Button in the popup."
+    },
+    "version": {
+        "message": "versie $VERSION_STRING$",
+        "description": "Shows Privacy Badger's version in the popup. For example, \"version 2018.8.1\".",
+        "placeholders": {
+            "version_string": {
+                "content": "$1",
+                "example": "2018.8.1"
+            }
+        }
+    },
     "badger_status_block": {
         "message": "$DOMAIN$ geblokkeerd",
         "description": "Tooltip shown when you hover over a domain name with a red slider in the list of domains in the popup or under the Tracking Domains tab on the options page.",
@@ -37,7 +67,7 @@
     },
     "donate_to_eff": {
         "message": "Aan EFF doneren",
-        "description": "Button shown in the popup and on the intro page."
+        "description": "Link shown in the popup; also a button on the intro page"
     },
     "intro_donate_subheading": {
         "message": "Help ons door te doneren en uw steun voor onze hulpprogramma's te delen",
@@ -53,7 +83,7 @@
     },
     "dnt_tooltip": {
         "message": "Dit domein belooft u niet te volgen",
-        "description": "Tooltip shown when you hover over a DNT-compliant domain name in the list of domains in the popup or under the Tracking Domains tab on the options page."
+        "description": "Tooltip shown when you hover over an EFF's DNT policy-compliant domain name in the list of domains in the popup or under the Tracking Domains tab on the options page."
     },
     "breakage_warning_tooltip": {
         "message": "Het staat bekend dat door het blokkeren van dit domein sommige websites niet langer goed werken",
@@ -186,7 +216,7 @@
         "description": "Checkbox label on the general settings page"
     },
     "local_learning_warning": {
-        "message": "Door leren in te schakelen wordt je mogelijk meer identificeerbaar voor websites",
+        "message": "Door leren in te schakelen wordt u mogelijk meer identificeerbaar voor websites",
         "description": "Tooltip on the general settings page"
     },
     "options_incognito_setting": {
@@ -198,7 +228,7 @@
         "description": "Tooltip on the general settings page"
     },
     "learning_prompt_text1": {
-        "message": "Privacy Badger zal niet langer als standaard gedrag leren van jouw surfgedrag.",
+        "message": "Privacy Badger zal niet langer als standaard gedrag leren van uw surfgedrag.",
         "description": "First part of a prompt to visit the blog."
     },
     "learning_prompt_text2": {
@@ -218,19 +248,15 @@
         "description": "Tooltip that comes up when you hover over the 'tracking domains' link under the Tracking Domains tab on the options page."
     },
     "intro_report_button": {
-        "message": "Vergeet niet op 'Een website melden die niet meer werkt' te klikken. Om uw privacy te respecteren verzenden we geen automatische meldingen.",
-        "description": "Intro page paragraph. The quoted message ('Did Privacy Badger break this site') should match the first part of the translation for the 'report_broken_site' message."
+        "message": "Vergeet alstublieft niet om op 'Defect voor deze site' te klikken. Om uw privacy te respecteren versturen we dat niet automatisch.",
+        "description": "Intro page paragraph. The quoted message ('Report broken site') should match the translation for the 'report_broken_site' message."
     },
     "options_title": {
         "message": "Privacy Badger-opties",
         "description": ""
     },
     "report_terms": {
-        "message": "Dit zal automatisch de volgende gegevens naar het EFF verzenden: de webpagina die je momenteel bezoekt, de versie van je webbrowser, de versie van Privacy Badger en de instelling van alle schuifknoppen voor deze webpagina.",
-        "description": ""
-    },
-    "popup_enable_for_site": {
-        "message": "Privacy Badger inschakelen op deze website",
+        "message": "Dit zal automatisch de volgende gegevens naar het EFF verzenden: de webpagina die u momenteel bezoekt, de versie van uw webbrowser, de versie van Privacy Badger en de instelling van alle schuifknoppen voor deze webpagina.",
         "description": ""
     },
     "options_domain_type_filter": {
@@ -301,16 +327,6 @@
         "message": "Neem de rondleiding",
         "description": "Intro page welcome button."
     },
-    "version": {
-        "message": "versie $VERSION_STRING$",
-        "description": "Shows Privacy Badger's version in the popup. For example, \"version 2018.8.1\".",
-        "placeholders": {
-            "version_string": {
-                "content": "$1",
-                "example": "2018.8.1"
-            }
-        }
-    },
     "badger_status_cookieblock": {
         "message": "Cookies geblokkeerd van $DOMAIN$",
         "description": "Tooltip shown when you hover over a domain name with a yellow slider in the list of domains in the popup or under the Tracking Domains tab on the options page.",
@@ -333,10 +349,6 @@
         "message": "Kies een bestand om te importeren.",
         "description": ""
     },
-    "report_broken_site": {
-        "message": "Een website melden die niet meer werkt",
-        "description": "Button in the popup."
-    },
     "tooltip_cookieblock": {
         "message": "Zet het schuifbalkje in het midden om cookies te blokkeren",
         "description": ""
@@ -346,7 +358,7 @@
         "description": "Intro page paragraph heading"
     },
     "intro_learns_paragraph": {
-        "message": "In plaats van lijsten bij te houden over wat je wilt blokkeren, zal Privacy Badger automatisch volgers ontdekken op basis van hun gedrag.",
+        "message": "In plaats van lijsten bij te houden over wat u wilt blokkeren, zal Privacy Badger automatisch volgers ontdekken op basis van hun gedrag.",
         "description": "Intro page paragraph"
     },
     "intro_beyond_ads": {
@@ -354,7 +366,7 @@
         "description": "Intro page paragraph heading."
     },
     "intro_beyond_ads_paragraph": {
-        "message": "Onzichtbaar volgen gebeurd op allerlei manieren; advertenties zijn slechts het zichtbare topje van de ijsberg. Privacy Badger verzendt het <a href='https://globalprivacycontrol.org/' target='_blank'>“Global Privacy Control”-signaal</a>, om niet mee te doen aan het doorgeven en verkopen van je data, en het <a href='https://www.eff.org/issues/do-not-track' target='_blank'>“Volg me niet”-signaal</a> om aan bedrijven aan te geven dat je niet gevolgd wil worden. Als ze je keuze niet respecteren, dan zal Privacy Badger leren om ze te blokkeren, ongeacht of ze adverteerders, volgers of iets anders zijn.",
+        "message": "Onzichtbaar volgen gebeurd op allerlei manieren; advertenties zijn slechts het zichtbare topje van de ijsberg. Privacy Badger verzendt het <a href='https://globalprivacycontrol.org/' target='_blank'>“Global Privacy Control”-signaal</a>, om niet mee te doen aan het doorgeven en verkopen van uw data, en het <a href='https://www.eff.org/issues/do-not-track' target='_blank'>“Volg me niet”-signaal</a> om aan bedrijven aan te geven dat u niet gevolgd wilt worden. Als ze uw keuze niet respecteren, dan zal Privacy Badger leren om ze te blokkeren, ongeacht of ze adverteerders, volgers of iets anders zijn.",
         "description": "Intro page paragraph."
     },
     "report_close": {
@@ -366,7 +378,7 @@
         "description": ""
     },
     "options_domain_filter_dnt": {
-        "message": "voldoet aan Niet-volgen-beleid",
+        "message": "volgt het 'niet volgen'-beleid van EEF",
         "description": "Dropdown control setting on the Tracking Domains options page tab."
     },
     "popup_help_button": {
@@ -398,11 +410,11 @@
         "description": "Checkbox label for enabling/disabling the Sec-GPC and DNT signals, found on the general settings page"
     },
     "options_disable_google_nav_error_service": {
-        "message": "Schakel het naar Google verzenden van webadressen die je bezoekt uit. Hierdoor worden ook suggesties voor vergelijkbare pagina's als een pagina niet kan worden gevonden uitgeschakeld.",
+        "message": "Schakel het naar Google verzenden van webadressen die u bezoekt uit. Hierdoor worden ook suggesties voor vergelijkbare pagina's als een pagina niet kan worden gevonden uitgeschakeld.",
         "description": "(Chrome only) Checkbox label found on the general settings page"
     },
     "options_disable_hyperlink_auditing": {
-        "message": "Voorkom dat websites volgen op welke verwijzingen je klikt (\"hyperlink auditing\")",
+        "message": "Voorkom dat websites volgen op welke verwijzingen u klikt (\"hyperlink auditing\")",
         "description": "Checkbox label found on the general settings page"
     },
     "options_disable_network_prediction": {
@@ -418,11 +430,11 @@
         "description": "Dropdown control setting on the Tracking Domains options page tab."
     },
     "popup_info_firstparty_protections": {
-        "message": "Bescherming tegen volgen op welke verwijzing je klikt is ingeschakeld",
+        "message": "Bescherming tegen volgen op welke verwijzing u klikt is ingeschakeld",
         "description": "Clickable status header text in the popup. Shown when Privacy Badger's link tracking protection is active (for example, on facebook.com)."
     },
     "popup_info_firstparty_description": {
-        "message": "Sommige websites $LINK_START$volgen op welke verwijzing je klikt$LINK_END$ waarmee je hun website verlaat. Privacy Badger verwijdert die mogelijkheid waardoor de website niet kan zien naar welke andere website jij doorklikt.",
+        "message": "Sommige websites $LINK_START$volgen op welke verwijzing u klikt$LINK_END$ waarmee u hun website verlaat. Privacy Badger verwijdert die mogelijkheid waardoor de website niet kan zien naar welke andere website u doorklikt.",
         "description": "Text revealed by clicking on the link tracking protection header in the popup",
         "placeholders": {
             "link_start": {
@@ -475,10 +487,6 @@
         "message": "Schuif de balk naar rechts om een domein toe te staan",
         "description": ""
     },
-    "popup_disable_for_site": {
-        "message": "Privacy Badger uitschakelen op deze website",
-        "description": "Button in the popup."
-    },
     "intro_privacy_note": {
         "message": "Privacy Badger zal NOOIT uw surfgedrag delen, tenzij u hiervoor kiest.",
         "description": "Intro page paragraph."
@@ -503,10 +511,6 @@
     "options_domain_list_no_trackers": {
         "message": "Privacy Badger heeft nog geen <a target='_blank' tabindex=-1 title='i18n_what_is_a_tracker' class='tooltip' href='https://www.eff.org/privacybadger#faq-What-is-a-third-party-tracker?'>volgerdomeinen</a> gedetecteerd. Blijf browsen!",
         "description": "Shown on the Tracking Domains tab on the options page if all tracking domains have been removed."
-    },
-    "name": {
-        "message": "Privacy Badger",
-        "description": ""
     },
     "intro_not_an_adblocker_paragraph": {
         "message": "Privacy Badger begint met blokkeren zodra het dezelfde volger op drie verschillende websites ziet. Drie slag en ze zijn uit!",
@@ -559,10 +563,6 @@
     "share_button_title_facebook": {
         "message": "Op Facebook delen",
         "description": "Text that comes up when you hover over the social sharing buttons on the intro page."
-    },
-    "description": {
-        "message": "Privacy Badger leert automatisch onzichtbare volgers te blokkeren.",
-        "description": ""
     },
     "report_fail": {
         "message": "Oeps. Er is iets misgegaan.",
@@ -691,7 +691,7 @@
         "description": "Options page tab heading"
     },
     "disabled_for_these_domains": {
-        "message": "<p>Privacy Badger is op de volgende websitess uitgeschakeld. Dit betekent dat Privacy Badger niets zal blokkeren op één van de websites in deze lijst, en dat het ook niet het “Volg me niet”- of “Global Privacy Control”-signaal zal verzenden.</p><p>Als je vermoedt dat Privacy Badger het laden van een bepaalde webpagina verstoort, of als je een bepaalde website wil toestaan om je data door te geven of verkopen, dan kun je de domeinnaam van die webpagina invullen in het invoerveld hieronder en op de knop \"Domein toevoegen\" klikken.</p>",
+        "message": "<p>Privacy Badger is op de volgende websitess uitgeschakeld. Dit betekent dat Privacy Badger niets zal blokkeren op één van de websites in deze lijst, en dat het ook niet het “Volg me niet”- of “Global Privacy Control”-signaal zal verzenden.</p><p>Als u vermoedt dat Privacy Badger het laden van een bepaalde webpagina verstoort, of als u een bepaalde website wil toestaan om uw data door te geven of verkopen, dan kunt u de domeinnaam van die webpagina invullen in het invoerveld hieronder en op de knop \"Domein toevoegen\" klikken.</p>",
         "description": "Shown on the options page under the Disabled Sites tab. 'Add domain' should match the 'add_domain_button' message."
     },
     "allowlist_domain_input_placeholder": {
@@ -709,5 +709,23 @@
     "invalid_domain": {
         "message": "Voeg een geldig domein of URL toe",
         "description": "Error shown when attempting to add an invalid domain to the list of disabled sites"
+    },
+    "deprecated_setting": {
+        "message": "De volgende instelling zal uit een toekomstige versie van Privacy Badger worden verwijderd:",
+        "description": "Followed by the options_webrtc_setting message ('Prevent WebRTC...')"
+    },
+    "learn_more_link": {
+        "message": "Bezoek $LINK$ voor meer informatie.",
+        "description": "Reusable 'learn more link' message",
+        "placeholders": {
+            "link": {
+                "content": "$1",
+                "example": "<a href='https://example.com'>example.com</a>"
+            }
+        }
+    },
+    "acknowledgement_action": {
+        "message": "Ik snap het",
+        "description": "Acknowledgement button text"
     }
 }

@@ -361,7 +361,7 @@ Badger.prototype = {
         return cb(new Error("Failed to parse seed data JSON"));
       }
 
-      self.mergeUserData(data, true);
+      self.mergeUserData(data);
       log("Loaded seed data successfully");
       return cb(null);
     });
@@ -879,14 +879,47 @@ Badger.prototype = {
       privateStore.setItem("badgerVersion", version);
     }
 
+    // initialize any other private store (not-for-export) settings
     if (!privateStore.hasItem("showLearningPrompt")) {
       privateStore.setItem("showLearningPrompt", false);
     }
+    badger.initDeprecations();
 
     if (self.isUpdate) {
       // remove obsolete settings
       if (settings.hasItem("showTrackingDomains")) {
         settings.deleteItem("showTrackingDomains");
+      }
+    }
+  },
+
+  /**
+   * Initializes private flags that keep track of deprecated features.
+   *
+   * Called on Badger startup and user data import.
+   */
+  initDeprecations: function () {
+    let self = this,
+      privateStore = self.getPrivateSettings();
+
+    if (!privateStore.hasItem("legacyWebRtcProtectionUser")) {
+      // initialize "legacy WebRTC IP leak protection user" flag
+      privateStore.setItem("legacyWebRtcProtectionUser",
+        self.getSettings().getItem("preventWebRTCIPLeak"));
+
+    } else if (!privateStore.getItem("legacyWebRtcProtectionUser")) {
+      // set legacy flag to true if the IP protection gets enabled
+      // for whatever reason (testing, user data import)
+      if (self.getSettings().getItem("preventWebRTCIPLeak")) {
+        privateStore.setItem("legacyWebRtcProtectionUser", true);
+      }
+    }
+
+    if (!privateStore.hasItem("showWebRtcDeprecation")) {
+      // will show WebRTC protection deprecation message
+      // iff showWebRtcDeprecation exists and is set to true
+      if (privateStore.getItem("legacyWebRtcProtectionUser")) {
+        privateStore.setItem("showWebRtcDeprecation", true);
       }
     }
   },
@@ -974,7 +1007,9 @@ Badger.prototype = {
         return;
       }
 
-      if (self.criticalError) {
+      let special_page = !self.tabData.hasOwnProperty(tab_id);
+
+      if (self.criticalError || (!special_page && badger.getPrivateSettings().getItem("showWebRtcDeprecation"))) {
         chrome.browserAction.setBadgeBackgroundColor({tabId: tab_id, color: "#cc0000"});
         chrome.browserAction.setBadgeText({tabId: tab_id, text: "!"});
         return;
@@ -984,9 +1019,8 @@ Badger.prototype = {
       // - the counter is disabled
       // - we don't have tabData for whatever reason (special browser pages)
       // - Privacy Badger is disabled on the page
-      if (
+      if (special_page ||
         !self.getSettings().getItem("showCounter") ||
-        !self.tabData.hasOwnProperty(tab_id) ||
         !self.isPrivacyBadgerEnabled(self.getFrameData(tab_id).host)
       ) {
         chrome.browserAction.setBadgeText({tabId: tab_id, text: ""});
@@ -1223,13 +1257,32 @@ Badger.prototype = {
   },
 
   /**
-   * Merge data exported from a different badger into this badger's storage.
+   * Merges Privacy Badger user data.
+   *
+   * Used to load pre-trained/"seed" data on installation and updates.
+   * Also used to import user data from other Privacy Badger instances.
    *
    * @param {Object} data the user data to merge in
-   * @param {Boolean} [skip_migrations=false] set when running from a migration to avoid infinite loop
    */
-  mergeUserData: function (data, skip_migrations) {
+  mergeUserData: function (data) {
     let self = this;
+
+    // fix incoming snitch map entries with current MDFP data
+    if (data.hasOwnProperty("snitch_map")) {
+      let correctedSites = {};
+
+      for (let domain in data.snitch_map) {
+        let newSnitches = data.snitch_map[domain].filter(
+          site => utils.isThirdPartyDomain(site, domain));
+
+        if (newSnitches.length) {
+          correctedSites[domain] = newSnitches;
+        }
+      }
+
+      data.snitch_map = correctedSites;
+    }
+
     // The order of these keys is also the order in which they should be imported.
     // It's important that snitch_map be imported before action_map (#1972)
     ["snitch_map", "action_map", "settings_map"].forEach(function (key) {
@@ -1237,12 +1290,6 @@ Badger.prototype = {
         self.storage.getStore(key).merge(data[key]);
       }
     });
-
-    // for exports from older Privacy Badger versions:
-    // fix yellowlist getting out of sync, remove non-tracking domains, etc.
-    if (!skip_migrations) {
-      self.runMigrations();
-    }
   }
 
 };

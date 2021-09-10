@@ -7,6 +7,7 @@ accuweather.com
 actionnetwork.org
 imagesrv.adition.com
 auth.adobe.com
+documentcloud.adobe.com
 wwwimages.adobe.com
 xsdownload.adobe.com
 assets.adobedtm.com
@@ -79,6 +80,7 @@ betterttv.net
 static.beyondmenu.com
 www.beyondmenu.com
 bigcommerce.com
+r.bing.com
 www.bing.com
 bit.ly
 bizrate.com
@@ -196,6 +198,7 @@ cdn.embed.ly
 cdn.embedly.com
 i-cdn.embed.ly
 i.embed.ly
+envato.com
 pp.ephapay.net
 epoch.com
 epoq.de
@@ -581,6 +584,7 @@ rackcdn.com
 rackspacecloud.com
 radikal.ru
 radiofrance.fr
+image.rakuten.co.jp
 rambler.ru
 images.rapgenius.com
 readability.com
@@ -620,6 +624,7 @@ securitymetrics.com
 seeclickfix.com
 sgizmo.com
 shopify.com
+shopifycdn.com
 shopping.com
 shop-pro.jp
 shoprunner.com
@@ -642,6 +647,8 @@ api.soundcloud.com
 feeds.soundcloud.com
 sp-prod.net
 spot.im
+api.spreaker.com
+widget.spreaker.com
 springboardplatform.com
 squarespace.com
 squareup.com
@@ -678,6 +685,7 @@ tawk.to
 technorati.com
 tegna-media.com
 textalk.se
+tfaforms.com
 tfaforms.net
 theplatform.com
 tile.thunderforest.com
@@ -726,6 +734,7 @@ unicornmedia.com
 unsplash.com
 uplynk.com
 usa.gov
+usercentrics.eu
 viafoura.net
 viddler.com
 videobash.com

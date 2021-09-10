@@ -1091,8 +1091,9 @@ function dispatcher(request, sender, sendResponse) {
       isOnFirstParty: utils.firstPartyProtectionsEnabled(tab_host),
       noTabData: false,
       origins,
-      showLearningPrompt: badger.getPrivateSettings().getItem("showLearningPrompt"),
       settings: badger.getSettings().getItemClones(),
+      showLearningPrompt: badger.getPrivateSettings().getItem("showLearningPrompt"),
+      showWebRtcDeprecation: !!badger.getPrivateSettings().getItem("showWebRtcDeprecation"),
       tabHost: tab_host,
       tabId: tab_id,
       tabUrl: request.tabUrl,
@@ -1115,6 +1116,7 @@ function dispatcher(request, sender, sendResponse) {
 
     sendResponse({
       cookieblocked,
+      legacyWebRtcProtectionUser: badger.getPrivateSettings().getItem("legacyWebRtcProtectionUser"),
       origins,
       settings: badger.getSettings().getItemClones(),
       webRTCAvailable: badger.webRTCAvailable,
@@ -1152,6 +1154,13 @@ function dispatcher(request, sender, sendResponse) {
 
   case "seenLearningPrompt": {
     badger.getPrivateSettings().setItem("showLearningPrompt", false);
+    sendResponse();
+    break;
+  }
+
+  case "seenWebRtcDeprecation": {
+    badger.getPrivateSettings().setItem("showWebRtcDeprecation", false);
+    badger.updateBadge(request.tabId);
     sendResponse();
     break;
   }
@@ -1230,8 +1239,8 @@ function dispatcher(request, sender, sendResponse) {
     break;
   }
 
+  // called when the user manually sets a slider on the options page
   case "saveOptionsToggle": {
-    // called when the user manually sets a slider on the options page
     badger.saveAction(request.action, request.origin);
     sendResponse({
       origins: badger.storage.getTrackingDomains()
@@ -1239,15 +1248,18 @@ function dispatcher(request, sender, sendResponse) {
     break;
   }
 
+  // called when a user imports data exported from another Badger instance
   case "mergeUserData": {
-    // called when a user imports data exported from another Badger instance
     badger.mergeUserData(request.data);
     badger.blockWidgetDomains();
     badger.setPrivacyOverrides();
-    sendResponse({
-      origins: badger.storage.getTrackingDomains(),
-      settings: badger.getSettings().getItemClones(),
-    });
+    badger.initDeprecations();
+
+    // for exports from older Privacy Badger versions:
+    // fix yellowlist getting out of sync, remove non-tracking domains, etc.
+    badger.runMigrations();
+
+    sendResponse();
     break;
   }
 
