@@ -21,6 +21,7 @@ alicdn.com
 aliyuncs.com
 ally.com
 amazon.com
+c.amazon-adsystem.com
 s3.amazonaws.com
 amazonaws.com
 coin.amazonpay.com
@@ -58,6 +59,7 @@ assetfiles.com
 assets-cdk.com
 auth0.com
 authorize.net
+azure-api.net
 azureedge.net
 bac-assets.com
 hiphotos.baidu.com
@@ -140,6 +142,7 @@ cdn.cohesionapps.com
 make.cohesionapps.com
 cloudplatform.coveo.com
 platform.cloud.coveo.com
+platform-eu.cloud.coveo.com
 static.cloud.coveo.com
 creativecommons.org
 cstv.com
@@ -299,6 +302,8 @@ maps.google.com
 mapsengine.google.com
 mt0.google.com
 mt1.google.com
+mt2.google.com
+mt3.google.com
 mts0.google.com
 mts1.google.com
 mw1.google.com
@@ -533,6 +538,7 @@ openload.co
 tile.openstreetmap.fr
 openstreetmap.org
 optimizely.com
+oraclecloud.com
 oregonlive.com
 outlook.com
 paddle.com

@@ -42,7 +42,6 @@ function Badger() {
   self.isUpdate = false;
 
   self.webRTCAvailable = checkWebRtcBrowserSupport();
-  self.firstPartyDomainPotentiallyRequired = testCookiesFirstPartyDomain();
 
   self.widgetList = [];
   let widgetListPromise = widgetLoader.loadWidgetsFromFile(
@@ -78,7 +77,7 @@ function Badger() {
     // set badge text color to white in Firefox 63+
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1474110
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1424620
-    if (chrome.browserAction.hasOwnProperty('setBadgeTextColor')) {
+    if (utils.hasOwn(chrome.browserAction, 'setBadgeTextColor')) {
       chrome.browserAction.setBadgeTextColor({ color: "#fff" });
     }
 
@@ -132,7 +131,21 @@ function Badger() {
     // set up periodic fetching of hashes from eff.org
     setInterval(self.updateDntPolicyHashes.bind(self), utils.oneDay() * 4);
 
+    let privateStore = self.getPrivateSettings();
     if (self.isFirstRun) {
+      privateStore.setItem("firstRunTimerFinished", false);
+
+      // work around the welcome page getting closed by an extension restart
+      // such as in response to being granted Private Browsing permission
+      // from the post-install doorhanger on Firefox
+      setTimeout(function () {
+        privateStore.setItem("firstRunTimerFinished", true);
+      }, utils.oneMinute());
+
+      self.showFirstRunPage();
+
+    } else if (!privateStore.getItem("firstRunTimerFinished")) {
+      privateStore.setItem("firstRunTimerFinished", true);
       self.showFirstRunPage();
     }
   });
@@ -167,31 +180,6 @@ function Badger() {
     return available;
   }
 
-  /**
-   * Checks for availability of firstPartyDomain chrome.cookies API parameter.
-   * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/cookies/getAll#Parameters
-   *
-   * firstPartyDomain is required when privacy.websites.firstPartyIsolate is enabled,
-   * and is in Firefox since Firefox 59. (firstPartyIsolate is in Firefox since 58).
-   *
-   * We don't care whether firstPartyIsolate is enabled, but rather whether
-   * firstPartyDomain is supported. Assuming firstPartyDomain is supported,
-   * setting it to null in chrome.cookies.getAll() produces the same result
-   * regardless of the state of firstPartyIsolate.
-   *
-   * firstPartyDomain is not currently supported in Chrome.
-   */
-  function testCookiesFirstPartyDomain() {
-    try {
-      chrome.cookies.getAll({
-        firstPartyDomain: null
-      }, function () {});
-    } catch (ex) {
-      return false;
-    }
-    return true;
-  }
-
 }
 
 Badger.prototype = {
@@ -219,13 +207,19 @@ Badger.prototype = {
           },
           frames: {
             <frame_id>: {
-              url: {String},
+              url: {String}
               host: {String}
+              widgetReplacementReady: {Boolean}
+              widgetQueue: {Array} widget objects
+              warAccessTokens: {
+                <extension_resource_URL>: {String} access token
+                ...
+              }
             },
             ...
           },
           origins: {
-            domain.tld: {String} action taken for this domain
+            <third_party_fqdn>: {String} action taken for this domain
             ...
           }
         },
@@ -523,7 +517,7 @@ Badger.prototype = {
   recordFrame: function(tabId, frameId, frameUrl) {
     let self = this;
 
-    if (!self.tabData.hasOwnProperty(tabId)) {
+    if (!utils.hasOwn(self.tabData, tabId)) {
       self.tabData[tabId] = {
         blockedFrameUrls: {},
         frames: {},
@@ -551,8 +545,8 @@ Badger.prototype = {
 
     frame_id = frame_id || 0;
 
-    if (self.tabData.hasOwnProperty(tab_id)) {
-      if (self.tabData[tab_id].frames.hasOwnProperty(frame_id)) {
+    if (utils.hasOwn(self.tabData, tab_id)) {
+      if (utils.hasOwn(self.tabData[tab_id].frames, frame_id)) {
         return self.tabData[tab_id].frames[frame_id];
       }
     }
@@ -880,8 +874,14 @@ Badger.prototype = {
     }
 
     // initialize any other private store (not-for-export) settings
-    if (!privateStore.hasItem("showLearningPrompt")) {
-      privateStore.setItem("showLearningPrompt", false);
+    let privateDefaultSettings = {
+      firstRunTimerFinished: true,
+      showLearningPrompt: false,
+    };
+    for (let key of Object.keys(privateDefaultSettings)) {
+      if (!privateStore.hasItem(key)) {
+        privateStore.setItem(key, privateDefaultSettings[key]);
+      }
     }
     badger.initDeprecations();
 
@@ -1007,7 +1007,7 @@ Badger.prototype = {
         return;
       }
 
-      let special_page = !self.tabData.hasOwnProperty(tab_id);
+      let special_page = !utils.hasOwn(self.tabData, tab_id);
 
       if (self.criticalError || (!special_page && badger.getPrivateSettings().getItem("showWebRtcDeprecation"))) {
         chrome.browserAction.setBadgeBackgroundColor({tabId: tab_id, color: "#cc0000"});
@@ -1206,7 +1206,7 @@ Badger.prototype = {
         action == constants.USER_COOKIEBLOCK
       ),
       origins = self.tabData[tab_id].origins,
-      previously_blocked = origins.hasOwnProperty(fqdn) && (
+      previously_blocked = utils.hasOwn(origins, fqdn) && (
         origins[fqdn] == constants.BLOCK ||
         origins[fqdn] == constants.COOKIEBLOCK ||
         origins[fqdn] == constants.USER_BLOCK ||
@@ -1268,7 +1268,7 @@ Badger.prototype = {
     let self = this;
 
     // fix incoming snitch map entries with current MDFP data
-    if (data.hasOwnProperty("snitch_map")) {
+    if (utils.hasOwn(data, "snitch_map")) {
       let correctedSites = {};
 
       for (let domain in data.snitch_map) {
@@ -1286,7 +1286,7 @@ Badger.prototype = {
     // The order of these keys is also the order in which they should be imported.
     // It's important that snitch_map be imported before action_map (#1972)
     ["snitch_map", "action_map", "settings_map"].forEach(function (key) {
-      if (data.hasOwnProperty(key)) {
+      if (utils.hasOwn(data, key)) {
         self.storage.getStore(key).merge(data[key]);
       }
     });

@@ -17,10 +17,10 @@
 
 /* globals badger:false, log:false */
 
-var constants = require("constants");
-var utils = require("utils");
-
 require.scopes.storage = (function () {
+
+let constants = require("constants");
+let utils = require("utils");
 
 /**
  * See the following link for documentation of
@@ -39,7 +39,7 @@ function BadgerPen(callback) {
   // initialize from extension local storage
   chrome.storage.local.get(self.KEYS, function (store) {
     self.KEYS.forEach(key => {
-      if (store.hasOwnProperty(key)) {
+      if (utils.hasOwn(store, key)) {
         self[key] = new BadgerStorage(key, store[key]);
       } else {
         let storageObj = new BadgerStorage(key, {});
@@ -62,7 +62,7 @@ function BadgerPen(callback) {
       if (utils.isObject(managedStore)) {
         let settings = {};
         for (let key in badger.defaultSettings) {
-          if (managedStore.hasOwnProperty(key)) {
+          if (utils.hasOwn(managedStore, key)) {
             settings[key] = managedStore[key];
           }
         }
@@ -85,7 +85,7 @@ BadgerPen.prototype = {
   ],
 
   getStore: function (key) {
-    if (this.hasOwnProperty(key)) {
+    if (utils.hasOwn(this, key)) {
       return this[key];
     }
     console.error("Can't initialize cache from getStore. You are using this API improperly");
@@ -229,9 +229,10 @@ BadgerPen.prototype = {
    * @returns {String} the best action for the FQDN
    */
   getBestAction: function (fqdn) {
-    let best_action = constants.NO_TRACKING;
-    let subdomains = utils.explodeSubdomains(fqdn);
-    let action_map = this.getStore('action_map');
+    let self = this,
+      action_map = self.getStore('action_map'),
+      best_action = constants.NO_TRACKING,
+      subdomains = utils.explodeSubdomains(fqdn);
 
     function getScore(action) {
       switch (action) {
@@ -255,10 +256,10 @@ BadgerPen.prototype = {
     // Loop through each subdomain we have a rule for
     // from least (base domain) to most (FQDN) specific
     // and keep the one which has the best score.
-    for (let i = subdomains.length; i >= 0; i--) {
+    for (let i = subdomains.length - 1; i >= 0; i--) {
       let domain = subdomains[i];
       if (action_map.hasItem(domain)) {
-        let action = this.getAction(
+        let action = self.getAction(
           action_map.getItem(domain),
           // ignore DNT unless it's directly on the FQDN being checked
           domain != fqdn
@@ -432,27 +433,8 @@ var _newActionMapObject = function() {
 };
 
 /**
- * Privacy Badger Storage Object. Has methods for getting, setting and deleting
- * should be used for all storage needs, transparently handles data presistence
- * syncing and private browsing.
- * Usage:
- * example_map = getStore('example_map');
- * # instance of BadgerStorage
- * example_map.setItem('foo', 'bar')
- * # null
- * example_map
- * # { foo: "bar" }
- * example_map.hasItem('foo')
- * # true
- * example_map.getItem('foo');
- * # 'bar'
- * example_map.getItem('not_real');
- * # undefined
- * example_map.deleteItem('foo');
- * # null
- * example_map.hasItem('foo');
- * # false
- *
+ * Privacy Badger Storage Object.
+ * Should be used for all storage needs.
  */
 
 /**
@@ -475,7 +457,7 @@ BadgerStorage.prototype = {
    */
   hasItem: function(key) {
     var self = this;
-    return self._store.hasOwnProperty(key);
+    return utils.hasOwn(self._store, key);
   },
 
   /**
@@ -583,7 +565,7 @@ BadgerStorage.prototype = {
 
         // default: overwrite existing setting with setting from import
         } else {
-          if (badger.defaultSettings.hasOwnProperty(prop)) {
+          if (utils.hasOwn(badger.defaultSettings, prop)) {
             self._store[prop] = mapData[prop];
           } else {
             console.error("Unknown Badger setting:", prop);
@@ -597,7 +579,7 @@ BadgerStorage.prototype = {
 
         // Copy over any user settings from the merged-in data
         if (action.userAction) {
-          if (self._store.hasOwnProperty(domain)) {
+          if (utils.hasOwn(self._store, domain)) {
             self._store[domain].userAction = action.userAction;
           } else {
             self._store[domain] = Object.assign(_newActionMapObject(), action);
@@ -605,7 +587,7 @@ BadgerStorage.prototype = {
         }
 
         // handle Do Not Track
-        if (self._store.hasOwnProperty(domain)) {
+        if (utils.hasOwn(self._store, domain)) {
           // Merge DNT settings if the imported data has a more recent update
           if (action.nextUpdateTime > self._store[domain].nextUpdateTime) {
             self._store[domain].nextUpdateTime = action.nextUpdateTime;
@@ -661,7 +643,7 @@ var _syncStorage = (function () {
   // Creates debounced versions of "sync" function,
   // one for each distinct badgerStorage value.
   return function (badgerStorage) {
-    if (!debouncedFuncs.hasOwnProperty(badgerStorage.name)) {
+    if (!utils.hasOwn(debouncedFuncs, badgerStorage.name)) {
       // call sync at most once every two seconds
       debouncedFuncs[badgerStorage.name] = utils.debounce(function () {
         sync(badgerStorage);
@@ -672,10 +654,10 @@ var _syncStorage = (function () {
 }());
 
 /************************************** exports */
-var exports = {};
-
-exports.BadgerPen = BadgerPen;
-
+let exports = {
+  BadgerPen,
+};
 return exports;
 /************************************** exports */
+
 }());
