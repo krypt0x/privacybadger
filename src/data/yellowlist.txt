@@ -556,6 +556,7 @@ phncdn.com
 photobucket.com
 phplist.com
 piclens.com
+pico.tools
 pinimg.com
 piratebay.org
 pistachio-cdn.graze.com
@@ -741,6 +742,7 @@ unsplash.com
 uplynk.com
 usa.gov
 usercentrics.eu
+viafoura.co
 viafoura.net
 viddler.com
 videobash.com
@@ -752,6 +754,8 @@ vimeo.com
 vimeocdn.com
 virtualearth.net
 visa.com
+marketplace.visualstudio.com
+update.code.visualstudio.com
 vmixcore.com
 voxmedia.com
 vox-cdn.com

@@ -1845,6 +1845,7 @@ let multiDomainFirstPartiesArray = [
 
     "graytvinc.com",
   ],
+  ["grubhub.com", "seamless.com"],
   ["guardian.co.uk", "guim.co.uk", "guardianapps.co.uk", "theguardian.com", "gu-web.net"],
   [
     "habr.com",
@@ -2684,6 +2685,7 @@ let multiDomainFirstPartiesArray = [
     "visualstudio.com",
     "vsallin.net",
     "vsassets.io",
+    "vscode.dev",
     "windowsazure.com",
     "windows.com",
     "windows.net",
