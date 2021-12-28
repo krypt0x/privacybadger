@@ -194,6 +194,7 @@ editmysite.com
 files.edx.org
 ehc.com
 elasticbeanstalk.com
+elfsight.com
 eltrafiko.com
 api-cdn.embed.ly
 api.embed.ly
@@ -404,6 +405,9 @@ cdn.jwplayer.com
 entitlements.jwplayer.com
 jwpltx.com
 jwpsrv.com
+dapi.kakao.com
+developers.kakao.com
+kapi.kakao.com
 cdnapi.kaltura.com
 cdnapisec.kaltura.com
 cdnbakmi.kaltura.com
@@ -483,6 +487,8 @@ mzstatic.com
 nanorep.co
 nationbuilder.com
 nationalgeographic.com
+map.naver.com
+pay.naver.com
 nbcuni.com
 neighborsink.com
 netdna-cdn.com
@@ -540,6 +546,7 @@ openstreetmap.org
 optimizely.com
 oraclecloud.com
 oregonlive.com
+cmp.osano.com
 outlook.com
 paddle.com
 pandacommerce.net
@@ -676,6 +683,7 @@ streamtheworld.com
 stripe.com
 m.stripe.network
 stripecdn.com
+cdn.substack.com
 surveygizmo.com
 surveymonkey.com
 swiftype.com
@@ -697,6 +705,7 @@ tfaforms.net
 theplatform.com
 tile.thunderforest.com
 tiktokcdn.com
+tildacdn.com
 timeinc.net
 tinypass.com
 tinypic.com
