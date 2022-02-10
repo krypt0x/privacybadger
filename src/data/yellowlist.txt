@@ -21,7 +21,6 @@ alicdn.com
 aliyuncs.com
 ally.com
 amazon.com
-c.amazon-adsystem.com
 s3.amazonaws.com
 amazonaws.com
 coin.amazonpay.com
@@ -140,6 +139,8 @@ codepen.io
 codesandbox.io
 cdn.cohesionapps.com
 make.cohesionapps.com
+consent.cookiebot.com
+consentcdn.cookiebot.com
 cloudplatform.coveo.com
 platform.cloud.coveo.com
 platform-eu.cloud.coveo.com
@@ -358,6 +359,7 @@ cdn2.hubspot.net
 humblebundle.com
 hwcdn.net
 hypothes.is
+iadvize.com
 ibsys.com
 icbdr.com
 mpsnare.iesnare.com
@@ -562,6 +564,7 @@ pgcdn.com
 phncdn.com
 photobucket.com
 phplist.com
+piano.io
 piclens.com
 pico.tools
 pinimg.com
@@ -639,6 +642,7 @@ seeclickfix.com
 sgizmo.com
 shopify.com
 shopifycdn.com
+shopifycloud.com
 shopping.com
 shop-pro.jp
 shoprunner.com
