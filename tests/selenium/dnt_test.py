@@ -9,6 +9,7 @@ import pbtest
 from functools import partial
 
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 
 from pbtest import retry_until
 
@@ -35,24 +36,15 @@ class DntTest(pbtest.PBSeleniumTest):
     def get_first_party_headers(self, url):
         self.load_url(url)
 
-        text = self.driver.find_element_by_tag_name('body').text
+        text = self.driver.find_element(By.TAG_NAME, 'body').text
 
         try:
             headers = json.loads(text)['headers']
         except ValueError:
-            print("\nFailed to parse JSON from {}".format(repr(text)))
+            print(f"\nFailed to parse JSON from {repr(text)}")
             return None
 
         return headers
-
-    def domain_was_recorded(self, domain):
-        return self.js(
-            "return (Object.keys("
-            "  chrome.extension.getBackgroundPage()."
-            "  badger.storage.action_map.getItemClones()"
-            ").indexOf(arguments[0]) != -1);",
-            domain
-        )
 
     def domain_was_detected(self, domain):
         return self.js(
@@ -124,7 +116,7 @@ class DntTest(pbtest.PBSeleniumTest):
 
     def test_dnt_policy_check_should_not_set_cookies(self):
         TEST_DOMAIN = "dnt-test.trackersimulator.org"
-        TEST_URL = "https://{}/".format(TEST_DOMAIN)
+        TEST_URL = f"https://{TEST_DOMAIN}/"
 
         # verify that the domain itself doesn't set cookies
         self.load_url(TEST_URL)
@@ -160,7 +152,7 @@ class DntTest(pbtest.PBSeleniumTest):
 
     def test_dnt_policy_check_should_not_send_cookies(self):
         TEST_DOMAIN = "dnt-request-cookies-test.trackersimulator.org"
-        TEST_URL = "https://{}/".format(TEST_DOMAIN)
+        TEST_URL = f"https://{TEST_DOMAIN}/"
 
         # directly visit a DNT policy URL known to set cookies
         self.load_url(TEST_URL + ".well-known/dnt-policy.txt")
@@ -196,8 +188,7 @@ class DntTest(pbtest.PBSeleniumTest):
         NON_TRACKING_DOMAIN = "www.eff.org"
 
         # clear pre-trained/seed tracker data
-        self.load_url(self.options_url)
-        self.js("chrome.extension.getBackgroundPage().badger.storage.clearTrackerData();")
+        self.clear_tracker_data()
 
         # enable local learning
         self.wait_for_script("return window.OPTIONS_INITIALIZED")
@@ -210,29 +201,25 @@ class DntTest(pbtest.PBSeleniumTest):
 
         # verify both domains are present on the page
         try:
-            selector = "iframe[src*='%s']" % TRACKING_DOMAIN
-            self.driver.find_element_by_css_selector(selector)
+            selector = f"iframe[src*='{TRACKING_DOMAIN}']"
+            self.driver.find_element(By.CSS_SELECTOR, selector)
         except NoSuchElementException:
             self.fail("Unable to find the tracking domain on the page")
         try:
-            selector = "img[src*='%s']" % NON_TRACKING_DOMAIN
-            self.driver.find_element_by_css_selector(selector)
+            selector = f"img[src*='{NON_TRACKING_DOMAIN}']"
+            self.driver.find_element(By.CSS_SELECTOR, selector)
         except NoSuchElementException:
             self.fail("Unable to find the non-tracking domain on the page")
 
-        self.load_url(self.options_url)
+        action_map = self.get_badger_storage('action_map')
 
         # verify that the cookie-tracking domain was recorded
-        self.assertTrue(
-            self.domain_was_recorded(TRACKING_DOMAIN),
-            "Tracking domain should have gotten recorded"
-        )
+        assert TRACKING_DOMAIN in action_map, (
+            "Tracking domain should have gotten recorded")
 
         # verify that the non-tracking domain was not recorded
-        self.assertFalse(
-            self.domain_was_recorded(NON_TRACKING_DOMAIN),
-            "Non-tracking domain should not have gotten recorded"
-        )
+        assert NON_TRACKING_DOMAIN not in action_map, (
+            "Non-tracking domain should not have gotten recorded")
 
     def test_first_party_dnt_header(self):
         TEST_URL = "https://httpbin.org/get"
@@ -273,7 +260,7 @@ class DntTest(pbtest.PBSeleniumTest):
 
         self.assertEqual(
             'no tracking (navigator.doNotTrack="1")',
-            self.driver.find_element_by_tag_name('body').text,
+            self.driver.find_element(By.TAG_NAME, 'body').text,
             "navigator.DoNotTrack should have been set to \"1\""
         )
         self.assertEqual(
@@ -290,7 +277,7 @@ class DntTest(pbtest.PBSeleniumTest):
         # navigator.doNotTrack defaults to null in Chrome, "unspecified" in Firefox
         self.assertEqual(
             'unset',
-            self.driver.find_element_by_tag_name('body').text[0:5],
+            self.driver.find_element(By.TAG_NAME, 'body').text[0:5],
             "navigator.DoNotTrack should have been left unset"
         )
         self.assertEqual(
@@ -309,7 +296,7 @@ class DntTest(pbtest.PBSeleniumTest):
         # navigator.doNotTrack defaults to null in Chrome, "unspecified" in Firefox
         self.assertEqual(
             'unset',
-            self.driver.find_element_by_tag_name('body').text[0:5],
+            self.driver.find_element(By.TAG_NAME, 'body').text[0:5],
             "navigator.DoNotTrack should have been left unset"
         )
         self.assertEqual(

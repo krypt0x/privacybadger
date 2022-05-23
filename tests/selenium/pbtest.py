@@ -19,7 +19,9 @@ from selenium.common.exceptions import (
     WebDriverException,
 )
 from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.edge.options import Options as EdgeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.firefox.service import Service as FirefoxService
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -33,8 +35,8 @@ except ImportError:
 
 SEL_DEFAULT_WAIT_TIMEOUT = 30
 
-BROWSER_TYPES = ['chrome', 'firefox']
-BROWSER_NAMES = ['google-chrome', 'google-chrome-stable', 'google-chrome-beta', 'firefox']
+BROWSER_TYPES = ['chrome', 'firefox', 'edge']
+BROWSER_NAMES = ['google-chrome', 'google-chrome-stable', 'google-chrome-beta', 'firefox', 'microsoft-edge', 'microsoft-edge-beta']
 
 parse_stdout = lambda res: res.strip().decode('utf-8')
 
@@ -60,7 +62,7 @@ def get_browser_type(string):
     for t in BROWSER_TYPES:
         if t in string.lower():
             return t
-    raise ValueError("couldn't get browser type from %s" % string)
+    raise ValueError(f"Could not get browser type from {string}")
 
 
 def get_browser_name(string):
@@ -71,7 +73,7 @@ def get_browser_name(string):
     for bn in BROWSER_NAMES:
         if string in bn and unix_which(bn, silent=True):
             return os.path.basename(unix_which(bn))
-    raise ValueError('Could not get browser name from %s' % string)
+    raise ValueError(f"Could not get browser name from {string}")
 
 
 class Shim:
@@ -102,18 +104,21 @@ class Shim:
             self.browser_path = unix_which(bname)
             self.browser_type = browser
         else:
-            raise ValueError("could not infer BROWSER from %s" % browser)
+            raise ValueError(f"Could not infer BROWSER from {browser}")
 
         self.extension_path = os.path.join(GIT_ROOT, 'src')
 
-        if self.browser_type == 'chrome':
+        if self.browser_type in ('chrome', 'edge'):
             # this extension ID and the "key" property in manifest.json
             # must both be derived from the same private key
             self.info = {
                 'extension_id': 'mcgekeccgjgcmhnhbabplanchdogjcnh'
             }
-            self.manager = self.chrome_manager
-            self.base_url = 'chrome-extension://%s/' % self.info['extension_id']
+            self.base_url = f"chrome-extension://{self.info['extension_id']}/"
+            if self.browser_type == 'chrome':
+                self.manager = self.chrome_manager
+            else:
+                self.manager = self.edge_manager
 
             # make extension ID constant across runs
             self.fix_chrome_extension_id()
@@ -124,13 +129,15 @@ class Shim:
                 'uuid': 'd56a5b99-51b6-4e83-ab23-796216679614'
             }
             self.manager = self.firefox_manager
-            self.base_url = 'moz-extension://%s/' % self.info['uuid']
+            self.base_url = f"moz-extension://{self.info['uuid']}/"
 
-        print('\nUsing browser path: %s\nwith browser type: %s\nand extension path: %s\n' % (
-            self.browser_path, self.browser_type, self.extension_path))
+        print(f"\nUsing browser path: {self.browser_path}\n"
+              f"with browser type: {self.browser_type}\n"
+              f"and extension path: {self.extension_path}\n")
 
     def fix_chrome_extension_id(self):
         # create temp directory
+        # pylint: disable-next=consider-using-with
         self.tmp_dir = tempfile.TemporaryDirectory()
         new_extension_path = os.path.join(self.tmp_dir.name, "src")
 
@@ -139,11 +146,11 @@ class Shim:
 
         # update manifest.json
         manifest_path = os.path.join(new_extension_path, "manifest.json")
-        with open(manifest_path, "r") as f:
+        with open(manifest_path, "r", encoding="utf-8") as f:
             manifest = json.load(f)
         # this key and the extension ID must both be derived from the same private key
         manifest['key'] = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArMdgFkGsm7nOBr/9qkx8XEcmYSu1VkIXXK94oXLz1VKGB0o2MN+mXL/Dsllgkh61LZgK/gVuFFk89e/d6Vlsp9IpKLANuHgyS98FKx1+3sUoMujue+hyxulEGxXXJKXhk0kGxWdE0IDOamFYpF7Yk0K8Myd/JW1U2XOoOqJRZ7HR6is1W6iO/4IIL2/j3MUioVqu5ClT78+fE/Fn9b/DfzdX7RxMNza9UTiY+JCtkRTmm4ci4wtU1lxHuVmWiaS45xLbHphQr3fpemDlyTmaVoE59qG5SZZzvl6rwDah06dH01YGSzUF1ezM2IvY9ee1nMSHEadQRQ2sNduNZWC9gwIDAQAB" # noqa:E501 pylint:disable=line-too-long
-        with open(manifest_path, "w") as f:
+        with open(manifest_path, "w", encoding="utf-8") as f:
             json.dump(manifest, f)
 
         # update self.extension_path
@@ -169,11 +176,8 @@ class Shim:
     @contextmanager
     def chrome_manager(self):
         opts = ChromeOptions()
-        if self.on_travis: # github.com/travis-ci/travis-ci/issues/938
-            opts.add_argument("--no-sandbox")
         opts.add_argument("--load-extension=" + self.extension_path)
         opts.binary_location = self.browser_path
-        opts.add_experimental_option("prefs", {"profile.block_third_party_cookies": False})
 
         # TODO not yet in Firefox (w/o hacks anyway):
         # https://github.com/mozilla/geckodriver/issues/284#issuecomment-456073771
@@ -195,28 +199,51 @@ class Shim:
             driver.quit()
 
     @contextmanager
-    def firefox_manager(self):
-        ffp = webdriver.FirefoxProfile()
-        # make extension ID constant across runs
-        ffp.set_preference('extensions.webextensions.uuids', '{"%s": "%s"}' %
-                           (self.info['extension_id'], self.info['uuid']))
-
-        # needed for test_referrer_header()
-        # https://bugzilla.mozilla.org/show_bug.cgi?id=1720294
-        ffp.set_preference('network.http.referer.disallowCrossSiteRelaxingDefault', False)
+    def edge_manager(self):
+        opts = EdgeOptions()
+        opts.add_argument("--load-extension=" + self.extension_path)
+        opts.binary_location = self.browser_path
 
         for i in range(5):
             try:
+                driver = webdriver.Edge(options=opts)
+            except WebDriverException as e:
+                if i == 0: print("")
+                print("Edge WebDriver initialization failed:")
+                print(str(e) + "Retrying ...")
+            else:
+                break
+
+        try:
+            yield driver
+        finally:
+            driver.quit()
+
+    @contextmanager
+    def firefox_manager(self):
+        for i in range(5):
+            try:
                 opts = FirefoxOptions()
+
+                opts.binary_location = self.browser_path
+
+                # make extension ID constant across runs
+                # pylint: disable-next=consider-using-f-string
+                opts.set_preference('extensions.webextensions.uuids', '{"%s": "%s"}' % (
+                    self.info['extension_id'], self.info['uuid']))
+
+                # needed for test_referrer_header()
+                # https://bugzilla.mozilla.org/show_bug.cgi?id=1720294
+                opts.set_preference('network.http.referer.disallowCrossSiteRelaxingDefault', False)
+
                 # to produce a trace-level geckodriver.log,
-                # remove the service_log_path argument to Firefox()
+                # remove the log_path argument to FirefoxService()
                 # and uncomment the line below
                 #opts.log.level = "trace"
-                driver = webdriver.Firefox(
-                    firefox_profile=ffp,
-                    firefox_binary=self.browser_path,
-                    options=opts,
-                    service_log_path=os.path.devnull)
+
+                service = FirefoxService(log_path=os.path.devnull)
+                driver = webdriver.Firefox(options=opts, service=service)
+
             except WebDriverException as e:
                 if i == 0: print("")
                 print("Firefox WebDriver initialization failed:")
@@ -308,15 +335,13 @@ class PBSeleniumTest(unittest.TestCase):
             # wait for Badger's storage, listeners, ...
             self.load_url(self.options_url)
             self.wait_for_script(
-                "return chrome.extension.getBackgroundPage()."
-                "badger.INITIALIZED"
-            )
+                "let badger = chrome.extension.getBackgroundPage().badger;"
+                "if (badger.INITIALIZED) {"
+                "  badger.getSettings().setItem('showIntroPage', false);"
+                "  return true;"
+                "}")
 
-            driver.close()
-            if driver.window_handles:
-                driver.switch_to.window(driver.window_handles[0])
-
-            super(PBSeleniumTest, self).run(result)
+            super().run(result)
 
     def is_firefox_nightly(self):
         caps = self.driver.capabilities
@@ -326,20 +351,7 @@ class PBSeleniumTest(unittest.TestCase):
         return False
 
     def open_window(self):
-        if self.driver.current_url.startswith("moz-extension://"):
-            # work around https://bugzilla.mozilla.org/show_bug.cgi?id=1491443
-            self.wait_for_script("return typeof chrome != 'undefined' && chrome && chrome.extension")
-            self.js(
-                "delete window.__new_window_created;"
-                "chrome.windows.create({}, function () {"
-                "window.__new_window_created = true;"
-                "});"
-            )
-            self.wait_for_script("return window.__new_window_created")
-        else:
-            self.js('window.open()')
-
-        self.driver.switch_to.window(self.driver.window_handles[-1])
+        self.driver.switch_to.new_window('tab')
 
     def load_url(self, url, wait_for_body_text=False, retries=5):
         """Load a URL and wait before returning."""
@@ -363,7 +375,7 @@ class PBSeleniumTest(unittest.TestCase):
         if wait_for_body_text:
             # wait for document.body.textContent to become truthy
             retry_until(
-                lambda: self.driver.find_element_by_tag_name('body').text)
+                lambda: self.driver.find_element(By.TAG_NAME, 'body').text)
 
     def txt_by_css(self, css_selector, timeout=SEL_DEFAULT_WAIT_TIMEOUT):
         """Find an element by CSS selector and return its text."""
@@ -459,13 +471,37 @@ class PBSeleniumTest(unittest.TestCase):
         self.load_url(self.options_url)
         self.wait_for_script("return window.OPTIONS_INITIALIZED")
         self.find_el_by_css('a[href="#tab-allowlist"]').click()
-        self.driver.find_element_by_id('new-disabled-site-input').send_keys(url)
-        self.driver.find_element_by_css_selector('#add-disabled-site').click()
+        self.driver.find_element(By.ID, 'new-disabled-site-input').send_keys(url)
+        self.driver.find_element(By.CSS_SELECTOR, '#add-disabled-site').click()
 
     def get_domain_slider_state(self, domain):
-        label = self.driver.find_element_by_css_selector(
-            'input[name="{}"][checked]'.format(domain))
+        label = self.driver.find_element(
+            By.CSS_SELECTOR, f'input[name="{domain}"][checked]')
         return label.get_attribute('value')
+
+    def clear_tracker_data(self):
+        self.load_url(self.options_url)
+        self.driver.execute_async_script((
+            "let done = arguments[arguments.length - 1];"
+            "chrome.runtime.sendMessage({"
+            "  type: 'removeAllData'"
+            "}, done);"
+        ))
+
+    def get_badger_storage(self, store_name):
+        self.load_url(self.options_url)
+        return self.driver.execute_async_script((
+            "let done = arguments[arguments.length - 1],"
+            "  store_name = arguments[0];"
+            "chrome.runtime.sendMessage({"
+            "  type: 'syncStorage',"
+            "  storeName: store_name"
+            "}, function () {"
+            "  chrome.storage.local.get([store_name], function (res) {"
+            "    done(res[store_name]);"
+            "  });"
+            "});"
+        ), store_name)
 
     def load_pb_ui(self, target_url):
         """Show the PB popup as a new tab.
@@ -524,7 +560,7 @@ class PBSeleniumTest(unittest.TestCase):
         cookieBlocked = {}
         blocked = {}
 
-        domain_divs = self.driver.find_elements_by_css_selector(
+        domain_divs = self.driver.find_elements(By.CSS_SELECTOR,
             "#blockedResourcesInner > div.clicker[data-origin]")
         for div in domain_divs:
             domain = div.get_attribute('data-origin')
@@ -547,7 +583,7 @@ class PBSeleniumTest(unittest.TestCase):
             elif action_type == 'block':
                 blocked[domain] = True
             else:
-                self.fail("what is this?!? %s" % action_type)
+                self.fail(f"what is this?!? {action_type}")
 
         return {
             'notYetBlocked': notYetBlocked,

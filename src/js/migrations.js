@@ -141,6 +141,8 @@ exports.Migrations= {
   unblockIncorrectlyBlockedDomains: function (badger) {
     console.log("Running migration to unblock likely incorrectly blocked domains ...");
 
+    const BLOCK_THRESHOLD = badger.getPrivateSettings().getItem('blockThreshold');
+
     let action_map = badger.storage.getStore("action_map"),
       snitch_map = badger.storage.getStore("snitch_map");
 
@@ -161,7 +163,7 @@ exports.Migrations= {
       let action = "";
 
       if (sites && sites.length) {
-        if (sites.length >= constants.TRACKING_THRESHOLD) {
+        if (sites.length >= BLOCK_THRESHOLD) {
           // tracking domain over threshold, set it to cookieblock or block
           badger.heuristicBlocking.blocklistOrigin(base_domain, domain);
           continue;
@@ -247,30 +249,52 @@ exports.Migrations= {
 
   resetWebRTCIPHandlingPolicy2: noop,
 
-  resetWebRtcIpHandlingPolicy3: function (badger) {
-    if (!badger.webRTCAvailable) {
-      return;
-    }
-
-    console.log("Migrating WebRTC IP protection ...");
-    chrome.privacy.network.webRTCIPHandlingPolicy.get({}, function (res) {
-      if (res.levelOfControl != 'controlled_by_this_extension') {
-        return;
-      }
-
-      // since we previously enabled this privacy override,
-      // update corresponding Badger setting
-      badger.getSettings().setItem("preventWebRTCIPLeak", true);
-
-      // update the browser setting
-      // in case it needs to be migrated from Mode 4 to Mode 3
-      badger.setPrivacyOverrides();
-    });
-  },
+  resetWebRtcIpHandlingPolicy3: noop,
 
   forgetOpenDNS: (badger) => {
     console.log("Forgetting Cisco OpenDNS domains ...");
     badger.storage.forget("opendns.com");
+  },
+
+  unsetWebRTCIPHandlingPolicy: function (/*badger*/) {
+    if (!chrome.privacy || !chrome.privacy.network || !chrome.privacy.network.webRTCIPHandlingPolicy) {
+      return;
+    }
+
+    function checkWebRtcBrowserSupport() {
+      let available = true;
+      let connection = null;
+
+      try {
+        let RTCPeerConnection = (
+          window.RTCPeerConnection || window.webkitRTCPeerConnection
+        );
+        if (RTCPeerConnection) {
+          connection = new RTCPeerConnection(null);
+        }
+      } catch (ex) {
+        available = false;
+      }
+
+      if (connection !== null && connection.close) {
+        connection.close();
+      }
+
+      return available;
+    }
+
+    if (!checkWebRtcBrowserSupport()) {
+      return;
+    }
+
+    console.log("Unsetting webRTCIPHandlingPolicy ...");
+    chrome.privacy.network.webRTCIPHandlingPolicy.get({}, function (res) {
+      if (res.levelOfControl == 'controlled_by_this_extension') {
+        chrome.privacy.network.webRTCIPHandlingPolicy.clear({
+          scope: 'regular'
+        });
+      }
+    });
   },
 
 };

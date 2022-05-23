@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-import pytest
 import unittest
 
 import pbtest
@@ -12,17 +11,9 @@ from functools import partial
 class SupercookieTest(pbtest.PBSeleniumTest):
     """Make sure we detect potential supercookies. """
 
-    def get_snitch_map_for(self, origin):
+    def get_snitch_map_for(self, domain):
         self.open_window() # don't replace the test page to allow for retrying
-        self.load_url(self.options_url)
-
-        CHECK_SNITCH_MAP_JS = (
-            "return chrome.extension.getBackgroundPage()"
-            ".badger.storage.getStore('snitch_map')"
-            ".getItemClones()[arguments[0]];"
-        )
-
-        return self.js(CHECK_SNITCH_MAP_JS, origin)
+        return self.get_badger_storage('snitch_map').get(domain)
 
     def setUp(self):
         # enable local learning
@@ -31,7 +22,6 @@ class SupercookieTest(pbtest.PBSeleniumTest):
         self.find_el_by_css('#local-learning-checkbox').click()
 
     # test for https://github.com/EFForg/privacybadger/pull/1403
-    @pytest.mark.flaky(reruns=3, condition=pbtest.shim.browser_type == "firefox")
     def test_async_tracking_attribution_bug(self):
         FIRST_PARTY_BASE = "eff.org"
         THIRD_PARTY_BASE = "efforg.github.io"
@@ -58,7 +48,6 @@ class SupercookieTest(pbtest.PBSeleniumTest):
             msg="Image is not a tracker but was flagged as one.")
 
 
-    @pytest.mark.flaky(reruns=3, condition=pbtest.shim.browser_type == "firefox")
     def test_should_detect_ls_of_third_party_frame(self):
         FIRST_PARTY_BASE = "eff.org"
         THIRD_PARTY_BASE = "efforg.github.io"
@@ -81,7 +70,6 @@ class SupercookieTest(pbtest.PBSeleniumTest):
             pbtest.retry_until(partial(self.get_snitch_map_for, THIRD_PARTY_BASE), times=3)
         )
 
-    @pytest.mark.flaky(reruns=3, condition=pbtest.shim.browser_type == "firefox")
     def test_should_not_detect_low_entropy_ls_of_third_party_frame(self):
         FIRST_PARTY_BASE = "eff.org"
         THIRD_PARTY_BASE = "efforg.github.io"
@@ -93,7 +81,6 @@ class SupercookieTest(pbtest.PBSeleniumTest):
         self.driver.refresh()
         assert not self.get_snitch_map_for(THIRD_PARTY_BASE)
 
-    @pytest.mark.flaky(reruns=3, condition=pbtest.shim.browser_type == "firefox")
     def test_should_not_detect_first_party_ls(self):
         BASE_DOMAIN = "efforg.github.io"
         self.load_url((
@@ -103,7 +90,6 @@ class SupercookieTest(pbtest.PBSeleniumTest):
         self.driver.refresh()
         assert not self.get_snitch_map_for(BASE_DOMAIN)
 
-    @pytest.mark.flaky(reruns=3, condition=pbtest.shim.browser_type == "firefox")
     def test_should_not_detect_ls_of_third_party_script(self):
         FIRST_PARTY_BASE = "eff.org"
         THIRD_PARTY_BASE = "efforg.github.io"
@@ -119,7 +105,6 @@ class SupercookieTest(pbtest.PBSeleniumTest):
         assert not self.get_snitch_map_for(FIRST_PARTY_BASE)
         assert not self.get_snitch_map_for(THIRD_PARTY_BASE)
 
-    @pytest.mark.flaky(reruns=3, condition=pbtest.shim.browser_type == "firefox")
     def test_localstorage_learning(self):
         """Verifies that we learn to block a third-party domain if we see
         non-trivial localstorage data from that third-party on three sites."""
@@ -131,8 +116,7 @@ class SupercookieTest(pbtest.PBSeleniumTest):
         THIRD_PARTY = "efforg.github.io"
 
         # remove pre-trained domains
-        self.js("chrome.extension.getBackgroundPage()."
-            "badger.storage.clearTrackerData();")
+        self.clear_tracker_data()
 
         # load the first site
         self.load_url(SITE1_URL)

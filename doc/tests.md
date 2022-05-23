@@ -1,14 +1,15 @@
 # Working with Privacy Badger's tests
 
-We have a few different types of tests:
+There are two types of tests:
 
-* We use [unit tests](/doc/tests.md#unit-tests) for confirming that smaller pieces of code behave as expected.
-* [Functional tests](/doc/tests.md#functional-tests) test the UI and that things integrate together properly.
-* [Travis CI](/doc/tests.md#travis-ci) runs all these automatically for every pull request on both Chrome and Firefox.
+* [Unit tests](/doc/tests.md#unit-tests) for exercising isolated units of code
+* [Functional tests](/doc/tests.md#functional-tests) for verifying high-level extension functionality
+
+[Travis CI](/doc/tests.md#travis-ci) runs unit and functional tests on every pull request on Chrome, Firefox and Edge.
 
 ## Travis CI
 
-Every pull request runs the full suite of functional and unit tests on [Travis CI](https://travis-ci.com/). We test on latest stable Chrome and Firefox releases, as well as on Chrome Beta, Firefox Beta and Firefox ESR.
+Every pull request runs the full suite of tests on [Travis CI](https://travis-ci.com/). We test on latest stable Chrome and Firefox releases, as well as on Chrome Beta, Edge Beta, Firefox Beta and Firefox ESR.
 
 See [`.travis.yml`](/.travis.yml) for Travis configuration, [`scripts/setup_travis.sh`](/scripts/setup_travis.sh) for test setup, and [`scripts/run_travis.sh`](/scripts/run_travis.sh) for test execution procedures.
 
@@ -36,7 +37,9 @@ Do verify that removing or mutating the code being tested produces failed assert
 
 Our [functional tests](/tests/selenium/) are written in Python and driven by [Selenium](https://selenium-python.readthedocs.io/) and [pytest](https://docs.pytest.org/en/latest/).
 
-To run them in Chrome, you need to [install `chromedriver`](http://chromedriver.chromium.org/getting-started). In Firefox, you need to [install `geckodriver`](https://github.com/EFForg/privacybadger/blob/1550b9efb64c1d5e276361e3940f402c3ec87afc/scripts/setup_travis.sh#L21-L50).
+- To run them in Chrome, you need to [install `chromedriver`](http://chromedriver.chromium.org/getting-started)
+- For Firefox, you need to [install `geckodriver`](https://github.com/EFForg/privacybadger/blob/1550b9efb64c1d5e276361e3940f402c3ec87afc/scripts/setup_travis.sh#L21-L50)
+- For Microsoft Edge, [install Microsoft Edge WebDriver](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/)
 
 You also need to [install the Python packages](https://snarky.ca/a-quick-and-dirty-guide-on-how-to-install-packages-for-python/) specified in [`/tests/requirements.txt`](/tests/requirements.txt).
 
@@ -85,7 +88,7 @@ $ BROWSER=firefox ENABLE_XVFB=1 pytest -s -v -k PopupTest tests/
 
 Test methods that you want to be discovered and run by `pytest` must be prefixed with the keyword `test`. For example: `test_pixel_tracking_detection`. A similar rule applies to naming any new test class files that you want to be detected by the testing suite: the `test` keyword must be appended to the end of the title. For example: `pixel_test.py`.
 
-When testing Badger's tracker detection/learning, you should first clear the pre-trained/seed tracker data. For example (run on Badger's options page): `self.js("chrome.extension.getBackgroundPage().badger.storage.clearTrackerData();")`. Clearing seed data ensures that the tracking domain was discovered just now and not from seed data.
+When testing Badger's tracker detection/learning, you should first clear the pre-trained/seed tracker data with `self.clear_tracker_data()`. Clearing seed data ensures that the tracking domain was discovered just now and not from seed data.
 
 You should also set up your tracking detection test in a way where your test fixture has a "no tracking" mode that you visit first and assert that no tracking was detected. This is to ensure that when we detect the tracking being tested we didn't actually detect some other kind of tracking instead.
 

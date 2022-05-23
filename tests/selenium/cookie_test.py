@@ -21,7 +21,6 @@ class CookieTest(pbtest.PBSeleniumTest):
             "first_party_cookie.html"
         ), "Set 1st party cookie")
 
-    @pytest.mark.flaky(reruns=3, condition=pbtest.shim.browser_type == "firefox")
     def test_cookie_tracker_detection(self):
         """Tests basic cookie tracking. The tracking site has no DNT file,
         and gets blocked by PB.
@@ -37,16 +36,12 @@ class CookieTest(pbtest.PBSeleniumTest):
 
         THIRD_PARTY_DOMAIN = "efforg.github.io"
 
+        # remove pre-trained domains
+        self.clear_tracker_data()
+
         # enable local learning
-        self.load_url(self.options_url)
         self.wait_for_script("return window.OPTIONS_INITIALIZED")
         self.find_el_by_css('#local-learning-checkbox').click()
-
-        # remove pre-trained domains
-        self.js(
-            "chrome.extension.getBackgroundPage()."
-            "badger.storage.clearTrackerData();"
-        )
 
         # load the first site with the third party code that reads and writes a cookie
         self.load_url(SITE1_URL)

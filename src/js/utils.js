@@ -31,68 +31,25 @@ function hasOwn(obj, prop) {
 }
 
 /**
- * Generic interface to make an XHR request
+ * Generic interface to make requests.
  *
- * @param {String} url The url to get
- * @param {Function} callback The callback to call after request has finished
- * @param {String} method GET/POST
- * @param {Object} opts XMLHttpRequest options
+ * @param {String} url the URL to get
+ * @param {Function} callback the callback ({String?} error, {String?} response body text)
  */
-function xhrRequest(url, callback, method, opts) {
-  if (!method) {
-    method = "GET";
-  }
-  if (!opts) {
-    opts = {};
-  }
-
-  let xhr = new XMLHttpRequest();
-
-  for (let key in opts) {
-    if (hasOwn(opts, key)) {
-      xhr[key] = opts[key];
+function fetchResource(url, callback) {
+  fetch(url).then(response => {
+    if (!response.ok) {
+      throw new Error("Non-2xx response status: " + response.status);
     }
-  }
+    return response.text();
 
-  xhr.onload = function () {
-    if (xhr.status == 200) {
-      callback(null, xhr.response);
-    } else {
-      let error = {
-        status: xhr.status,
-        message: xhr.response,
-        object: xhr
-      };
-      callback(error, error.message);
-    }
-  };
+  }).then(data => {
+    // success
+    callback(null, data);
 
-  // triggered by network problems
-  xhr.onerror = function () {
-    callback({ status: 0, message: "", object: xhr }, "");
-  };
-
-  xhr.open(method, url, true);
-  xhr.send();
-}
-
-/**
- * Converts binary data to base64-encoded text suitable for use in data URIs.
- *
- * Adapted from https://stackoverflow.com/a/9458996.
- *
- * @param {ArrayBuffer} buffer binary data
- *
- * @returns {String} base64-encoded text
- */
-function arrayBufferToBase64(buffer) {
-  var binary = '';
-  var bytes = new Uint8Array(buffer);
-  var len = bytes.byteLength;
-  for (var i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary);
+  }).catch(error => {
+    callback(error, null);
+  });
 }
 
 /**
@@ -599,12 +556,12 @@ function filter(obj, cb) {
 
 /************************************** exports */
 let exports = {
-  arrayBufferToBase64,
   concatUniq,
   debounce,
   difference,
   estimateMaxEntropy,
   explodeSubdomains,
+  fetchResource,
   filter,
   findCommonSubstrings,
   firstPartyProtectionsEnabled,
@@ -623,7 +580,6 @@ let exports = {
   random,
   rateLimit,
   sha1,
-  xhrRequest,
 };
 
 exports.isObject = function (obj) {

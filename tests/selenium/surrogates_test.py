@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-import pytest
 import unittest
 
 import pbtest
@@ -28,16 +27,13 @@ class SurrogatesTest(pbtest.PBSeleniumTest):
         except TimeoutException:
             return False
 
-    @pytest.mark.flaky(reruns=3, condition=pbtest.shim.browser_type == "firefox")
     def test_ga_js_surrogate(self):
         SURROGATE_HOST = "www.google-analytics.com"
 
         # clear pre-trained/seed tracker data
-        self.load_url(self.options_url)
-        self.js("chrome.extension.getBackgroundPage().badger.storage.clearTrackerData();")
+        self.clear_tracker_data()
 
         # verify the surrogate is present
-        self.load_url(self.options_url)
         assert self.js(
             "let bg = chrome.extension.getBackgroundPage();"
             "const sdb = bg.require('surrogatedb');"

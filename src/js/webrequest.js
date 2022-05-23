@@ -621,15 +621,21 @@ function recordFingerprinting(tab_id, msg) {
           scriptData.canvas.fingerprinting = true;
           log(script_host, 'caught fingerprinting on', document_host);
 
+          let document_base = window.getBaseDomain(document_host);
+
           // mark this as a strike
           badger.heuristicBlocking.updateTrackerPrevalence(
-            script_host, script_base, window.getBaseDomain(document_host));
+            script_host, script_base, document_base);
 
           // log for popup
           let action = checkAction(tab_id, script_host);
           if (action) {
             badger.logThirdPartyOriginOnTab(tab_id, script_host, action);
           }
+
+          // record canvas fingerprinting
+          badger.storage.recordTrackingDetails(
+            script_base, document_base, 'canvas');
         }
       }
       // This is a canvas write
@@ -1129,26 +1135,10 @@ function dispatcher(request, sender, sendResponse) {
     let button_path = chrome.runtime.getURL(
       "skin/socialwidgets/" + widgetData.replacementButton.imagePath);
 
-    let image_type = button_path.slice(button_path.lastIndexOf('.') + 1);
-
-    let xhrOptions = {};
-    if (image_type != "svg") {
-      xhrOptions.responseType = "arraybuffer";
-    }
-
-    // fetch replacement button image data
-    utils.xhrRequest(button_path, function (err, response) {
-      // one data URI for SVGs
-      if (image_type == "svg") {
-        return sendResponse('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(response));
-      }
-
-      // another data URI for all other image formats
-      sendResponse(
-        'data:image/' + image_type + ';base64,' +
-        utils.arrayBufferToBase64(response)
-      );
-    }, "GET", xhrOptions);
+    // fetch replacement button SVG image data
+    utils.fetchResource(button_path, function (_, response) {
+      return sendResponse('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(response));
+    }, "GET");
 
     // indicate this is an async response to chrome.runtime.onMessage
     return true;
@@ -1243,7 +1233,6 @@ function dispatcher(request, sender, sendResponse) {
       origins,
       settings: badger.getSettings().getItemClones(),
       showLearningPrompt: badger.getPrivateSettings().getItem("showLearningPrompt"),
-      showWebRtcDeprecation: !!badger.getPrivateSettings().getItem("showWebRtcDeprecation"),
       tabHost: tab_host,
       tabId: tab_id,
       tabUrl: request.tabUrl,
@@ -1266,10 +1255,8 @@ function dispatcher(request, sender, sendResponse) {
 
     sendResponse({
       cookieblocked,
-      legacyWebRtcProtectionUser: badger.getPrivateSettings().getItem("legacyWebRtcProtectionUser"),
       origins,
       settings: badger.getSettings().getItemClones(),
-      webRTCAvailable: badger.webRTCAvailable,
       widgets: badger.widgetList.map(widget => widget.name),
     });
 
@@ -1296,21 +1283,26 @@ function dispatcher(request, sender, sendResponse) {
     break;
   }
 
-  case "seenComic": {
-    badger.getSettings().setItem("seenComic", true);
+  // used by tests
+  case "syncStorage": {
+    badger.storage.forceSync(request.storeName, (err) => {
+      sendResponse(err);
+    });
+    return true; // async chrome.runtime.onMessage response
+  }
+
+  // used by Badger Sett
+  case "setBlockThreshold": {
+    let value = +request.value;
+    if (value > 0) {
+      badger.getPrivateSettings().setItem("blockThreshold", value);
+    }
     sendResponse();
     break;
   }
 
   case "seenLearningPrompt": {
     badger.getPrivateSettings().setItem("showLearningPrompt", false);
-    sendResponse();
-    break;
-  }
-
-  case "seenWebRtcDeprecation": {
-    badger.getPrivateSettings().setItem("showWebRtcDeprecation", false);
-    badger.updateBadge(request.tabId);
     sendResponse();
     break;
   }
