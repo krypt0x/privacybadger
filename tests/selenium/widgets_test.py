@@ -68,10 +68,14 @@ class WidgetsTest(pbtest.PBSeleniumTest):
 
         # reinitialize widgets using above JSON
         self.load_url(self.options_url)
-        self.js((
-            "(function (widgetsJson) {"
-            "  let bg = chrome.extension.getBackgroundPage();"
-            "  bg.badger.widgetList = bg.widgetLoader.initializeWidgets(widgetsJson);"
+        self.driver.execute_async_script((
+            "let done = arguments[arguments.length - 1];"
+            "(async function (widgetsJson) {"
+            "  const { default: widgetLoader } = await import('../js/socialwidgetloader.js');"
+            "  chrome.runtime.sendMessage({"
+            "    type: 'setWidgetList',"
+            "    value: widgetLoader.initializeWidgets(widgetsJson)"
+            "  }, done);"
             "}(arguments[0]));"
         ), widgetsJson)
 
@@ -130,6 +134,7 @@ class WidgetsTest(pbtest.PBSeleniumTest):
             self.fail("Widget frame should still be here")
 
         frame_text = self.txt_by_css('body')
+        # TODO doesn't work in non-English locales
         if frame_text != "This page has been blocked by an extension":
             assert not frame_text, "Widget frame should be empty"
 

@@ -1,5 +1,3 @@
-require.scopes.multiDomainFP = (function () {
-
 /**
  * 2d array of related domains (etld+1), all domains owned by the same entity go into
  * an array, this is later transformed for efficient lookups.
@@ -282,6 +280,7 @@ let multiDomainFirstPartiesArray = [
     "static-af.com",
     "static-kl.com",
   ],
+  ["alchemer.com", "surveygizmo.com"],
   [
     "alibaba.com",
 
@@ -493,6 +492,7 @@ let multiDomainFirstPartiesArray = [
     "a2z.com",
     "amazonpay.com",
     "media-amazon.com",
+    "media-imdb.com",
     "ssl-images-amazon.com",
   ],
   [
@@ -574,7 +574,8 @@ let multiDomainFirstPartiesArray = [
     "tt.com",
     "diepresse.com",
   ],
-  ["apple.com", "apple.news", "icloud.com", "icloud.com.cn", "webkit.org", "cdn-apple.com"],
+  ["apple.com", "apple.news", "icloud.com", "icloud.com.cn", "webkit.org",
+    "aaplimg.com", "cdn-apple.com"],
   ["applefcu.org", "applefcuonline.org"],
   ["archive.org", "openlibrary.org"],
   ["asos.com", "asosservices.com"],
@@ -649,6 +650,7 @@ let multiDomainFirstPartiesArray = [
   ["automattic.com", "wordpress.com", "wordpress.org", "wp.com"],
   ["avito.ru", "avito.st"],
   ["avon.com", "youravon.com"],
+  ["bahn.de", "img-bahn.de", "static-bahn.de"],
   [
     "baidu.com",
 
@@ -664,7 +666,7 @@ let multiDomainFirstPartiesArray = [
   ],
   ["balsamiq.com", "balsamiq.cloud"],
   ["bancomer.com", "bancomer.com.mx", "bbvanet.com.mx"],
-  ["bankofamerica.com", "bofa.com", "mbna.com", "usecfo.com"],
+  ["bankofamerica.com", "bofa.com", "mbna.com", "usecfo.com", "bac-assets.com"],
   ["bank-yahav.co.il", "bankhapoalim.co.il"],
   [
     "bauermedia.co.uk",
@@ -810,6 +812,8 @@ let multiDomainFirstPartiesArray = [
   ["century21.com", "21online.com"],
   ["chart.io", "chartio.com"],
   ["chaturbate.com", "highwebmedia.com"],
+  ["chegg.com", "citationmachine.net", "easybib.com", "internships.com",
+    "mathway.com", "cheggcdn.com"],
   [
     "cisco.com",
 
@@ -1205,7 +1209,7 @@ let multiDomainFirstPartiesArray = [
 
     "envato-static.com",
   ],
-  ["epicgames.com", "unrealengine.com"],
+  ["epicgames.com", "unrealengine.com", "bandcamp.com", "bcbits.com"],
   [
     "eventbrite.com",
 
@@ -1357,6 +1361,7 @@ let multiDomainFirstPartiesArray = [
   [
     "facebook.com",
 
+    "instagram.com",
     "messenger.com",
     "workplace.com",
 
@@ -1366,6 +1371,7 @@ let multiDomainFirstPartiesArray = [
     "oculusvr.com",
     "powersunitedvr.com",
 
+    "cdninstagram.com",
     "facebook.net",
     "fbcdn.com",
     "fbcdn.net",
@@ -1437,6 +1443,15 @@ let multiDomainFirstPartiesArray = [
     "foxsports.com",
 
     "fncstatic.com",
+  ],
+  [
+    "freshworks.com",
+
+    "freshchat.com",
+    "freshdesk.com",
+    "freshmarketer.com",
+    "freshservice.com",
+    "myfreshworks.com",
   ],
   [
     "futureplc.com",
@@ -2341,7 +2356,6 @@ let multiDomainFirstPartiesArray = [
   ],
   ["lbry.com", "odysee.com", "lbry.tv"],
   ["linkedin.com", "licdn.com"],
-  ["livejournal.com", "livejournal.net", "lj-toys.com"],
   ["lnk.to", "tix.to", "tck.to", "ticket.to", "linkfire.com", "assetlab.io", "linkfire.co", "lnkfi.re"],
   [
     "logmeininc.com",
@@ -2610,6 +2624,7 @@ let multiDomainFirstPartiesArray = [
     "1drv.ms",
     "aadrm.com",
     "acompli.net",
+    "adaptivecards.io",
     "adbureau.net",
     "adecn.com",
     "aka.ms",
@@ -2638,12 +2653,15 @@ let multiDomainFirstPartiesArray = [
     "microsoftalumni.com",
     "microsoftalumni.org",
     "microsoftazuread-sso.com",
+    "microsoftedgeinsider.com",
     "microsoftedgeinsiders.com",
     "microsoftonline.com",
     "microsoftonline-p.com",
     "microsoftonline-p.net",
     "microsoftstore.com",
     "microsoftstream.com",
+    "minecraft.net",
+    "mktoevents.com",
     "msads.net",
     "msappproxy.net",
     "msauthimages.net",
@@ -2656,6 +2674,7 @@ let multiDomainFirstPartiesArray = [
     "msn.com",
     "msndirect.com",
     "msocdn.com",
+    "msra.cn",
     "netconversions.com",
     "o365weve.com",
     "oaspapps.com",
@@ -2674,6 +2693,7 @@ let multiDomainFirstPartiesArray = [
     "passport.net",
     "phonefactor.net",
     "powerapps.com",
+    "powerbi.com",
     "roiservice.com",
     "sfbassets.com",
     "sfx.ms",
@@ -2706,6 +2726,9 @@ let multiDomainFirstPartiesArray = [
     "xboxlive.com",
     "yammer.com",
     "yammerusercontent.com",
+
+    "s-msft.com",
+    "msftauth.net",
 
     "github.com",
     "githubapp.com",
@@ -2953,6 +2976,8 @@ let multiDomainFirstPartiesArray = [
     "whereilive.com.au",
     "whimn.com.au",
   ],
+  ["newgrounds.com", "ngfiles.com"],
+  ["nfl.com", "nflgamepass.com"],
   [
     "nineforbrands.com.au",
 
@@ -3561,6 +3586,28 @@ let multiDomainFirstPartiesArray = [
     "rakuten-static.com",
   ],
   [
+    "rambler-co.ru",
+
+    "championat.com",
+    "ferra.ru",
+    "gazeta.ru",
+    "indicator.ru",
+    "lenta.ru",
+    "letidor.ru",
+    "livejournal.com",
+    "moslenta.ru",
+    "motor.ru",
+    "passion.ru",
+    "quto.ru",
+    "secretmag.ru",
+    "wmj.ru",
+
+    "eaglecdn.com",
+    "livejournal.net",
+    "lj-toys.com",
+    "rambler.ru",
+  ],
+  [
     "reachplc.com",
 
     "aberdeenlive.news",
@@ -4064,6 +4111,7 @@ let multiDomainFirstPartiesArray = [
     "stacksnippets.net",
   ],
   ["steampowered.com", "steamstatic.com", "steamcommunity.com"],
+  ["stripe.com", "stripe.network", "stripecdn.com"],
   ["suning.com", "suning.cn", "hksuning.com"],
   [
     "surveymonkey.com",
@@ -4311,7 +4359,7 @@ let multiDomainFirstPartiesArray = [
   ["tvp.pl", "tvp.info"],
   ["twitter.com", "twimg.com", "t.co", "periscope.tv", "pscp.tv"],
   ["ua2go.com", "ual.com", "united.com", "unitedwifi.com"],
-  ["ubisoft.com", "ubi.com", "anno-union.com", "thesettlers-alliance.com"],
+  ["ubisoft.com", "ubi.com", "anno-union.com", "thesettlers-alliance.com", "ubisoftconnect.com"],
   ["ui.com", "ubnt.com"],
   [
     "unitedhealthgroup.com",
@@ -4500,6 +4548,8 @@ let multiDomainFirstPartiesArray = [
     "vzw.com",
 
     "aol.com",
+    "aolcdn.com",
+
     "autoblog.com",
     "engadget.com",
     "oath.com",
@@ -4845,6 +4895,22 @@ let multiDomainFirstPartiesArray = [
 
     "turner.com",
     "ugdturner.com",
+
+    "discovery.com",
+
+    "ahctv.com",
+    "animalplanet.com",
+    "cookingchanneltv.com",
+    "destinationamerica.com",
+    "discoverylife.com",
+    "food.com",
+    "foodnetwork.com",
+    "hgtv.com",
+    "investigationdiscovery.com",
+    "motortrend.com",
+    "sciencechannel.com",
+    "tlc.com",
+    "travelchannel.com",
   ],
   [
     "weather.com",
@@ -5097,11 +5163,10 @@ let _domainLookup = makeDomainLookup(multiDomainFirstPartiesArray);
  * @return boolean true if the domains are the same first party
  */
 let isMultiDomainFirstParty = makeIsMultiDomainFirstParty(_domainLookup);
-/************************************** exports */
-return {
+
+export default {
   isMultiDomainFirstParty,
   makeDomainLookup,
   makeIsMultiDomainFirstParty,
   multiDomainFirstPartiesArray,
 };
-})(); //require scopes

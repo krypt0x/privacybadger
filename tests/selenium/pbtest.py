@@ -4,13 +4,12 @@ import functools
 import json
 import os
 import re
-import subprocess
 import tempfile
 import time
 import unittest
 
 from contextlib import contextmanager
-from shutil import copytree
+from shutil import copytree, which
 
 from selenium import webdriver
 from selenium.common.exceptions import (
@@ -38,24 +37,9 @@ SEL_DEFAULT_WAIT_TIMEOUT = 30
 BROWSER_TYPES = ['chrome', 'firefox', 'edge']
 BROWSER_NAMES = ['google-chrome', 'google-chrome-stable', 'google-chrome-beta', 'firefox', 'microsoft-edge', 'microsoft-edge-beta']
 
-parse_stdout = lambda res: res.strip().decode('utf-8')
-
-run_shell_command = lambda command: parse_stdout(subprocess.check_output(command))
-
-GIT_ROOT = run_shell_command(['git', 'rev-parse', '--show-toplevel'])
-
 
 class WindowNotFoundException(Exception):
     pass
-
-
-def unix_which(command, silent=False):
-    try:
-        return run_shell_command(['which', command])
-    except subprocess.CalledProcessError as e:
-        if silent:
-            return None
-        raise e
 
 
 def get_browser_type(string):
@@ -66,13 +50,11 @@ def get_browser_type(string):
 
 
 def get_browser_name(string):
-    if ('/' in string) or ('\\' in string): # it's a path
-        return os.path.basename(string)
-
-    # it's a browser type
     for bn in BROWSER_NAMES:
-        if string in bn and unix_which(bn, silent=True):
-            return os.path.basename(unix_which(bn))
+        if string in bn:
+            bn_path = which(bn)
+            if bn_path:
+                return os.path.basename(bn_path)
     raise ValueError(f"Could not get browser name from {string}")
 
 
@@ -93,20 +75,24 @@ class Shim:
         if browser is None:
             raise ValueError("The BROWSER environment variable is not set. " + self._browser_msg)
 
-        if ("/" in browser) or ("\\" in browser): # path to a browser binary
+        if ("/" in browser) or ("\\" in browser):
+            # path to a browser binary
             self.browser_path = browser
-            self.browser_type = get_browser_type(self.browser_path)
-        elif unix_which(browser, silent=True): # executable browser name like 'google-chrome-stable'
-            self.browser_path = unix_which(browser)
             self.browser_type = get_browser_type(browser)
-        elif get_browser_type(browser): # browser type like 'firefox' or 'chrome'
+        elif which(browser):
+            # executable browser name like 'google-chrome-stable'
+            self.browser_path = which(browser)
+            self.browser_type = get_browser_type(browser)
+        elif get_browser_type(browser):
+            # browser type like 'firefox' or 'chrome'
             bname = get_browser_name(browser)
-            self.browser_path = unix_which(bname)
-            self.browser_type = browser
+            self.browser_path = which(bname)
+            self.browser_type = get_browser_type(browser)
         else:
             raise ValueError(f"Could not infer BROWSER from {browser}")
 
-        self.extension_path = os.path.join(GIT_ROOT, 'src')
+        self.extension_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
         if self.browser_type in ('chrome', 'edge'):
             # this extension ID and the "key" property in manifest.json
@@ -309,11 +295,6 @@ class PBSeleniumTest(unittest.TestCase):
             cls.vdisplay = Xvfb(width=1280, height=720)
             cls.vdisplay.start()
 
-        # setting DBUS_SESSION_BUS_ADDRESS to nonsense prevents frequent
-        # hangs of chromedriver (possibly due to crbug.com/309093)
-        os.environ["DBUS_SESSION_BUS_ADDRESS"] = "/dev/null"
-        cls.proj_root = GIT_ROOT
-
     @classmethod
     def tearDownClass(cls):
         if cls.wants_xvfb:
@@ -322,7 +303,6 @@ class PBSeleniumTest(unittest.TestCase):
     def init(self, driver):
         self.driver = driver
         self.js = self.driver.execute_script
-        self.bg_url = self.base_url + "_generated_background_page.html"
         self.options_url = self.base_url + "skin/options.html"
         self.popup_url = self.base_url + "skin/popup.html"
         self.first_run_url = self.base_url + "skin/firstRun.html"
@@ -335,18 +315,24 @@ class PBSeleniumTest(unittest.TestCase):
             # wait for Badger's storage, listeners, ...
             self.load_url(self.options_url)
             self.wait_for_script(
-                "let badger = chrome.extension.getBackgroundPage().badger;"
-                "if (badger.INITIALIZED) {"
-                "  badger.getSettings().setItem('showIntroPage', false);"
-                "  return true;"
-                "}")
+                "let done = arguments[arguments.length - 1];"
+                "chrome.runtime.sendMessage({"
+                "  type: 'isBadgerInitialized'"
+                "}, r => done(r));", execute_async=True)
+            # also disable the welcome page
+            self.driver.execute_async_script(
+                "let done = arguments[arguments.length - 1];"
+                "chrome.runtime.sendMessage({"
+                "  type: 'updateSettings',"
+                "  data: { showIntroPage: false }"
+                "}, done);")
 
             super().run(result)
 
     def is_firefox_nightly(self):
         caps = self.driver.capabilities
         if caps['browserName'] == "firefox":
-            version = self.driver.capabilities['browserVersion']
+            version = caps['browserVersion']
             return re.search('a[0-9]+$', version) is not None
         return False
 
@@ -394,19 +380,18 @@ class PBSeleniumTest(unittest.TestCase):
         return WebDriverWait(self.driver, timeout).until(
             EC.visibility_of_element_located((By.XPATH, xpath)))
 
-    def wait_for_script(
-        self,
-        script,
-        *script_args,
-        timeout=SEL_DEFAULT_WAIT_TIMEOUT,
-        message="Timed out waiting for execute_script to eval to True"
-    ):
-        """Variant of self.js that executes script continuously until it
-        returns True."""
-        return WebDriverWait(self.driver, timeout).until(
-            lambda driver: driver.execute_script(script, *script_args),
-            message
-        )
+    def wait_for_script(self, script, *script_args,
+        timeout=SEL_DEFAULT_WAIT_TIMEOUT, execute_async=False,
+        message="Timed out waiting for execute_script to eval to True"):
+
+        """Variant of execute_script/execute_async_script
+        that keeps rerunning the script until it returns True."""
+
+        def execute_script(dr):
+            if execute_async: return dr.execute_async_script(script, *script_args)
+            return dr.execute_script(script, *script_args)
+
+        return WebDriverWait(self.driver, timeout).until(execute_script, message)
 
     def wait_for_text(self, selector, text, timeout=SEL_DEFAULT_WAIT_TIMEOUT):
         return WebDriverWait(self.driver, timeout).until(
@@ -448,24 +433,21 @@ class PBSeleniumTest(unittest.TestCase):
         self.driver.close()
         self.driver.switch_to.window(self.driver.window_handles[0])
 
-    def block_domain(self, domain):
+    def add_domain(self, domain, action):
+        """Adds given domain to backend storage."""
         self.load_url(self.options_url)
-        self.js((
-            "(function (domain) {"
-            "  let bg = chrome.extension.getBackgroundPage();"
-            "  let base_domain = window.getBaseDomain(domain);"
-            "  bg.badger.heuristicBlocking.blocklistOrigin(base_domain, domain);"
-            "}(arguments[0]));"
-        ), domain)
+        self.js(
+            "let domain = arguments[0],"
+            "  action = arguments[1];"
+            "chrome.runtime.sendMessage({"
+            "  type: 'setAction', domain, action"
+            "});", domain, action)
+
+    def block_domain(self, domain):
+        self.add_domain(domain, "block")
 
     def cookieblock_domain(self, domain):
-        self.load_url(self.options_url)
-        self.js((
-            "(function (domain) {"
-            "  let bg = chrome.extension.getBackgroundPage();"
-            "  bg.badger.storage.setupHeuristicAction(domain, bg.constants.COOKIEBLOCK);"
-            "}(arguments[0]));"
-        ), domain)
+        self.add_domain(domain, "cookieblock")
 
     def disable_badger_on_site(self, url):
         self.load_url(self.options_url)
@@ -503,7 +485,7 @@ class PBSeleniumTest(unittest.TestCase):
             "});"
         ), store_name)
 
-    def load_pb_ui(self, target_url):
+    def open_popup(self, target_url=None, show_reminder=False):
         """Show the PB popup as a new tab.
 
         If Selenium would let us just programmatically launch an extension from its icon,
@@ -522,15 +504,20 @@ class PBSeleniumTest(unittest.TestCase):
 
         self.open_window()
         self.load_url(self.popup_url)
+        self.wait_for_script("return window.POPUP_INITIALIZED")
 
         # get the popup populated with status information for the correct url
-        self.switch_to_window_with_url(self.popup_url)
         self.js("""
 /**
- * if the query url pattern matches a tab, switch the module's tab object to that tab
+ * @param {String} [url]
+ * @param {Boolean} [show_reminder]
  */
-(function (url) {
-  chrome.tabs.query({url}, function (tabs) {
+(function (url, show_reminder) {
+  let queryOpts = { currentWindow: true };
+  if (url) {
+    queryOpts = { url };
+  }
+  chrome.tabs.query(queryOpts, function (tabs) {
     if (!tabs || !tabs.length) {
       return;
     }
@@ -539,19 +526,17 @@ class PBSeleniumTest(unittest.TestCase):
       tabId: tabs[0].id,
       tabUrl: tabs[0].url
     }, (response) => {
+      response.settings.seenComic = !show_reminder;
       setPopupData(response);
       refreshPopup();
+      showNagMaybe(); // not init() because init() already ran and should only run once
       window.DONE_REFRESHING = true;
     });
   });
-}(arguments[0]));""", target_url)
+}(arguments[0], arguments[1]));""", target_url, show_reminder)
 
         # wait for popup to be ready
-        self.wait_for_script(
-            "return typeof window.DONE_REFRESHING != 'undefined' &&"
-            "window.POPUP_INITIALIZED &&"
-            "window.SLIDERS_DONE"
-        )
+        self.wait_for_script("return window.DONE_REFRESHING && window.SLIDERS_DONE")
 
     def get_tracker_state(self):
         """Parse the UI to group all third party origins into their respective action states."""

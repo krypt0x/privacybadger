@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+import pytest
 import unittest
 
 import pbtest
@@ -22,6 +23,7 @@ class SupercookieTest(pbtest.PBSeleniumTest):
         self.find_el_by_css('#local-learning-checkbox').click()
 
     # test for https://github.com/EFForg/privacybadger/pull/1403
+    @pytest.mark.xfail(pbtest.shim.browser_type in ("chrome", "edge"), reason="chromedriver bug")
     def test_async_tracking_attribution_bug(self):
         FIRST_PARTY_BASE = "eff.org"
         THIRD_PARTY_BASE = "efforg.github.io"
@@ -120,21 +122,21 @@ class SupercookieTest(pbtest.PBSeleniumTest):
 
         # load the first site
         self.load_url(SITE1_URL)
-        self.load_pb_ui(SITE1_URL)
+        self.open_popup(SITE1_URL)
         sliders = self.get_tracker_state()
         assert THIRD_PARTY in sliders['notYetBlocked']
         self.close_window_with_url(SITE1_URL)
 
         # go to second site
         self.load_url(SITE2_URL)
-        self.load_pb_ui(SITE2_URL)
+        self.open_popup(SITE2_URL)
         sliders = self.get_tracker_state()
         assert THIRD_PARTY in sliders['notYetBlocked']
         self.close_window_with_url(SITE2_URL)
 
         # go to third site
         self.load_url(SITE3_URL)
-        self.load_pb_ui(SITE3_URL)
+        self.open_popup(SITE3_URL)
         sliders = self.get_tracker_state()
         assert THIRD_PARTY in sliders['blocked']
         self.close_window_with_url(SITE3_URL)
