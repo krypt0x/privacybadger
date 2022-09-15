@@ -28,11 +28,12 @@ import incognito from "./incognito.js";
 import { Migrations } from "./migrations.js";
 import widgetLoader from "./socialwidgetloader.js";
 import BadgerPen from "./storage.js";
+import TabData from "./tabdata.js";
 import webrequest from "./webrequest.js";
 import utils from "./utils.js";
 
 /**
- * Privacy Badger initializer.
+ * Privacy Badger constructor.
  *
  * @param {Boolean} from_qunit don't intercept requests when run by unit tests
  */
@@ -51,8 +52,14 @@ function Badger(from_qunit) {
     self.widgetList = widgets;
   });
 
-  self.storage = new BadgerPen(async function (thisStorage) {
-    self.heuristicBlocking = new HeuristicBlocking.HeuristicBlocker(thisStorage);
+  self.storage = new BadgerPen(onStorageReady);
+
+  /**
+   * Callback that continues Privacy Badger initialization
+   * once Badger storage is ready.
+   */
+  async function onStorageReady() {
+    self.heuristicBlocking = new HeuristicBlocking.HeuristicBlocker(self.storage);
 
     // TODO there are async migrations
     // TODO is this the right place for migrations?
@@ -63,7 +70,7 @@ function Badger(from_qunit) {
     // kick off async initialization steps
     let ylistPromise = self.initializeYellowlist().catch(console.error),
       dntHashesPromise = self.initializeDnt().catch(console.error),
-      tabDataPromise = self.updateTabList().catch(console.error);
+      tabDataPromise = self.tabData.initialize().catch(console.error);
 
     // async load known CNAME domain aliases (but don't wait on them)
     self.initializeCnames().catch(console.error);
@@ -133,7 +140,7 @@ function Badger(from_qunit) {
     });
     // set up periodic fetching of hashes from eff.org
     setInterval(self.updateDntPolicyHashes.bind(self), utils.oneDay() * 4);
-  });
+  }
 
   /**
    * Checks for availability of firstPartyDomain chrome.cookies API parameter.
@@ -159,54 +166,16 @@ function Badger(from_qunit) {
     }
     return true;
   }
-
-}
+} /* end of Badger constructor */
 
 Badger.prototype = {
   INITIALIZED: false,
 
   /**
-   * Per-tab data that gets cleaned up on tab closing looks like:
-      tabData = {
-        <tab_id>: {
-          blockedFrameUrls: {
-            <parent_frame_id>: [
-              {String} blocked frame URL,
-              ...
-            ],
-            ...
-          },
-          fpData: {
-            <script_origin>: {
-              canvas: {
-                fingerprinting: {Boolean},
-                write: {Boolean}
-              }
-            },
-            ...
-          },
-          frames: {
-            <frame_id>: {
-              url: {String}
-              host: {String}
-              widgetReplacementReady: {Boolean}
-              widgetQueue: {Array} widget objects
-              warAccessTokens: {
-                <extension_resource_URL>: {String} access token
-                ...
-              }
-            },
-            ...
-          },
-          origins: {
-            <third_party_fqdn>: {String} action taken for this domain
-            ...
-          }
-        },
-        ...
-      }
+   * Mapping of tab IDs to tab-specific data
+   * such as frame URLs and found trackers
    */
-  tabData: {},
+  tabData: new TabData(),
 
   /**
    * Mapping of known CNAME domain aliases
@@ -474,73 +443,6 @@ Badger.prototype = {
     };
     this.storage.setupUserAction(origin, allUserActions[userAction]);
     log("Finished saving action " + userAction + " for " + origin);
-  },
-
-  /**
-   * Populate tabs object with currently open tabs when extension is updated or installed.
-   *
-   * @returns {Promise}
-   */
-  updateTabList: function () {
-    let self = this;
-
-    return new Promise(function (resolve) {
-      chrome.tabs.query({}, tabs => {
-        tabs.forEach(tab => {
-          // don't record on special browser pages
-          if (!utils.isRestrictedUrl(tab.url)) {
-            self.recordFrame(tab.id, 0, tab.url);
-          }
-        });
-        resolve();
-      });
-    });
-  },
-
-  /**
-   * Generate representation in internal data structure for frame
-   *
-   * @param {Integer} tabId ID of the tab
-   * @param {Integer} frameId ID of the frame
-   * @param {String} frameUrl The url of the frame
-   */
-  recordFrame: function(tabId, frameId, frameUrl) {
-    let self = this;
-
-    if (!utils.hasOwn(self.tabData, tabId)) {
-      self.tabData[tabId] = {
-        blockedFrameUrls: {},
-        frames: {},
-        origins: {}
-      };
-    }
-
-    self.tabData[tabId].frames[frameId] = {
-      url: frameUrl,
-      host: extractHostFromURL(frameUrl)
-    };
-  },
-
-  /**
-   * Read the frame data from memory
-   *
-   * @param {Integer} tab_id Tab ID to check for
-   * @param {Integer} [frame_id=0] Frame ID to check for.
-   *  Optional, defaults to frame 0 (the main document frame).
-   *
-   * @returns {?Object} Frame data object or null
-   */
-  getFrameData: function (tab_id, frame_id) {
-    let self = this;
-
-    frame_id = frame_id || 0;
-
-    if (utils.hasOwn(self.tabData, tab_id)) {
-      if (utils.hasOwn(self.tabData[tab_id].frames, frame_id)) {
-        return self.tabData[tab_id].frames[frame_id];
-      }
-    }
-    return null;
   },
 
   initializeCnames: function () {
@@ -945,11 +847,11 @@ Badger.prototype = {
    * @returns {Integer} tracking domains count
    */
   getTrackerCount: function (tab_id) {
-    let origins = this.tabData[tab_id].origins,
+    let trackers = this.tabData.getTrackers(tab_id),
       count = 0;
 
-    for (let domain in origins) {
-      let action = origins[domain];
+    for (let domain in trackers) {
+      let action = trackers[domain];
       if (
         action == constants.BLOCK ||
         action == constants.COOKIEBLOCK ||
@@ -995,9 +897,9 @@ Badger.prototype = {
       // - the counter is disabled
       // - we don't have tabData for whatever reason (special browser pages)
       // - Privacy Badger is disabled on the page
-      if (!utils.hasOwn(self.tabData, tab_id) ||
+      if (!self.tabData.has(tab_id) ||
         !self.getSettings().getItem("showCounter") ||
-        !self.isPrivacyBadgerEnabled(self.getFrameData(tab_id).host)
+        !self.isPrivacyBadgerEnabled(self.tabData.getFrameData(tab_id).host)
       ) {
         chrome.browserAction.setBadgeText({tabId: tab_id, text: ""});
         return;
@@ -1087,15 +989,15 @@ Badger.prototype = {
   },
 
   /**
-   * Add an origin to the disabled sites list
+   * Adds a domain to the list of disabled sites.
    *
-   * @param {String} origin The origin to disable the PB for
+   * @param {String} domain The site domain to disable PB for
    */
-  disablePrivacyBadgerForOrigin: function(origin) {
-    var settings = this.getSettings();
-    var disabledSites = settings.getItem('disabledSites');
-    if (disabledSites.indexOf(origin) < 0) {
-      disabledSites.push(origin);
+  disableOnSite: function (domain) {
+    let settings = this.getSettings();
+    let disabledSites = settings.getItem('disabledSites');
+    if (disabledSites.indexOf(domain) < 0) {
+      disabledSites.push(domain);
       settings.setItem("disabledSites", disabledSites);
     }
   },
@@ -1110,14 +1012,14 @@ Badger.prototype = {
   },
 
   /**
-   * Remove an origin from the disabledSites list
+   * Removes a domain from the list of disabled sites.
    *
-   * @param {String} origin The origin to disable the PB for
+   * @param {String} domain The site domain to re-enable PB on
    */
-  enablePrivacyBadgerForOrigin: function(origin) {
-    var settings = this.getSettings();
-    var disabledSites = settings.getItem("disabledSites");
-    var idx = disabledSites.indexOf(origin);
+  reenableOnSite: function (domain) {
+    let settings = this.getSettings();
+    let disabledSites = settings.getItem("disabledSites");
+    let idx = disabledSites.indexOf(domain);
     if (idx >= 0) {
       disabledSites.splice(idx, 1);
       settings.setItem("disabledSites", disabledSites);
@@ -1166,8 +1068,8 @@ Badger.prototype = {
   },
 
   /**
-   * Save third party origins to tabData[tab_id] object for
-   * use in the popup and, if needed, call updateBadge.
+   * Records third party FQDNs to tabData for use in the popup,
+   * and if necessary updates the badge.
    *
    * @param {Integer} tab_id the tab we are on
    * @param {String} fqdn the third party origin to add
@@ -1181,15 +1083,15 @@ Badger.prototype = {
         action == constants.USER_BLOCK ||
         action == constants.USER_COOKIEBLOCK
       ),
-      origins = self.tabData[tab_id].origins,
-      previously_blocked = utils.hasOwn(origins, fqdn) && (
-        origins[fqdn] == constants.BLOCK ||
-        origins[fqdn] == constants.COOKIEBLOCK ||
-        origins[fqdn] == constants.USER_BLOCK ||
-        origins[fqdn] == constants.USER_COOKIEBLOCK
+      trackers = self.tabData.getTrackers(tab_id),
+      previously_blocked = utils.hasOwn(trackers, fqdn) && (
+        trackers[fqdn] == constants.BLOCK ||
+        trackers[fqdn] == constants.COOKIEBLOCK ||
+        trackers[fqdn] == constants.USER_BLOCK ||
+        trackers[fqdn] == constants.USER_COOKIEBLOCK
       );
 
-    origins[fqdn] = action;
+    self.tabData.logTracker(tab_id, fqdn, action);
 
     // no need to update badge if not a (cookie)blocked domain,
     // or if we have already seen it as a (cookie)blocked domain

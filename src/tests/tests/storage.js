@@ -20,11 +20,11 @@ QUnit.module("Storage", {
       "test domain is not yet in action_map");
     assert.notOk(snitchMap.getItem(DOMAIN),
       "test domain is not yet in snitch_map");
+  },
+  afterEach: () => {
+    // remove any storage subscriptions
+    actionMap._subscribers = {};
   }
-});
-
-QUnit.test("testGetBadgerStorage", function (assert) {
-  assert.ok(actionMap.updateObject instanceof Function, "actionMap is a pbstorage");
 });
 
 QUnit.test("test BadgerStorage methods", function (assert) {
@@ -33,6 +33,125 @@ QUnit.test("test BadgerStorage methods", function (assert) {
   assert.ok(actionMap.hasItem('foo'));
   actionMap.deleteItem('foo');
   assert.notOk(actionMap.hasItem('foo'));
+  assert.equal(actionMap.getItem('foo'), null);
+});
+
+QUnit.test("getItem() returns clones of objects", function (assert) {
+  actionMap.setItem("xyz", { foo: "bar" });
+
+  // updating properties of returned objects should not update original objects
+  let copyMaybe = actionMap.getItem("xyz");
+  copyMaybe.foo = "baz";
+
+  assert.deepEqual(actionMap.getItem("xyz"), { foo: "bar" },
+    "object in storage should have remained the same");
+});
+
+QUnit.test("getItem() does not error out with undefined", function (assert) {
+  actionMap.setItem("abc", undefined);
+  assert.equal(actionMap.getItem("abc"), undefined);
+});
+
+QUnit.test("subscribing to storage changes", function (assert) {
+  let done = assert.async(2);
+
+  actionMap.subscribe("set:foo", function (val) {
+    assert.equal(val, "bar", "We got notified with expected value");
+    done();
+  });
+
+  actionMap.subscribe("set:foo", function (val) {
+    assert.equal(val, "bar", "The second subscriber got notified too");
+    done();
+  });
+
+  actionMap.subscribe("set:xyz", function () {
+    assert.ok(false, "Subscribers to other storage keys should not get notified");
+    done();
+  });
+
+  actionMap.setItem("foo", "bar");
+});
+
+QUnit.test("updating object properties by subscribers does not update original objects", function (assert) {
+  let done = assert.async();
+
+  actionMap.subscribe("set:xyz", function (val) {
+    val.foo = "baz";
+  });
+
+  actionMap.subscribe("set:xyz", function (val) {
+    assert.deepEqual(val, { foo: "bar" },
+      "new value object should have remained the same");
+    val.foo = "baz";
+
+    setTimeout(function () {
+      assert.deepEqual(actionMap.getItem("xyz"), { foo: "bar" },
+        "storage should contain original value");
+      done();
+    }, 1);
+  });
+
+  actionMap.setItem("xyz", { foo: "bar" });
+});
+
+QUnit.test("subscribing to all storage keys", function (assert) {
+  let done = assert.async(2);
+
+  actionMap.subscribe("set:*", function (val, key) {
+    if (key == "foo") {
+      assert.equal(val, "bar", "We got notified with expected value");
+      done();
+    } else if (key == "abc") {
+      assert.equal(val, "xyz", "We got notified again with expected value");
+      done();
+    } else {
+      assert.ok(false, "Not expecting any other notifications");
+      done();
+    }
+  });
+
+  actionMap.setItem("foo", "bar");
+  snitchMap.setItem("foo", "123");
+  actionMap.setItem("abc", "xyz");
+});
+
+QUnit.test("subscribing to deletions", function (assert) {
+  let done = assert.async(1);
+
+  actionMap.setItem("foo", "bar");
+
+  actionMap.subscribe("delete:foo", function () {
+    assert.deepEqual(Array.from(arguments), [undefined, "foo"]);
+    done();
+  });
+
+  actionMap.deleteItem("foo");
+});
+
+QUnit.test("unsubscribing from events", function (assert) {
+  let done = assert.async(1);
+
+  function handler(val) {
+    assert.equal(val, 2);
+    done();
+  }
+
+  // subscribe
+  actionMap.subscribe("set:foo", handler);
+
+  // remove the subscription
+  let subs = actionMap.unsubscribe("set:foo");
+  assert.deepEqual(subs[0], handler);
+
+  // should not get notified
+  actionMap.setItem("foo", 1);
+
+  // re-subscribe
+  actionMap.subscribe("set:foo", subs[0]);
+
+  // should get notified
+  actionMap.setItem("foo", 2);
 });
 
 QUnit.test("test user override of default action for domain", function (assert) {

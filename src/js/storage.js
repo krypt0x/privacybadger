@@ -100,8 +100,7 @@ function BadgerPen(callback) {
       setTimeout(function () {
         badger.initWelcomePage();
       }, 0);
-      callback(self);
-      return;
+      return callback();
     }
 
     // see if we have any enterprise/admin/group policy overrides
@@ -112,8 +111,7 @@ function BadgerPen(callback) {
         setTimeout(function () {
           badger.initWelcomePage();
         }, 0);
-        callback(self);
-        return;
+        return callback();
       }
 
       // managed storage is empty
@@ -129,7 +127,7 @@ function BadgerPen(callback) {
         }, 0);
       }
 
-      callback(self);
+      callback();
     });
   });
 }
@@ -167,14 +165,17 @@ BadgerPen.prototype = {
   },
 
   /**
-   * Reset the snitch map and action map, forgetting all data the badger has
-   * learned from browsing.
+   * Empties tracking-related storage, forgetting all data learned from browsing.
    */
   clearTrackerData: function () {
     let self = this;
-    ['action_map', 'snitch_map', 'tracking_map'].forEach(key => {
-      self.getStore(key).updateObject({});
-    });
+
+    for (let store_name of ['action_map', 'snitch_map', 'tracking_map']) {
+      let store = self.getStore(store_name);
+      for (let key of store.keys()) {
+        store.deleteItem(key);
+      }
+    }
   },
 
   /**
@@ -199,12 +200,12 @@ BadgerPen.prototype = {
     return constants.NO_TRACKING;
   },
 
-  touchDNTRecheckTime: function(domain, time) {
+  touchDNTRecheckTime: function (domain, time) {
     this._setupDomainAction(domain, time, "nextUpdateTime");
   },
 
-  getNextUpdateForDomain: function(domain) {
-    var action_map = this.getStore('action_map');
+  getNextUpdateForDomain: function (domain) {
+    let action_map = this.getStore('action_map');
     if (action_map.hasItem(domain)) {
       return action_map.getItem(domain).nextUpdateTime;
     } else {
@@ -261,11 +262,15 @@ BadgerPen.prototype = {
   },
 
   /**
-   * Update DNT policy hashes
+   * Updates EFF's Do Not Track policy hashes.
    */
   updateDntHashes: function (hashes) {
-    var dnt_hashes = this.getStore('dnt_hashes');
-    dnt_hashes.updateObject(utils.invert(hashes));
+    let self = this,
+      dntPolicyStore = self.getStore('dnt_hashes');
+
+    for (let policy_name in hashes) {
+      dntPolicyStore.setItem(hashes[policy_name], policy_name);
+    }
   },
 
   /**
@@ -355,13 +360,16 @@ BadgerPen.prototype = {
    * @return {Array} an array of FQDN strings
    */
   getAllDomainsByPresumedAction: function (selector) {
-    var action_map = this.getStore('action_map');
-    var relevantDomains = [];
-    for (var domain in action_map.getItemClones()) {
-      if (selector == this.getAction(domain)) {
+    let self = this,
+      action_map = self.getStore('action_map'),
+      relevantDomains = [];
+
+    for (let domain in action_map.getItemClones()) {
+      if (selector == self.getAction(domain)) {
         relevantDomains.push(domain);
       }
     }
+
     return relevantDomains;
   },
 
@@ -427,7 +435,7 @@ BadgerPen.prototype = {
    *
    * @param {String} domain Domain to add
    */
-  setupDNT: function(domain) {
+  setupDNT: function (domain) {
     this._setupDomainAction(domain, true, "dnt");
   },
 
@@ -435,7 +443,7 @@ BadgerPen.prototype = {
    * Remove DNT setting from a domain*
    * @param {String} domain FQDN string
    */
-  revertDNT: function(domain) {
+  revertDNT: function (domain) {
     this._setupDomainAction(domain, false, "dnt");
   },
 
@@ -453,7 +461,7 @@ BadgerPen.prototype = {
    * Remove user set action from a domain
    * @param {String} domain FQDN string
    */
-  revertUserAction: function(domain) {
+  revertUserAction: function (domain) {
     this._setupDomainAction(domain, "", "userAction");
 
     // if Privacy Badger never recorded tracking for this domain,
@@ -527,21 +535,20 @@ BadgerPen.prototype = {
       entry[site_base].push(tracking_type);
     }
     trackingDataStore.setItem(tracker_base, entry);
-  }
+  },
 };
 
 /**
- * @returns {{userAction: null, dnt: null, heuristicAction: null}}
  * @private
  */
-var _newActionMapObject = function() {
+function _newActionMapObject() {
   return {
     userAction: "",
     dnt: false,
     heuristicAction: "",
     nextUpdateTime: 0
   };
-};
+}
 
 /**
  * Privacy Badger Storage Object.
@@ -554,10 +561,11 @@ var _newActionMapObject = function() {
  * @param {String} name - the name of the storage object
  * @param {Object} seed - the base object which we are instantiating from
  */
-var BadgerStorage = function(name, seed) {
+function BadgerStorage(name, seed) {
   this.name = name;
   this._store = seed;
-};
+  this._subscribers = {}; // basic pub-sub
+}
 
 BadgerStorage.prototype = {
   /**
@@ -566,8 +574,8 @@ BadgerStorage.prototype = {
    * @param {String} key - the key for the item
    * @return {Boolean}
    */
-  hasItem: function(key) {
-    var self = this;
+  hasItem: function (key) {
+    let self = this;
     return utils.hasOwn(self._store, key);
   },
 
@@ -577,10 +585,12 @@ BadgerStorage.prototype = {
    * @param {String} key - the key for the item
    * @return {?*} the value for that key or null
    */
-  getItem: function(key) {
-    var self = this;
+  getItem: function (key) {
+    let self = this;
     if (self.hasItem(key)) {
-      return self._store[key];
+      // return a clone of the value in storage
+      let str = JSON.stringify(self._store[key]);
+      return (str === undefined ? str : JSON.parse(str));
     } else {
       return null;
     }
@@ -591,8 +601,8 @@ BadgerStorage.prototype = {
    *
    * @return {*} the items in badgerObject
    */
-  getItemClones: function() {
-    var self = this;
+  getItemClones: function () {
+    let self = this;
     return JSON.parse(JSON.stringify(self._store));
   },
 
@@ -602,11 +612,11 @@ BadgerStorage.prototype = {
    * @param {String} key - the key for the item
    * @param {*} value - the new value
    */
-  setItem: function(key,value) {
-    var self = this;
+  setItem: function (key, value) {
+    let self = this;
+    self.notify("set:" + key, key, value);
     self._store[key] = value;
-    // Async call to syncStorage.
-    setTimeout(function() {
+    setTimeout(function () {
       _syncStorage(self);
     }, 0);
   },
@@ -616,23 +626,11 @@ BadgerStorage.prototype = {
    *
    * @param {String} key - the key for the item
    */
-  deleteItem: function(key) {
-    var self = this;
+  deleteItem: function (key) {
+    let self = this;
+    self.notify("delete:" + key, key);
     delete self._store[key];
-    // Async call to syncStorage.
-    setTimeout(function() {
-      _syncStorage(self);
-    }, 0);
-  },
-
-  /**
-   * Update the entire object that this instance is storing
-   */
-  updateObject: function(object) {
-    var self = this;
-    self._store = object;
-    // Async call to syncStorage.
-    setTimeout(function() {
+    setTimeout(function () {
       _syncStorage(self);
     }, 0);
   },
@@ -645,14 +643,14 @@ BadgerStorage.prototype = {
   },
 
   /**
-   * When a user imports a tracker and settings list via the Import function,
-   * we want to overwrite any existing settings, while simultaneously merging
-   * in any new information (i.e. the list of disabled site domains). In order
-   * to do this, we need different logic for each of the storage maps based on
-   * their internal structure. The three cases in this function handle each of
-   * the three storage maps that can be exported.
+   * When a user imports data via the Import function, we want to overwrite
+   * any existing settings, while simultaneously merging in any new information
+   * (i.e. the list of disabled site domains). Thus, we need different logic
+   * for each of the storage objects based on their internal structure.
    *
-   * @param {Object} mapData The object containing storage map data to merge
+   * This is also used to load pre-trained data, and to ingest managed storage.
+   *
+   * @param {Object} mapData The storage object to merge into existing storage
    */
   merge: function (mapData) {
     const self = this;
@@ -661,23 +659,25 @@ BadgerStorage.prototype = {
       for (let prop in mapData) {
         // combine array settings via intersection/union
         if (prop == "disabledSites" || prop == "widgetReplacementExceptions") {
-          self._store[prop] = utils.concatUniq(self._store[prop], mapData[prop]);
+          self.setItem(prop, utils.concatUniq(self.getItem(prop), mapData[prop]));
 
         // string/array map
         } else if (prop == "widgetSiteAllowlist") {
+          let existingEntry = self.getItem(prop);
+
           // for every site host in the import
           for (let site in mapData[prop]) {
             // combine exception arrays
-            self._store[prop][site] = utils.concatUniq(
-              self._store[prop][site],
-              mapData[prop][site]
-            );
+            existingEntry[site] = utils.concatUniq(
+              existingEntry[site], mapData[prop][site]);
           }
+
+          self.setItem(prop, existingEntry);
 
         // default: overwrite existing setting with setting from import
         } else {
           if (utils.hasOwn(badger.defaultSettings, prop)) {
-            self._store[prop] = mapData[prop];
+            self.setItem(prop, mapData[prop]);
           } else {
             console.error("Unknown Badger setting:", prop);
           }
@@ -686,28 +686,31 @@ BadgerStorage.prototype = {
 
     } else if (self.name == "action_map") {
       for (let domain in mapData) {
-        let action = mapData[domain];
+        let newEntry = mapData[domain],
+          existingEntry = self.getItem(domain);
 
-        // Copy over any user settings from the merged-in data
-        if (action.userAction) {
-          if (utils.hasOwn(self._store, domain)) {
-            self._store[domain].userAction = action.userAction;
+        // copy over any user settings from the merged-in data
+        if (newEntry.userAction) {
+          if (existingEntry) {
+            existingEntry.userAction = newEntry.userAction;
+            self.setItem(domain, existingEntry);
           } else {
-            self._store[domain] = Object.assign(_newActionMapObject(), action);
+            self.setItem(domain, Object.assign(_newActionMapObject(), newEntry));
           }
         }
 
         // handle Do Not Track
-        if (utils.hasOwn(self._store, domain)) {
-          // Merge DNT settings if the imported data has a more recent update
-          if (action.nextUpdateTime > self._store[domain].nextUpdateTime) {
-            self._store[domain].nextUpdateTime = action.nextUpdateTime;
-            self._store[domain].dnt = action.dnt;
+        if (existingEntry) {
+          // merge DNT settings if the imported data has a more recent update
+          if (newEntry.nextUpdateTime > existingEntry.nextUpdateTime) {
+            existingEntry.nextUpdateTime = newEntry.nextUpdateTime;
+            existingEntry.dnt = newEntry.dnt;
+            self.setItem(domain, existingEntry);
           }
         } else {
-          // Import action map entries for new DNT-compliant domains
-          if (action.dnt) {
-            self._store[domain] = Object.assign(_newActionMapObject(), action);
+          // import action map entries for new DNT-compliant domains
+          if (newEntry.dnt) {
+            self.setItem(domain, Object.assign(_newActionMapObject(), newEntry));
           }
         }
       }
@@ -740,12 +743,55 @@ BadgerStorage.prototype = {
         }
       }
     }
+  },
 
-    // Async call to syncStorage.
-    setTimeout(function () {
-      _syncStorage(self);
-    }, 0);
-  }
+  /**
+   * @param {String} name The event to notify subscribers for
+   * @param {String} key The storage key being created/updated/deleted
+   * @param {*} val The new value being assigned to the key
+   */
+  notify: function (name, key, val) {
+    let self = this;
+
+    function _notify(ename) {
+      if (self._subscribers[ename]) {
+        for (let fn of self._subscribers[ename]) {
+          let str = JSON.stringify(val),
+            val_clone = (str === undefined ? str : JSON.parse(str));
+          fn.call(self, val_clone, key);
+        }
+      }
+    }
+
+    // exact match subscribers
+    _notify(name);
+
+    // wildcard subscribers
+    _notify(name.slice(0, name.indexOf(":") + 1) + "*");
+  },
+
+  /**
+   * @param {String} name The event to subscribe to
+   * @param {Function} callback
+   */
+  subscribe: function (name, callback) {
+    let self = this;
+    if (!self._subscribers[name]) {
+      self._subscribers[name] = [];
+    }
+    self._subscribers[name].push(callback);
+  },
+
+  /**
+   * @param {String} name The event to clear subscriptions for
+   * @returns {Array} The subscriptions removed for that event name
+   */
+  unsubscribe: function (name) {
+    let self = this,
+      subs = self._subscribers[name] || [];
+    delete self._subscribers[name];
+    return subs;
+  },
 };
 
 let _syncStorage = (function () {
