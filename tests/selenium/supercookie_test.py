@@ -38,14 +38,14 @@ class SupercookieTest(pbtest.PBSeleniumTest):
         # the HTML page contains:
 
         # an iframe from THIRD_PARTY_BASE that writes to localStorage
-        self.assertEqual(
-            [FIRST_PARTY_BASE],
-            pbtest.retry_until(partial(self.get_snitch_map_for, THIRD_PARTY_BASE)),
-            msg="Frame sets localStorage but was not flagged as a tracker.")
+        snitch_map = pbtest.retry_until(
+            partial(self.get_snitch_map_for, THIRD_PARTY_BASE))
+        assert snitch_map == [FIRST_PARTY_BASE], (
+            "Frame sets localStorage but was not flagged as a tracker.")
 
         # and an image from raw.githubusercontent.com that doesn't do any tracking
-        self.assertFalse(self.get_snitch_map_for("raw.githubusercontent.com"),
-            msg="Image is not a tracker but was flagged as one.")
+        assert not self.get_snitch_map_for("raw.githubusercontent.com"), (
+            "Image is not a tracker but was flagged as one.")
 
 
     def test_should_detect_ls_of_third_party_frame(self):
@@ -59,16 +59,16 @@ class SupercookieTest(pbtest.PBSeleniumTest):
             "localstorage.html"
         ))
 
-        # TODO We get some intermittent failures for this test.
+        # TODO FIXME We get some intermittent failures for this test.
         # It seems we sometimes miss the setting of localStorage items
         # because the script runs after we already checked what's in localStorage.
         # We can work around this race condition by reloading the page.
         self.driver.refresh()
 
-        self.assertEqual(
-            [FIRST_PARTY_BASE],
-            pbtest.retry_until(partial(self.get_snitch_map_for, THIRD_PARTY_BASE), times=3)
-        )
+        snitch_map = pbtest.retry_until(
+            partial(self.get_snitch_map_for, THIRD_PARTY_BASE),
+            times=3)
+        assert snitch_map == [FIRST_PARTY_BASE]
 
     def test_should_not_detect_low_entropy_ls_of_third_party_frame(self):
         FIRST_PARTY_BASE = "eff.org"
@@ -78,7 +78,7 @@ class SupercookieTest(pbtest.PBSeleniumTest):
             f"https://privacybadger-tests.{FIRST_PARTY_BASE}/html/"
             "localstorage_low_entropy.html"
         ))
-        self.driver.refresh()
+        self.driver.refresh() # TODO workaround
         assert not self.get_snitch_map_for(THIRD_PARTY_BASE)
 
     def test_should_not_detect_first_party_ls(self):
@@ -87,7 +87,7 @@ class SupercookieTest(pbtest.PBSeleniumTest):
             f"https://{BASE_DOMAIN}/privacybadger-test-fixtures/html/"
             "localstorage/set_ls.html"
         ))
-        self.driver.refresh()
+        self.driver.refresh() # TODO workaround
         assert not self.get_snitch_map_for(BASE_DOMAIN)
 
     def test_should_not_detect_ls_of_third_party_script(self):
@@ -100,14 +100,14 @@ class SupercookieTest(pbtest.PBSeleniumTest):
             "localstorage_from_third_party_script.html"
         ))
 
-        self.driver.refresh()
+        self.driver.refresh() # TODO workaround
 
         assert not self.get_snitch_map_for(FIRST_PARTY_BASE)
         assert not self.get_snitch_map_for(THIRD_PARTY_BASE)
 
     def test_localstorage_learning(self):
         """Verifies that we learn to block a third-party domain if we see
-        non-trivial localstorage data from that third-party on three sites."""
+        non-trivial localStorage data from that third-party on three sites."""
 
         SITE1_URL = "https://ddrybktjfxh4.cloudfront.net/localstorage.html"
         SITE2_URL = "https://d3syxqe9po5ji0.cloudfront.net/localstorage.html"
@@ -118,26 +118,34 @@ class SupercookieTest(pbtest.PBSeleniumTest):
         # remove pre-trained domains
         self.clear_tracker_data()
 
+        def get_sliders(url, category):
+            self.open_popup(url)
+            sliders = self.get_tracker_state()
+            return sliders[category]
+
         # load the first site
         self.load_url(SITE1_URL)
-        self.open_popup(SITE1_URL)
-        sliders = self.get_tracker_state()
-        assert THIRD_PARTY in sliders['notYetBlocked']
-        self.close_window_with_url(SITE1_URL)
+        # TODO FIXME remove workaround once we fix race conditions in contentscripts/supercookie.js
+        self.driver.refresh()
+        sliders = pbtest.retry_until(
+            partial(get_sliders, SITE1_URL, 'notYetBlocked'), times=3)
+        assert THIRD_PARTY in sliders
 
         # go to second site
         self.load_url(SITE2_URL)
-        self.open_popup(SITE2_URL)
-        sliders = self.get_tracker_state()
-        assert THIRD_PARTY in sliders['notYetBlocked']
-        self.close_window_with_url(SITE2_URL)
+        # TODO workaround
+        self.driver.refresh()
+        sliders = pbtest.retry_until(
+            partial(get_sliders, SITE2_URL, 'notYetBlocked'), times=3)
+        assert THIRD_PARTY in sliders
 
         # go to third site
         self.load_url(SITE3_URL)
-        self.open_popup(SITE3_URL)
-        sliders = self.get_tracker_state()
-        assert THIRD_PARTY in sliders['blocked']
-        self.close_window_with_url(SITE3_URL)
+        # TODO workaround
+        self.driver.refresh()
+        sliders = pbtest.retry_until(
+            partial(get_sliders, SITE3_URL, 'blocked'), times=3)
+        assert THIRD_PARTY in sliders, "third party should now be reported as blocked"
 
 
 if __name__ == "__main__":

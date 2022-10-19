@@ -158,8 +158,14 @@ function onBeforeRequest(details) {
  */
 function getWarSecret(tab_id, frame_id, url) {
   let secret = (+(("" + Math.random()).slice(2))).toString(16),
-    frameData = badger.tabData.getFrameData(tab_id, frame_id),
-    tokens = frameData.warAccessTokens;
+    frameData = badger.tabData.getFrameData(tab_id, frame_id);
+
+  if (!frameData) {
+    badger.tabData.recordFrame(tab_id, frame_id, null);
+    frameData = badger.tabData.getFrameData(tab_id, frame_id);
+  }
+
+  let tokens = frameData.warAccessTokens;
 
   if (!tokens) {
     tokens = {};
@@ -237,6 +243,16 @@ function onBeforeSendHeaders(details) {
   }
 
   let tab_host = frameData.host;
+
+  if (type == 'main_frame') {
+    if (badger.isDNTSignalEnabled() && badger.isPrivacyBadgerEnabled(tab_host)) {
+      details.requestHeaders.push({name: "DNT", value: "1"}, {name: "Sec-GPC", value: "1"});
+      return { requestHeaders: details.requestHeaders };
+    }
+
+    return {};
+  }
+
   let request_host = extractHostFromURL(url);
 
   // CNAME uncloaking
@@ -245,19 +261,17 @@ function onBeforeSendHeaders(details) {
   }
 
   if (!utils.isThirdPartyDomain(request_host, tab_host)) {
-    if (badger.isPrivacyBadgerEnabled(tab_host)) {
-      // Still sending Do Not Track even if HTTP and cookie blocking are disabled
-      if (badger.isDNTSignalEnabled()) {
-        if (tab_host == 'www.costco.com') {
-          details.requestHeaders.push({name: "Sec-GPC", value: "1"});
-        } else {
-          details.requestHeaders.push({name: "DNT", value: "1"}, {name: "Sec-GPC", value: "1"});
-        }
+    if (badger.isDNTSignalEnabled() && badger.isPrivacyBadgerEnabled(tab_host)) {
+      // send Do Not Track header even when HTTP and cookie blocking are disabled
+      if (tab_host == 'www.costco.com') {
+        details.requestHeaders.push({name: "Sec-GPC", value: "1"});
+      } else {
+        details.requestHeaders.push({name: "DNT", value: "1"}, {name: "Sec-GPC", value: "1"});
       }
-      return {requestHeaders: details.requestHeaders};
-    } else {
-      return {};
+      return { requestHeaders: details.requestHeaders };
     }
+
+    return {};
   }
 
   let action = checkAction(tab_id, request_host, frame_id);
@@ -349,13 +363,17 @@ function onHeadersReceived(details) {
     return {};
   }
 
-  if (details.type == 'main_frame' && badger.isFlocOverwriteEnabled()) {
-    let responseHeaders = details.responseHeaders || [];
-    responseHeaders.push({
-      name: 'permissions-policy',
-      value: 'interest-cohort=()'
-    });
-    return { responseHeaders };
+  if (details.type == 'main_frame') {
+    if (badger.isFlocOverwriteEnabled()) {
+      let responseHeaders = details.responseHeaders || [];
+      responseHeaders.push({
+        name: 'permissions-policy',
+        value: 'interest-cohort=()'
+      });
+      return { responseHeaders };
+    }
+
+    return {};
   }
 
   let tab_host = frameData.host;
@@ -944,6 +962,35 @@ function getSurrogateWidget(name, data, frame_url) {
         "type": 4
       }
     };
+  }
+
+  if (name == "YouTube") {
+    if (!data || !data.domId || !data.videoId) {
+      return false;
+    }
+
+    let video_id = data.videoId,
+      dom_id = data.domId;
+
+    if (!OK.test(video_id) || !OK.test(dom_id)) {
+      return false;
+    }
+
+    let widget = {
+      name,
+      buttonSelectors: ["#" + dom_id],
+      scriptSelectors: [
+        `script[src^='${CSS.escape("https://www.youtube.com/iframe_api")}']`,
+        `script[src^='${CSS.escape("https://www.youtube.com/player_api")}']`
+      ],
+      replacementButton: {
+        "unblockDomains": ["www.youtube.com"],
+        "type": 4
+      },
+      directLinkUrl: `https://www.youtube.com/embed/${video_id}`
+    };
+
+    return widget;
   }
 
   return false;

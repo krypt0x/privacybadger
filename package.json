@@ -8,13 +8,13 @@
   "devDependencies": {
     "jquery": "3.5.1",
     "jquery-smooth-scroll": "2.2.0",
-    "jquery-ui": "1.13.0",
+    "jquery-ui": "1.13.2",
     "jquery-ui-iconfont": "2.3.2",
     "qunit": "2.9.2",
     "select2": "4.0.11",
     "sinon": "2.0.0",
     "tooltipster": "4.2.6",
-    "web-ext": "~7.1.0"
+    "web-ext": "~7.2.0"
   },
   "private": true
 }

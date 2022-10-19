@@ -4,11 +4,11 @@ set -e
 
 cd "$(dirname "$0")"
 
-LATEST_SDK_VERSION=7.1.0
+LATEST_SDK_VERSION=7.2.0
 WEB_EXT=../node_modules/.bin/web-ext
 
 # Auto-generated XPI name from 'web-ext sign'
-PRE_XPI_NAME=privacy_badger_by_eff-$TARGET-an+fx.xpi
+PRE_XPI_NAME=privacy_badger-$1.xpi
 XPI_NAME="privacy-badger-eff-$1.xpi"
 AMO_ZIP_NAME="privacy_badger-$1.amo.zip"
 

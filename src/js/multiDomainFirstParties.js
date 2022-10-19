@@ -280,6 +280,7 @@ let multiDomainFirstPartiesArray = [
     "static-af.com",
     "static-kl.com",
   ],
+  ["ais.th", "ais.co.th"],
   ["alchemer.com", "surveygizmo.com"],
   [
     "alibaba.com",
@@ -303,6 +304,7 @@ let multiDomainFirstPartiesArray = [
     "alicloud.com",
     "aliexpress.com",
     "aliexpress.ru",
+    "aliexpress.us",
     "alifanyi.com",
     "aligames.com",
     "alihealth.cn",
@@ -316,6 +318,7 @@ let multiDomainFirstPartiesArray = [
     "aliyun.com",
     "aliyuncs.com",
     "aliyun-iot-share.com",
+    "allylikes.com",
     "amap.com",
     "cainiao.com",
     "cainiao.com.cn",
@@ -1210,6 +1213,7 @@ let multiDomainFirstPartiesArray = [
     "envato-static.com",
   ],
   ["epicgames.com", "unrealengine.com", "bandcamp.com", "bcbits.com"],
+  ["etsy.com", "etsystatic.com"],
   [
     "eventbrite.com",
 
@@ -1783,8 +1787,22 @@ let multiDomainFirstPartiesArray = [
     "www.googleapis.com",
 
     "nest.com",
+    "thinkwithgoogle.com",
+
+    "applieddigitalskills.withgoogle.com",
+    "cloudonair.withgoogle.com",
     "codingcompetitions.withgoogle.com",
+    "experiments.withgoogle.com",
+    "foobar.withgoogle.com",
+    "learndigital.withgoogle.com",
     "nestpowerproject.withgoogle.com",
+    "newsinitiative.withgoogle.com",
+    "projectshield.withgoogle.com",
+    "quickdraw.withgoogle.com",
+    "searchon.withgoogle.com",
+    "summerofcode.withgoogle.com",
+    "teachablemachine.withgoogle.com",
+    "webdesigner.withgoogle.com",
   ],
   ["www.gov.uk", "cabinet-office.gov.uk", "publishing.service.gov.uk"],
   [
@@ -2693,6 +2711,7 @@ let multiDomainFirstPartiesArray = [
     "passport.net",
     "phonefactor.net",
     "powerapps.com",
+    "powerautomate.com",
     "powerbi.com",
     "roiservice.com",
     "sfbassets.com",
@@ -2918,6 +2937,7 @@ let multiDomainFirstPartiesArray = [
     "kada.com",
     "kaola.com",
     "kaola.com.hk",
+    "lofter.com",
   ],
   ["netflix.com", "nflxext.com", "nflximg.net", "nflxvideo.net"],
   [
@@ -5074,6 +5094,7 @@ let multiDomainFirstPartiesArray = [
     "yandex.com.tr",
     "yandex.com.ua",
     "yandex.ee",
+    "yandex.eu",
     "yandex.fr",
     "yandex.kg",
     "yandex.kz",
