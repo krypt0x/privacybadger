@@ -88,15 +88,15 @@
         "description": "Text shown in the popup when showing non-tracking domains is enabled, and there are no third-party domains on the page."
     },
     "tooltip_block": {
-        "message": "將滾動條滑到左邊封鎖該網域",
+        "message": "將滑桿滑到左邊封鎖該網域",
         "description": "Domain slider list header tooltip."
     },
     "tooltip_cookieblock": {
-        "message": "將滾動條滑到中間封鎖該網域的 cookie",
+        "message": "將滑桿滑到中間封鎖該網域的 cookie",
         "description": "Domain slider list header tooltip."
     },
     "tooltip_allow": {
-        "message": "將滾動條滑到右邊允許該網域",
+        "message": "將滑桿滑到右邊允許該網域",
         "description": "Domain slider list header tooltip."
     },
     "badger_status_block": {
@@ -159,6 +159,10 @@
         "message": "已知封鎖此網域會破壞網站",
         "description": "Tooltip for a warning icon that appears when move a domain slider to 'red' (block) for a domain that was automatically set to 'yellow' (block cookies)."
     },
+    "google_signin_tooltip": {
+        "message": "要啟用使用您的 Google 帳號登入網站，請向右滑動此滑桿，並重新整理頁面",
+        "description": "Tooltip for a notification icon that appears next to the slider for accounts.google.com when it is blocked by default."
+    },
     "feed_the_badger_title": {
         "message": "點擊以將此網域的控制權還給 Privacy Badger",
         "description": "Tooltip shown over an undo arrow that appears when you move a domain slider away from its automatic setting."
@@ -192,7 +196,7 @@
         "description": "Placeholder text in the text input in the 'Report broken site' overlay."
     },
     "report_terms": {
-        "message": "將會自動回報下列資訊給 EFF 電子前鋒基金會：您目前造訪的頁面、瀏覽器版本、Privacy Badger 版本，以及此頁面所有滾動條的狀態。",
+        "message": "將會自動回報下列資訊給 EFF 電子前鋒基金會：您目前造訪的頁面、瀏覽器版本、Privacy Badger 版本，以及此頁面所有滑桿的狀態。",
         "description": ""
     },
     "report_button": {
@@ -263,7 +267,17 @@
     },
     "extension_error_text": {
         "message": "請<a href='https://www.eff.org/privacybadger#faq-I-found-a-bug!-What-do-I-do-now?' target='_blank'>告訴我們</a>關於下列錯誤的訊息：",
-        "description": "Shown in the popup when there is a problem with the user's Privacy Badger extension that we want to encourage the user to tell us about."
+        "description": "Shown in the popup when there is an extension error we want to encourage the user to tell us about."
+    },
+    "popup_error_text_low_disk_space_issue": {
+        "message": "寫入擴充套件儲存空間失敗：$ERROR_TEXT$。<br><br>您的磁碟空間不足嗎？",
+        "description": "Special error message for the 'An unexpected error occurred' text that sometimes occurs on Firefox browsers with low disk space",
+        "placeholders": {
+            "error_text": {
+                "content": "$1",
+                "example": "An unexpected error occurred"
+            }
+        }
     },
     "firstRun_title": {
         "message": "感謝您安裝 Privacy Badger！",

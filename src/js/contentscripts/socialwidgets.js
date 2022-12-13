@@ -293,6 +293,15 @@ function restoreWidget(widget) {
       });
       return;
     }
+
+    // if there are no matching script elements
+    if (!document.querySelectorAll(widget.scriptSelectors.join(',')).length) {
+      // we can't do "in-place" activation; reload the page instead
+      unblockTracker(name, function () {
+        location.reload();
+      });
+      return;
+    }
   }
 
   unblockTracker(name, function () {
@@ -500,7 +509,6 @@ function createReplacementWidget(widget, elToReplace) {
 
   // child div styles
   styleAttrs = [
-    "color: #303030",
     "font-family: helvetica, arial, sans-serif",
     "font-size: 16px",
     "display: flex",
@@ -672,6 +680,7 @@ function createReplacementWidget(widget, elToReplace) {
 
   let head_styles = `
 html, body {
+  color: #303030 !important;
   height: 100% !important;
   overflow: hidden !important;
 }
@@ -732,6 +741,33 @@ a {
 a:hover {
   color: #ec9329;
 }
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+  body {
+    background-color: #333 !important;
+    color: #ddd !important;
+  }
+  a, a:visited {
+    color: #ddd !important;
+  }
+  a:hover {
+    color: #f06a0a !important;
+  }
+  #${info_icon_id}:before, #${close_icon_id}:before {
+    color: #aaa;
+  }
+  #${site_button_id} {
+    background-color: #333 !important;
+    border: solid 2px #ddd !important;
+    color: #ddd !important;
+  }
+  #${button_id}:hover, #${site_button_id}:hover {
+    background-color: #333 !important;
+    color: #ddd !important;
+  }
+}
   `.trim();
 
   widgetFrame.srcdoc = '<html><head><style>' + head_styles + '</style></head><body style="margin:0">' + widgetDiv.outerHTML + '</body></html>';
@@ -743,17 +779,6 @@ a:hover {
  * Replaces buttons/widgets in the DOM.
  */
 function replaceIndividualButton(widget) {
-  // for script type widgets,
-  // to avoid breaking lazy loaded widgets
-  // by replacing the DOM element too early
-  // first check whether a script is actually present
-  if (widget.replacementButton.type == 4) {
-    let script_selector = widget.scriptSelectors.join(',');
-    if (!document.querySelectorAll(script_selector).length) {
-      return;
-    }
-  }
-
   let selector = widget.buttonSelectors.join(','),
     elsToReplace = document.querySelectorAll(selector);
 

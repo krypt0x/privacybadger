@@ -25,6 +25,7 @@ upload:
 	scripts/generate-legacy-yellowlist.sh > $(TMPFILE) && scp $(TMPFILE) $$YELLOWLIST_LEGACY_UPLOAD_PATH && rm $(TMPFILE)
 	scp src/data/dnt-policies.json $$DNT_POLICIES_UPLOAD_PATH
 
+# get the Transifex CLI client from https://github.com/transifex/cli/releases/latest
 tx:
 	tx pull -f
 	scripts/fix_placeholders.py
@@ -33,10 +34,10 @@ runch:
 	./node_modules/.bin/web-ext run --target chromium --start-url "chrome://extensions" -s src/
 
 runff:
-	./node_modules/.bin/web-ext run --start-url "about:debugging#/runtime/this-firefox" -s src/
+	./node_modules/.bin/web-ext run --devtools --start-url "about:debugging#/runtime/this-firefox" -s src/
 
 runfn:
-	./node_modules/.bin/web-ext run --start-url "about:debugging#/runtime/this-firefox" -s src/ -f nightly
+	./node_modules/.bin/web-ext run --devtools --start-url "about:debugging#/runtime/this-firefox" -s src/ -f nightly
 
 test:
 	BROWSER=chrome ENABLE_XVFB=1 pytest -s tests/

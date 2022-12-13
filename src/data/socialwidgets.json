@@ -85,18 +85,6 @@
             "type": 4
         }
     },
-    "Facebook Comments": {
-        "domain": "www.facebook.com",
-        "buttonSelectors": [
-            "div.fb-comments.fb_iframe_widget"
-        ],
-        "replacementButton": {
-            "unblockDomains": [
-                "www.facebook.com"
-            ],
-            "type": 3
-        }
-    },
     "Facebook Like": {
         "domain": "www.facebook.com",
         "buttonSelectors": [
@@ -112,6 +100,30 @@
             ],
             "imagePath": "FacebookLike.svg",
             "type": 1
+        }
+    },
+    "Facebook Page": {
+        "domain": "www.facebook.com",
+        "buttonSelectors": [
+            "iframe[src^='https://www.facebook.com/plugins/page.php?']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "www.facebook.com"
+            ],
+            "type": 3
+        }
+    },
+    "Facebook Post": {
+        "domain": "www.facebook.com",
+        "buttonSelectors": [
+            "iframe[src^='https://www.facebook.com/plugins/post.php?']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "www.facebook.com"
+            ],
+            "type": 3
         }
     },
     "Facebook Share": {
@@ -150,6 +162,7 @@
         ],
         "buttonSelectors": [
             "iframe[src^='https://maps.google.com/maps/']",
+            "iframe[src^='https://maps.google.com/maps?']",
             "iframe[src^='https://www.google.com/maps/']"
         ],
         "noDirectLink": true,
@@ -191,6 +204,18 @@
             "type": 4
         }
     },
+    "iHeart Player": {
+        "domain": "www.iheart.com",
+        "buttonSelectors": [
+            "iframe[src^='https://www.iheart.com/']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "www.iheart.com"
+            ],
+            "type": 3
+        }
+    },
     "LinkedIn": {
         "domain": "platform.linkedin.com",
         "buttonSelectors": [
@@ -227,6 +252,19 @@
             "type": 0
         }
     },
+    "PodBean Player": {
+        "domain": "www.podbean.com",
+        "buttonSelectors": [
+            "iframe[src^='https://www.podbean.com/media/player/']",
+            "iframe[src^='https://www.podbean.com/player-v2/']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "www.podbean.com"
+            ],
+            "type": 3
+        }
+    },
     "Qualtrics": {
         "domains": [
             "*.qualtrics.com"
@@ -249,6 +287,25 @@
         "replacementButton": {
             "unblockDomains": [
                 "rumble.com"
+            ],
+            "type": 3
+        }
+    },
+    "Rutube Player": {
+        "domains": [
+            "rutube.ru",
+            "www.rutube.ru"
+        ],
+        "buttonSelectors": [
+            "iframe[src^='https://rutube.ru/pl/']",
+            "iframe[src^='https://rutube.ru/embed/']",
+            "iframe[src^='https://rutube.ru/play/embed/']",
+            "iframe[src^='https://www.rutube.ru/play/embed/']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "rutube.ru",
+                "www.rutube.ru"
             ],
             "type": 3
         }
@@ -335,14 +392,19 @@
         }
     },
     "Vimeo": {
-        "domain": "player.vimeo.com",
+        "domains": [
+            "player.vimeo.com",
+            "vimeo.com"
+        ],
         "buttonSelectors": [
             "iframe[src^='https://player.vimeo.com/video/']:not([src*='background=1'])",
-            "iframe[src^='//player.vimeo.com/video/']:not([src*='background=1'])"
+            "iframe[src^='//player.vimeo.com/video/']:not([src*='background=1'])",
+            "iframe[src^='https://vimeo.com/showcase/']"
         ],
         "replacementButton": {
             "unblockDomains": [
-                "player.vimeo.com"
+                "player.vimeo.com",
+                "vimeo.com"
             ],
             "type": 3
         }

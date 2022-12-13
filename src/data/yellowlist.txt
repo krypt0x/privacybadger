@@ -142,7 +142,6 @@ eventbrite.com
 everyaction.com
 s-static.ak.facebook.com
 staticxx.facebook.com
-www.facebook.com
 fastly.net
 fbcdn.net
 filepicker.io
@@ -417,6 +416,7 @@ scribd.com
 assets.scrippsdigital.com
 seamlessaccess.org
 www.searchanise.com
+secureserver.net
 securiti.ai
 shopify.com
 shopifycdn.com
@@ -537,6 +537,7 @@ yahooapis.com
 api-maps.yandex.ru
 img-fotki.yandex.ru
 maps.yandex.net
+strm.yandex.ru
 yastatic.net
 yelpcdn.com
 yimg.com

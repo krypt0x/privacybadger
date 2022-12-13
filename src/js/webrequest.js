@@ -48,7 +48,8 @@ function onBeforeRequest(details) {
   let frame_id = details.frameId,
     tab_id = details.tabId,
     type = details.type,
-    url = details.url;
+    url = details.url,
+    sw_request = false;
 
   if (type == "main_frame") {
     let oldTabData = badger.tabData.getFrameData(tab_id),
@@ -59,10 +60,6 @@ function onBeforeRequest(details) {
     return {};
   }
 
-  if (type == "sub_frame") {
-    badger.tabData.recordFrame(tab_id, frame_id, url);
-  }
-
   // Block ping requests sent by navigator.sendBeacon (see, #587)
   // tabId for pings are always -1 due to Chrome bugs #522124 and #522129
   // Once these bugs are fixed, PB will treat pings as any other request
@@ -70,18 +67,46 @@ function onBeforeRequest(details) {
     return {cancel: true};
   }
 
-  let frameData = badger.tabData.getFrameData(tab_id);
-  if (!frameData || tab_id < 0 || utils.isRestrictedUrl(url)) {
-    return {};
+  if (tab_id < 0) {
+    // TODO may also want to apply this workaround in onBeforeSendHeaders(),
+    // TODO onHeadersReceived() and heuristicBlockingAccounting()
+    tab_id = guessTabIdFromInitiator(details);
+    if (tab_id < 0) {
+      // TODO we still miss SW requests that show up after on-tab close cleanup
+      //
+      // TODO could also miss SW requests that come before webNavigation fires
+      //
+      // TODO also, if there are multiple tabs with the same URL,
+      // TODO we might assign SW requests to the wrong tab,
+      // TODO or miss them entirely (when the more recently opened tab
+      // TODO gets closed while the older tab is still loading)
+      return {};
+    } else {
+      // NOTE details.type is always xmlhttprequest for SW-initiated requests in Chrome,
+      // which means surrogation won't work and frames won't get collapsed.
+      // As a workaround, let's perform surrogation checks for all SW requests,
+      // although we may redirect a non-script resource request to a matching surrogate.
+      sw_request = true;
+    }
   }
 
-  let tab_host = frameData.host;
   let request_host = extractHostFromURL(url);
 
   // CNAME uncloaking
   if (utils.hasOwn(badger.cnameDomains, request_host)) {
     request_host = badger.cnameDomains[request_host];
   }
+
+  let frameData = badger.tabData.getFrameData(tab_id);
+  if (!frameData) {
+    return {};
+  }
+
+  if (type == "sub_frame") {
+    badger.tabData.recordFrame(tab_id, frame_id, url);
+  }
+
+  let tab_host = frameData.host;
 
   if (!utils.isThirdPartyDomain(request_host, tab_host)) {
     return {};
@@ -102,7 +127,7 @@ function onBeforeRequest(details) {
     return {};
   }
 
-  if (type == 'script') {
+  if (type == 'script' || sw_request) {
     let surrogate;
 
     if (utils.hasOwn(surrogates.WIDGET_SURROGATES, request_host)) {
@@ -222,7 +247,7 @@ function onBeforeSendHeaders(details) {
     url = details.url,
     frameData = badger.tabData.getFrameData(tab_id);
 
-  if (!frameData || tab_id < 0 || utils.isRestrictedUrl(url)) {
+  if (!frameData || tab_id < 0) {
     // strip cookies from DNT policy requests
     if (type == "xmlhttprequest" && url.endsWith("/.well-known/dnt-policy.txt")) {
       // remove Cookie headers
@@ -525,6 +550,37 @@ function hideBlockedFrame(tab_id, parent_frame_id, frame_url, frame_host) {
     }
     tabData.blockedFrameUrls[parent_frame_id].push(frame_url);
   });
+}
+
+/**
+ * Tries to work around tab ID of -1 for requests
+ * originated by a Service Worker in Chrome.
+ *
+ * https://bugs.chromium.org/p/chromium/issues/detail?id=766433#c13
+ *
+ * @param {Object} details webRequest request/response details object
+ *
+ * @returns {Integer} the tab ID or -1
+ */
+function guessTabIdFromInitiator(details) {
+  if (!details.initiator || details.initiator == "null") {
+    return -1;
+  }
+
+  if (details.tabId != -1 || details.frameId != -1 || details.parentFrameId != -1 || details.type != "xmlhttprequest") {
+    return -1;
+  }
+
+  // ignore trivially first party requests
+  if (details.url.startsWith(details.initiator)) {
+    return -1;
+  }
+
+  if (utils.hasOwn(badger.tabData.tabIdsByInitiator, details.initiator)) {
+    return badger.tabData.tabIdsByInitiator[details.initiator];
+  }
+
+  return -1;
 }
 
 /**
@@ -1024,6 +1080,12 @@ function dispatcher(request, sender, sendResponse) {
       console.error("Rejected unknown message %o from %s", request, sender.url);
       return sendResponse();
     }
+
+    // also reject messages from special pages like chrome://new-tab-page/
+    // our content scripts still run there, for example in YouTube embed frames
+    if (sender.tab && sender.tab.url && utils.isRestrictedUrl(sender.tab.url)) {
+      return sendResponse();
+    }
   }
 
   switch (request.type) {
@@ -1037,12 +1099,13 @@ function dispatcher(request, sender, sendResponse) {
   }
 
   case "checkLocation": {
-    if (!badger.isPrivacyBadgerEnabled(extractHostFromURL(sender.tab.url))) {
+    let tab_host = extractHostFromURL(sender.tab.url);
+
+    if (!badger.isPrivacyBadgerEnabled(tab_host)) {
       return sendResponse();
     }
 
-    let frame_host = extractHostFromURL(request.frameUrl),
-      tab_host = extractHostFromURL(sender.tab.url);
+    let frame_host = extractHostFromURL(request.frameUrl);
 
     // CNAME uncloaking
     if (utils.hasOwn(badger.cnameDomains, frame_host)) {
@@ -1209,6 +1272,7 @@ function dispatcher(request, sender, sendResponse) {
       origins: trackers,
       settings: badger.getSettings().getItemClones(),
       showLearningPrompt: badger.getPrivateSettings().getItem("showLearningPrompt"),
+      shownBreakageNotes: badger.getPrivateSettings().getItem("shownBreakageNotes"),
       tabHost: tab_host,
       tabId: tab_id,
       tabUrl: request.tabUrl,
@@ -1344,6 +1408,19 @@ function dispatcher(request, sender, sendResponse) {
 
   case "seenLearningPrompt": {
     badger.getPrivateSettings().setItem("showLearningPrompt", false);
+    sendResponse();
+    break;
+  }
+
+  case "seenBreakageNote": {
+    if (request.domain) {
+      let privateStore = badger.getPrivateSettings(),
+        shownBreakageNotes = privateStore.getItem("shownBreakageNotes");
+      if (!shownBreakageNotes.includes(request.domain)) {
+        shownBreakageNotes.push(request.domain);
+      }
+      badger.getPrivateSettings().setItem("shownBreakageNotes", shownBreakageNotes);
+    }
     sendResponse();
     break;
   }
@@ -1617,7 +1694,7 @@ function dispatcher(request, sender, sendResponse) {
 
 /*************** Event Listeners *********************/
 function startListeners() {
-  chrome.webNavigation.onBeforeNavigate.addListener(onNavigate);
+  chrome.webNavigation.onCommitted.addListener(onNavigate);
 
   chrome.webRequest.onBeforeRequest.addListener(onBeforeRequest, {urls: ["http://*/*", "https://*/*"]}, ["blocking"]);
 
