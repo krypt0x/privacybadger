@@ -29,6 +29,20 @@
             "type": 3
         }
     },
+    "BitChute": {
+        "domains": [
+            "www.bitchute.com"
+        ],
+        "buttonSelectors": [
+            "iframe[src^='https://www.bitchute.com/embed/']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "www.bitchute.com"
+            ],
+            "type": 3
+        }
+    },
     "Coub Player": {
         "domain": "coub.com",
         "buttonSelectors": [
@@ -64,6 +78,23 @@
             "details": "http://www.digg.com/submit?url=",
             "imagePath": "Digg.svg",
             "type": 0
+        }
+    },
+    "Discord": {
+        "domains": [
+            "discord.com",
+            "discordapp.com"
+        ],
+        "buttonSelectors": [
+            "iframe[src^='https://discord.com/widget?']",
+            "iframe[src^='https://discordapp.com/widget?']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "discord.com",
+                "discordapp.com"
+            ],
+            "type": 3
         }
     },
     "Disqus": {
