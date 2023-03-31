@@ -2245,7 +2245,7 @@ let multiDomainFirstPartiesArray = [
     "stghouzz.com",
     "thathomesite.com",
   ],
-  ["hp.com", "hpdaas.com", "hpsmart.com"],
+  ["hp.com", "hpconnected.com", "hpdaas.com", "hpsmart.com"],
   [
     "huobi.com",
 
@@ -2611,6 +2611,7 @@ let multiDomainFirstPartiesArray = [
   ],
   [
     "mail.ru",
+    "sportmail.ru",
     "imgsmail.ru",
 
     "ok.ru",
@@ -2887,6 +2888,10 @@ let multiDomainFirstPartiesArray = [
     "live.com",
     "live.net",
     "lync.com",
+    "mcas-gov.ms",
+    "mcas-gov.us",
+    "mcas.ms",
+    "microsoft365.com",
     "microsoftalumni.com",
     "microsoftalumni.org",
     "microsoftazuread-sso.com",
@@ -2897,6 +2902,7 @@ let multiDomainFirstPartiesArray = [
     "microsoftonline-p.net",
     "microsoftonline.us",
     "microsoftstore.com",
+    "microsoftstore.com.cn",
     "microsoftstream.com",
     "microsoft.us",
     "minecraft.net",
@@ -2918,6 +2924,7 @@ let multiDomainFirstPartiesArray = [
     "o365weve.com",
     "oaspapps.com",
     "office365.com",
+    "office365.us",
     "office.com",
     "officelive.com",
     "office.net",
@@ -2950,6 +2957,7 @@ let multiDomainFirstPartiesArray = [
     "sway-cdn.com",
     "sway.com",
     "sway-extensions.com",
+    "tealsk12.org",
     "trafficmanager.net",
     "virtualearth.net",
     "visualstudio.com",
@@ -4180,6 +4188,7 @@ let multiDomainFirstPartiesArray = [
     "skapiec.pl",
     "vod.pl",
 
+    "dreamlab.pl",
     "grupaonet.pl",
   ],
   [

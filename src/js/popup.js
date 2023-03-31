@@ -36,6 +36,10 @@ let BREAKAGE_NOTE_DOMAINS = {
   "accounts.google.com": "google_signin_tooltip" // Google Sign-In
 };
 
+const DOMAIN_TOOLTIP_CONF = {
+  side: 'bottom',
+};
+
 /* if they aint seen the comic*/
 function showNagMaybe() {
   var $nag = $("#instruction");
@@ -148,7 +152,10 @@ function showNagMaybe() {
     $outer.show();
   }
 
-  if (POPUP_DATA.showLearningPrompt) {
+  if (POPUP_DATA.criticalError) {
+    _showError(POPUP_DATA.criticalError);
+
+  } else if (POPUP_DATA.showLearningPrompt) {
     _showLearningPrompt();
 
   } else if (!POPUP_DATA.settings.seenComic) {
@@ -159,8 +166,6 @@ function showNagMaybe() {
       }
     });
 
-  } else if (POPUP_DATA.criticalError) {
-    _showError(POPUP_DATA.criticalError);
   }
 }
 
@@ -247,6 +252,11 @@ function init() {
     $("#share_output").select();
     document.execCommand('copy');
     $(this).text(chrome.i18n.getMessage("copy_button_copied"));
+  });
+
+  $('html').css({
+    overflow: 'visible',
+    visibility: 'visible'
   });
 
   window.POPUP_INITIALIZED = true;
@@ -553,12 +563,12 @@ function createBreakageNote(domain, i18n_message_key) {
     theme: 'tooltipster-badger-breakage-note'
 
   // now restore the Allow tooltip
-  }).tooltipster(Object.assign({}, htmlUtils.DOMAIN_TOOLTIP_CONF, {
+  }).tooltipster(Object.assign({}, DOMAIN_TOOLTIP_CONF, {
     content: chrome.i18n.getMessage('domain_slider_allow_tooltip'),
     multiple: true
   }));
 
-  if (POPUP_DATA.settings.seenComic && !POPUP_DATA.showLearningPrompt) {
+  if (POPUP_DATA.settings.seenComic && !POPUP_DATA.showLearningPrompt && !POPUP_DATA.criticalError) {
     $slider_allow.tooltipster('show');
   }
 }
@@ -614,9 +624,11 @@ function refreshPopup() {
     $('#overlay').toggleClass('active');
   }
 
-  // show sliders when sliders were shown last
+  // show sliders when sliders were shown last,
+  // or when there is a visible breakage note,
   // or when there is at least one breakage warning
   if (POPUP_DATA.settings.showExpandedTrackingSection || (
+    (POPUP_DATA.settings.seenComic && !POPUP_DATA.showLearningPrompt && !POPUP_DATA.criticalError) &&
     Object.keys(BREAKAGE_NOTE_DOMAINS).some(d => (
       (POPUP_DATA.origins[d] == constants.BLOCK ||
         POPUP_DATA.origins[d] == constants.COOKIEBLOCK) &&
@@ -643,6 +655,7 @@ function refreshPopup() {
 
   if (!originsArr.length) {
     // show "no trackers" message
+    $('#blockedResources').hide();
     $("#instructions-no-trackers").show();
 
     if (POPUP_DATA.settings.learnLocally && POPUP_DATA.settings.showNonTrackingDomains) {
@@ -726,11 +739,6 @@ function refreshPopup() {
     }
   }
 
-  if (printable.length) {
-    // get containing HTML for domain list along with toggle legend icons
-    $("#blockedResources")[0].innerHTML = htmlUtils.getTrackerContainerHtml();
-  }
-
   // activate tooltips
   $('.tooltip').tooltipster();
 
@@ -767,8 +775,7 @@ function refreshPopup() {
     $printable.appendTo('#blockedResourcesInner');
 
     // activate tooltips
-    $('#blockedResourcesInner .tooltip:not(.tooltipstered)').tooltipster(
-      htmlUtils.DOMAIN_TOOLTIP_CONF);
+    $printable.find('.tooltip:not(.tooltipstered)').tooltipster(DOMAIN_TOOLTIP_CONF);
     if ($printable.hasClass('breakage-note')) {
       let domain = $printable[0].dataset.origin;
       if (!POPUP_DATA.shownBreakageNotes.includes(domain)) {
@@ -822,7 +829,7 @@ function updateOrigin() {
   $clicker.find('.origin-inner').tooltipster('destroy');
   $clicker.find('.origin-inner').attr(
     'title', htmlUtils.getActionDescription(action, origin));
-  $clicker.find('.origin-inner').tooltipster(htmlUtils.DOMAIN_TOOLTIP_CONF);
+  $clicker.find('.origin-inner').tooltipster(DOMAIN_TOOLTIP_CONF);
 
   // persist the change
   saveToggle(origin, action);
@@ -860,16 +867,28 @@ function setPopupData(data) {
 $(function () {
   $.tooltipster.setDefaults(htmlUtils.TOOLTIPSTER_DEFAULTS);
 
-  getTab(function (tab) {
+  function getPopupData(tab) {
     chrome.runtime.sendMessage({
       type: "getPopupData",
       tabId: tab.id,
       tabUrl: tab.url
     }, (response) => {
+      if (!response) {
+        // event page/extension service worker is still starting up, retry
+        // async w/ non-zero delay to avoid locking up the messaging channel
+        setTimeout(function () {
+          getPopupData(tab);
+        }, 10);
+        return;
+      }
       setPopupData(response);
       refreshPopup();
       init();
     });
+  }
+
+  getTab(function (tab) {
+    getPopupData(tab);
   });
 });
 

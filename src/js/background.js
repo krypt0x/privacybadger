@@ -54,6 +54,15 @@ function Badger(from_qunit) {
 
   self.storage = new BadgerPen(onStorageReady);
 
+  // initialize all chrome.* API listeners on first turn of event loop
+  if (!from_qunit) {
+    incognito.startListeners();
+    webrequest.startListeners();
+    HeuristicBlocking.startListeners();
+    FirefoxAndroid.startListeners();
+    startBackgroundListeners();
+  }
+
   /**
    * Callback that continues Privacy Badger initialization
    * once Badger storage is ready.
@@ -61,15 +70,11 @@ function Badger(from_qunit) {
   async function onStorageReady() {
     self.heuristicBlocking = new HeuristicBlocking.HeuristicBlocker(self.storage);
 
-    // TODO there are async migrations
-    // TODO is this the right place for migrations?
-    self.runMigrations();
-
     self.setPrivacyOverrides();
 
     // kick off async initialization steps
-    let ylistPromise = self.initializeYellowlist().catch(console.error),
-      dntHashesPromise = self.initializeDnt().catch(console.error),
+    let ylistPromise = self.initYellowlist().catch(console.error),
+      dntHashesPromise = self.initDntPolicyHashes().catch(console.error),
       tabDataPromise = self.tabData.initialize().catch(console.error);
 
     // async load known CNAME domain aliases (but don't wait on them)
@@ -107,39 +112,18 @@ function Badger(from_qunit) {
       self.blockPanopticlickDomains();
     }
 
-    if (from_qunit) {
-      self.INITIALIZED = true;
-      return;
+    if (self.isUpdate) {
+      self.runMigrations();
     }
-
-    // start the listeners
-    incognito.startListeners();
-    webrequest.startListeners();
-    HeuristicBlocking.startListeners();
-    FirefoxAndroid.startListeners();
-    startBackgroundListeners();
 
     console.log("Privacy Badger is ready to rock!");
     console.log("Set DEBUG=1 to view console messages.");
     self.INITIALIZED = true;
 
-    // get the latest yellowlist from eff.org
-    self.updateYellowlist(err => {
-      if (err) {
-        console.error(err);
-      }
-    });
-    // set up periodic fetching of the yellowlist from eff.org
-    setInterval(self.updateYellowlist.bind(self), utils.oneDay());
-
-    // get the latest DNT policy hashes from eff.org
-    self.updateDntPolicyHashes(err => {
-      if (err) {
-        console.error(err);
-      }
-    });
-    // set up periodic fetching of hashes from eff.org
-    setInterval(self.updateDntPolicyHashes.bind(self), utils.oneDay() * 4);
+    if (!from_qunit) {
+      self.initYellowlistUpdates();
+      self.initDntPolicyUpdates();
+    }
   }
 
   /**
@@ -458,7 +442,7 @@ Badger.prototype = {
    *
    * @returns {Promise}
    */
-  initializeYellowlist: function () {
+  initYellowlist: function () {
     let self = this;
 
     return new Promise(function (resolve, reject) {
@@ -485,6 +469,31 @@ Badger.prototype = {
   },
 
   /**
+   * Checks if it's time to fetch the latest yellowlist from eff.org.
+   * If it isn't yet time, schedules the next update for when it is.
+   */
+  initYellowlistUpdates: function () {
+    let self = this,
+      next_update_time = self.getPrivateSettings().getItem('nextYellowlistUpdateTime'),
+      time_now = Date.now();
+
+    if (time_now < next_update_time) {
+      let msec_remaining = next_update_time - time_now;
+      log("Not yet time to update yellowlist; next update in %s mins",
+        Math.round(msec_remaining / 1000 / 60));
+      // schedule an update for when the extension remains running that long
+      setTimeout(self.updateYellowlist.bind(self), msec_remaining);
+      return;
+    }
+
+    self.updateYellowlist(err => {
+      if (err) {
+        console.error(err);
+      }
+    });
+  },
+
+  /**
    * Updates to the latest yellowlist from eff.org.
    * @param {Function} [callback] optional callback
    */
@@ -494,6 +503,9 @@ Badger.prototype = {
     if (!callback) {
       callback = function () {};
     }
+
+    // schedule the next update for long-running extension environments
+    setTimeout(self.updateYellowlist.bind(self), utils.oneDay());
 
     utils.fetchResource(constants.YELLOWLIST_URL, function (err, response) {
       if (err) {
@@ -541,6 +553,9 @@ Badger.prototype = {
       self.storage.updateYellowlist(domains);
       log("Updated yellowlist from remote");
 
+      // refresh next update time to help avoid updating on every restart
+      self.getPrivateSettings().setItem('nextYellowlistUpdateTime', utils.oneDayFromNow());
+
       return callback(null);
     });
   },
@@ -550,7 +565,7 @@ Badger.prototype = {
    *
    * @returns {Promise}
    */
-  initializeDnt: function () {
+  initDntPolicyHashes: function () {
     let self = this;
 
     return new Promise(function (resolve, reject) {
@@ -587,6 +602,31 @@ Badger.prototype = {
   },
 
   /**
+   * Checks if it's time to get the latest EFF DNT policy hashes from eff.org.
+   * If it isn't yet time, schedules the next update for when it is.
+   */
+  initDntPolicyUpdates: function () {
+    let self = this,
+      next_update_time = self.getPrivateSettings().getItem('nextDntHashesUpdateTime'),
+      time_now = Date.now();
+
+    if (time_now < next_update_time) {
+      let msec_remaining = next_update_time - time_now;
+      log("Not yet time to update DNT hashes; next update in %s mins",
+        Math.round(msec_remaining / 1000 / 60));
+      // schedule an update for when the extension remains running that long
+      setTimeout(self.updateDntPolicyHashes.bind(self), msec_remaining);
+      return;
+    }
+
+    self.updateDntPolicyHashes(err => {
+      if (err) {
+        console.error(err);
+      }
+    });
+  },
+
+  /**
    * Fetch acceptable DNT policy hashes from the EFF server
    * @param {Function} [cb] optional callback
    */
@@ -596,6 +636,9 @@ Badger.prototype = {
     if (!cb) {
       cb = function () {};
     }
+
+    // schedule the next update for long-running extension environments
+    setTimeout(self.updateDntPolicyHashes.bind(self), utils.oneDay() * 4);
 
     if (!self.isCheckingDNTPolicyEnabled()) {
       // user has disabled this, we can check when they re-enable
@@ -621,6 +664,10 @@ Badger.prototype = {
 
       self.storage.updateDntHashes(hashes);
       log("Updated hashes from remote");
+
+      // refresh next update time to help avoid updating on every restart
+      self.getPrivateSettings().setItem('nextDntHashesUpdateTime', utils.nDaysFromNow(4));
+
       return cb(null);
     });
   },
@@ -699,14 +746,14 @@ Badger.prototype = {
   defaultSettings: {
     checkForDNTPolicy: true,
     disabledSites: [],
-    disableFloc: true,
     disableGoogleNavErrorService: true,
     disableHyperlinkAuditing: true,
     disableNetworkPrediction: true,
+    disableTopics: true,
     hideBlockedElements: true,
     learnInIncognito: false,
     learnLocally: false,
-    migrationLevel: 0,
+    migrationLevel: Migrations.length,
     seenComic: false,
     sendDNTSignal: true,
     showCounter: true,
@@ -762,6 +809,8 @@ Badger.prototype = {
     let privateDefaultSettings = {
       blockThreshold: constants.TRACKING_THRESHOLD,
       firstRunTimerFinished: true,
+      nextDntHashesUpdateTime: 0,
+      nextYellowlistUpdateTime: 0,
       showLearningPrompt: false,
       shownBreakageNotes: [],
     };
@@ -778,6 +827,7 @@ Badger.prototype = {
     // remove obsolete settings
     if (self.isUpdate) {
       [
+        "disableFloc",
         "preventWebRTCIPLeak",
         "showTrackingDomains",
         "webRTCIPProtection",
@@ -801,45 +851,15 @@ Badger.prototype = {
    */
   initDeprecations: function () {},
 
-  runMigrations: function() {
-    var self = this;
-    var settings = self.getSettings();
-    var migrationLevel = settings.getItem('migrationLevel');
-    if (migrationLevel === null) {
-      return;
-    }
-    // TODO do not remove any migration methods
-    // TODO w/o refactoring migrationLevel handling to work differently
-    var migrations = [
-      Migrations.changePrivacySettings,
-      Migrations.migrateAbpToStorage,
-      Migrations.migrateBlockedSubdomainsToCookieblock,
-      Migrations.migrateLegacyFirefoxData,
-      Migrations.migrateDntRecheckTimes,
-      // Need to run this migration again for everyone to #1181
-      Migrations.migrateDntRecheckTimes2,
-      Migrations.forgetMistakenlyBlockedDomains,
-      Migrations.unblockIncorrectlyBlockedDomains,
-      Migrations.forgetBlockedDNTDomains,
-      Migrations.reapplyYellowlist,
-      Migrations.forgetNontrackingDomains,
-      Migrations.forgetMistakenlyBlockedDomains,
-      Migrations.resetWebRTCIPHandlingPolicy,
-      Migrations.enableShowNonTrackingDomains,
-      Migrations.forgetFirstPartySnitches,
-      Migrations.forgetCloudflare,
-      Migrations.forgetConsensu,
-      Migrations.resetWebRTCIPHandlingPolicy2,
-      Migrations.resetWebRtcIpHandlingPolicy3,
-      Migrations.forgetOpenDNS,
-      Migrations.unsetWebRTCIPHandlingPolicy,
-    ];
+  runMigrations: function () {
+    let self = this,
+      settings = self.getSettings(),
+      migrationLevel = settings.getItem('migrationLevel');
 
-    for (var i = migrationLevel; i < migrations.length; i++) {
-      migrations[i].call(Migrations, self);
+    for (let i = migrationLevel; i < Migrations.length; i++) {
+      Migrations[i].call(self);
       settings.setItem('migrationLevel', i+1);
     }
-
   },
 
   /**
@@ -973,9 +993,9 @@ Badger.prototype = {
     return this.getSettings().getItem("checkForDNTPolicy");
   },
 
-  isFlocOverwriteEnabled: function() {
-    if (document.interestCohort) {
-      return this.getSettings().getItem("disableFloc");
+  isTopicsOverwriteEnabled: function () {
+    if (document.browsingTopics) {
+      return this.getSettings().getItem("disableTopics");
     }
     return false;
   },
@@ -1168,7 +1188,7 @@ Badger.prototype = {
 
 function startBackgroundListeners() {
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    if (changeInfo.status == "loading" && tab.url) {
+    if (badger.INITIALIZED && changeInfo.status == "loading" && tab.url) {
       badger.updateIcon(tab.id, tab.url);
       badger.updateBadge(tabId);
     }
@@ -1176,13 +1196,17 @@ function startBackgroundListeners() {
 
   // Update icon if a tab is replaced or loaded from cache
   chrome.tabs.onReplaced.addListener(function(addedTabId/*, removedTabId*/) {
-    chrome.tabs.get(addedTabId, function(tab) {
-      badger.updateIcon(tab.id, tab.url);
-    });
+    if (badger.INITIALIZED) {
+      chrome.tabs.get(addedTabId, function(tab) {
+        badger.updateIcon(tab.id, tab.url);
+      });
+    }
   });
 
   chrome.tabs.onActivated.addListener(function (activeInfo) {
-    badger.updateBadge(activeInfo.tabId);
+    if (badger.INITIALIZED) {
+      badger.updateBadge(activeInfo.tabId);
+    }
   });
 }
 

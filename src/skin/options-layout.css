@@ -195,6 +195,29 @@ p, #settingsForm {
     max-height: 400px; /* override popup.css */
 }
 
+/* domain more info tooltips */
+.origin-inner {
+    border-bottom: 1px dotted #333;
+    cursor: pointer;
+    display: inline-block;
+}
+.tooltipster-badger-domain-more-info.tooltipster-sidetip .tooltipster-box {
+    padding: 10px 0;
+}
+.tooltipster-badger-domain-more-info.tooltipster-sidetip .tooltipster-content {
+    font-size: 15px;
+}
+.tooltipster-badger-domain-more-info.tooltipster-sidetip .tooltipster-content a,
+.tooltipster-badger-domain-more-info.tooltipster-sidetip .tooltipster-content a:visited {
+    color: #fff;
+}
+.tooltipster-badger-domain-more-info.tooltipster-sidetip .tooltipster-content a:hover  {
+    color: #f06a0a;
+}
+.tooltipster-badger-domain-more-info.tooltipster-sidetip .tooltipster-content ul {
+    padding-inline-start: 25px;
+}
+
 label[for=hide-widgets-select] {
     display: block;
 }
@@ -329,6 +352,10 @@ header {
         border: 1px solid #555;
     }
 
+    .origin-inner {
+        border-bottom: 1px dotted #ddd;
+    }
+
     #resetData, #removeAllData {
         background-color: #86151d;
         background-image: none;
@@ -387,7 +414,7 @@ header {
         color: #f96a0a;
     }
 
-    .select2-container--default.select2-container--disabled .select2-selection--multiple     {
+    .select2-container--default.select2-container--disabled .select2-selection--multiple {
         background-color: #222;
         opacity: 0.5;
         cursor: not-allowed;

@@ -12,6 +12,7 @@ from selenium.common.exceptions import (
 )
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
 
 
@@ -46,6 +47,27 @@ class OptionsTest(pbtest.PBSeleniumTest):
         self.load_url(self.options_url)
         self.wait_for_script("return window.OPTIONS_INITIALIZED")
 
+    def test_reloading_should_reapply_filters(self):
+        FILTERVAL = "user"
+
+        self.load_options_page()
+        self.select_domain_list_tab()
+
+        # change a domain list filter
+        Select(self.find_el_by_css('#tracking-domains-type-filter')).select_by_value(FILTERVAL)
+
+        # reload page and assert filters are set
+        self.driver.refresh()
+        sel = Select(self.find_el_by_css('#tracking-domains-type-filter'))
+        assert sel.first_selected_option.get_attribute('value') == FILTERVAL
+
+        # open options page in a new window and assert filters are not set
+        self.open_window()
+        self.load_options_page()
+        self.select_domain_list_tab()
+        sel = Select(self.find_el_by_css('#tracking-domains-type-filter'))
+        assert not sel.first_selected_option.get_attribute('value')
+
     def test_added_origin_display(self):
         """Ensure origin and tracker count are displayed."""
         self.clear_tracker_data()
@@ -64,7 +86,7 @@ class OptionsTest(pbtest.PBSeleniumTest):
         except NoSuchElementException:
             self.fail("Tracking origin is not displayed")
 
-    def test_removed_origin_display(self):
+    def test_removing_domain(self):
         """Ensure origin is removed properly."""
         self.clear_tracker_data()
         self.add_domain("pbtest.org", "block")
@@ -72,33 +94,35 @@ class OptionsTest(pbtest.PBSeleniumTest):
         self.load_options_page()
         self.select_domain_list_tab()
 
-        # Remove displayed origin.
-        remove_origin_element = self.find_el_by_xpath(
+        domains = self.driver.find_elements(By.CSS_SELECTOR, 'div.clicker')
+        assert len(domains) == 1, "Should see exactly one domain in the list"
+
+        # remove displayed domain
+        remove_domain_element = self.find_el_by_xpath(
             './/div[@data-origin="pbtest.org"]'
             '//a[@class="removeOrigin"]')
-        remove_origin_element.click()
+        remove_domain_element.click()
 
         # Make sure the alert is present. Otherwise we get intermittent errors.
         WebDriverWait(self.driver, 3).until(EC.alert_is_present())
         self.driver.switch_to.alert.accept()
 
-        # Check that only the 'no trackers' message is displayed.
+        # verify that only the 'no trackers' message is displayed
         try:
             WebDriverWait(self.driver, 5).until(
                 EC.visibility_of_element_located((By.ID, "options_domain_list_no_trackers")))
         except TimeoutException:
-            self.fail("There should be a 'no trackers' message after deleting origin")
+            self.fail("There should be a 'no trackers' message after deleting domain")
 
-        error_message = "Only the 'no trackers' message should be displayed before adding an origin"
+        error_message = "Only the 'no trackers' message should be displayed"
         assert not self.driver.find_element(By.ID, "options_domain_list_trackers").is_displayed(), error_message
 
-        # Check that no origins are displayed.
+        # verify that no domains are displayed
         try:
-            origins = self.driver.find_element(By.ID, "blockedResourcesInner")
+            domains = self.driver.find_elements(By.CSS_SELECTOR, 'div.clicker')
         except NoSuchElementException:
-            origins = None
-        error_message = "Origin should not be displayed after removal"
-        assert origins is None, error_message
+            domains = []
+        assert len(domains) == 0, "No domains should be displayed after removal"
 
     def test_reset_data(self):
         self.load_options_page()

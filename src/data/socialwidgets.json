@@ -356,16 +356,19 @@
     "Spotify Player": {
         "domains": [
             "embed.spotify.com",
-            "open.spotify.com"
+            "open.spotify.com",
+            "podcasters.spotify.com"
         ],
         "buttonSelectors": [
             "iframe[src^='https://embed.spotify.com/']",
-            "iframe[src^='https://open.spotify.com/embed']"
+            "iframe[src^='https://open.spotify.com/embed']",
+            "iframe[src^='https://podcasters.spotify.com/pod/']"
         ],
         "replacementButton": {
             "unblockDomains": [
                 "embed.spotify.com",
-                "open.spotify.com"
+                "open.spotify.com",
+                "podcasters.spotify.com"
             ],
             "type": 3
         }
@@ -447,13 +450,14 @@
             "www.youtube-nocookie.com"
         ],
         "buttonSelectors": [
-            "iframe[src^='//youtube.com/embed/']",
-            "iframe[src^='//www.youtube.com/embed/']",
-            "iframe[src^='http://www.youtube.com/embed/']",
-            "iframe[src^='https://www.youtube.com/embed/']",
-            "iframe[src^='https://youtube.com/embed/']",
-            "iframe[src^='//www.youtube-nocookie.com/embed/']",
-            "iframe[src^='https://www.youtube-nocookie.com/embed/']"
+            "iframe[src^='//youtube.com/embed']",
+            "iframe[src^='//www.youtube.com/embed']",
+            "iframe[src^='http://www.youtube.com/embed']",
+            "iframe[src^='https://www.youtube.com/embed']",
+            "iframe[src^='https://youtube.com/embed']",
+            "iframe[src^='https://www.youtube.com/v/']",
+            "iframe[src^='//www.youtube-nocookie.com/embed']",
+            "iframe[src^='https://www.youtube-nocookie.com/embed']"
         ],
         "replacementButton": {
             "unblockDomains": [

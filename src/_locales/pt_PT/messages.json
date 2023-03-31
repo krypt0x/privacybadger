@@ -7,6 +7,10 @@
         "message": "O Privacy Badger aprende automaticamente a bloquear rastreadores invisíveis.",
         "description": "Extension description sometimes used by extension stores. See also 'intro_welcome', 'share_base_message' and 'intro_learns' messages."
     },
+    "canvas_fingerprinting": {
+        "message": "impressão digital canvas",
+        "description": "Canvas fingerprinting is the tracking method described in https://en.wikipedia.org/wiki/Canvas_fingerprinting"
+    },
     "popup_help_button": {
         "message": "Ajuda",
         "description": "Tooltip shown over the question mark button in the upper right corner of the popup."
@@ -28,15 +32,15 @@
         "description": "Shown in the popup for special browser pages such as the New Tab page and 'about:' pages."
     },
     "popup_disabled_site_header": {
-        "message": "O Privacy Badger está desactivado neste site",
+        "message": "O Privacy Badger está desativado neste site",
         "description": "Shown in the popup on disabled sites."
     },
     "popup_disable_for_site": {
-        "message": "Desativar para este site",
+        "message": "Desativar para este site",
         "description": "Button in the popup."
     },
     "popup_enable_for_site": {
-        "message": "Ativar para este site",
+        "message": "Ativar para este site",
         "description": "Button in the popup, visible if Privacy Badger is disabled on the current site."
     },
     "report_broken_site": {
@@ -368,64 +372,64 @@
         "description": ""
     },
     "options_general_settings": {
-        "message": "Configurações gerais",
+        "message": "Definições gerais",
         "description": "This is an options page tab heading."
     },
     "show_counter_checkbox": {
         "message": "Mostrar número de rastreadores",
-        "description": "Checkbox label on the general settings page"
+        "description": "Checkbox label in general settings."
     },
     "options_enable_dnt_checkbox": {
         "message": "Enviar para os sites os sinais de \"<a href='https://globalprivacycontrol.org/' target='_blank'>controlo da privacidade global (Global Privacy Control)</a>\" e \"<a href='https://www.eff.org/issues/do-not-track' target='_blank'>não rastrear (Do Not Track)</a>\"",
-        "description": "Checkbox label for enabling/disabling the Sec-GPC and DNT signals, found on the general settings page"
+        "description": "Checkbox label for toggling GPC and DNT signals, found in general settings."
     },
     "options_dnt_policy_setting": {
         "message": "Verificar se os <a target='_blank' href='https://www.eff.org/privacybadger/faq#What-is-a-third-party-tracker'>domínios de terceiros</a> estão em conformidade com a <a target='_blank' href='https://www.eff.org/dnt-policy'>política de Não Rastrear da EFF</a>",
-        "description": "Checkbox label on the general settings page"
+        "description": "Checkbox label in general settings."
     },
     "options_privacy_settings": {
         "message": "Privacidade",
-        "description": "Subheading on the general settings options page."
+        "description": "Subheading in general settings."
     },
     "options_disable_hyperlink_auditing": {
         "message": "Impede que os sites façam os rastreamento dos links que clica (\"auditoria de hiperligações\")",
-        "description": "Checkbox label found on the general settings page"
+        "description": "Checkbox label in general settings."
     },
     "options_disable_network_prediction": {
         "message": "Desativar pré-carregamento",
-        "description": "Checkbox label found on the general settings page"
+        "description": "Checkbox label in general settings."
     },
     "options_disable_google_nav_error_service": {
         "message": "Desativar o envio de endereços web que visita para o Google. Isto também desativa as sugestões para páginas similares quando uma página não é encontrada.",
-        "description": "(Chrome only) Checkbox label found on the general settings page"
+        "description": "(Chrome only) Checkbox label in general settings."
     },
     "options_disable_floc": {
-        "message": "Desativar o Federated Learning of Cohorts do Google (FLoC)",
-        "description": "(Chrome only) Checkbox label on the general settings page."
+        "message": "Desativar o Topics API do Google",
+        "description": "Checkbox label in general settings. For what this disables, see https://brave.com/web-standards-at-brave/7-googles-topics-api/"
     },
     "options_advanced_settings": {
         "message": "Avançado",
-        "description": "Subheading on the general settings options page."
+        "description": "Subheading in general settings."
     },
     "options_learn_setting": {
         "message": "Aprender a bloquear novos rastreadores com a sua navegação",
-        "description": "Checkbox label on the general settings page"
+        "description": "Checkbox label in general settings."
     },
     "local_learning_warning": {
         "message": "Ativar a aprendizagem de bloquear novos rastreadores pode torná-lo mais identificável nos sites",
-        "description": "Tooltip on the general settings page"
+        "description": "Tooltip in general settings."
     },
     "options_show_nontracking_domains_checkbox": {
         "message": "Mostrar domínios que não parecem estar a rastreá-lo",
-        "description": "Checkbox label on the general settings page. Should match wording used in the 'non_tracker' message."
+        "description": "Checkbox label in general settings. Should match wording used in the 'non_tracker' message."
     },
     "options_incognito_setting": {
         "message": "Aprender em janelas privadas/anónimas",
-        "description": "Checkbox label on the general settings page"
+        "description": "Checkbox label in general settings."
     },
     "options_incognito_warning": {
         "message": "Ativar a aprendizagem em janelas privadas/anónimas/incógnito pode deixar rastos do seu histórico de navegação privada no seu computador. Por padrão, o Privacy Badger irá bloquear rastreadores já conhecidos em janelas privadas/anónimas/incógnito, mas não aprenderá nada sobre os novos rastreadores. Pode querer ativar esta opção caso utilize muito o modo de navegação em janelas privadas/anónimas/incógnito.",
-        "description": "Tooltip on the general settings page"
+        "description": "Tooltip in general settings."
     },
     "disabled_sites": {
         "message": "Sites desativados",
@@ -552,6 +556,16 @@
         "message": "Mostrar domínios que o seu Badger ainda não se decidiu bloquear:",
         "description": "Label for a checkbox on the Tracking Domains options page tab. Should match wording used in the 'not_yet_blocked_header' message."
     },
+    "options_domain_list_sites": {
+        "message": "$DOMAIN$ foi visto a rastrear os seguintes sites:",
+        "description": "Part of a tooltip available for each domain in the tracking domains list on the options page.",
+        "placeholders": {
+            "domain": {
+                "content": "$1",
+                "example": "example.com"
+            }
+        }
+    },
     "options_remove_origin_confirm": {
         "message": "Tem certeza de que deseja remover esse domínio do Privacy Badger?",
         "description": "Confirmation shown when you click to remove a domain from Privacy Badger's tracking domains list on the options page."
@@ -561,7 +575,7 @@
         "description": "This is an options page tab heading."
     },
     "manage_data_intro": {
-        "message": "Importar dados do utilizador:<ul><li>Substitui as configurações gerais</li><li>Combina as listas de sites desativados</li><li>Combina informações sobre os rastreadores que o Privacy Badger detetou</li><li>Substitui personalizações do controlo deslizante</li></ul>",
+        "message": "Importar dados do utilizador:<ul><li>Substitui as definições gerais</li><li>Combina as listas de sites desativados</li><li>Combina informações sobre os rastreadores que o Privacy Badger detetou</li><li>Substitui personalizações do controlo deslizante</li></ul>",
         "description": "A brief explanation of what happens when you import Badger user data. Shown above the import/export user data buttons under the Manage Data options page tab."
     },
     "export_user_data": {
@@ -589,7 +603,7 @@
         "description": ""
     },
     "import_successful": {
-        "message": "Lista de rastreadores e configurações atualizadas com sucesso!",
+        "message": "Lista de rastreadores e definições atualizadas com sucesso!",
         "description": ""
     },
     "sync_intro": {
@@ -629,15 +643,15 @@
         "description": "'Error' message when there is on cloud data to download."
     },
     "reset_data": {
-        "message": "Limpar domínios de rastreamento",
+        "message": "Repor domínios de rastreamento",
         "description": "Caption above reset button"
     },
     "reset": {
-        "message": "Limpar",
+        "message": "Repor",
         "description": "Options page button, under the Manage Data tab"
     },
     "reset_data_confirm": {
-        "message": "Limpar os domínios de rastreamento irá:\n\n  • Eliminar todos os dados sobre rastreadores que o Privacy Badger aprendeu com sua navegação\n  • Restaurar a lista de domínios de rastreamento para a última lista pré-criada (visite www.eff.org/badger-pretraining para saber mais)",
+        "message": "Repor os domínios de rastreamento irá:\n\n  • Eliminar todos os dados sobre rastreadores que o Privacy Badger aprendeu com sua navegação\n  • Restaurar a lista de domínios de rastreamento para a última lista pré-criada (visite www.eff.org/badger-pretraining para saber mais)",
         "description": "Pop-up triggered when the reset_data button is clicked"
     },
     "remove_all_data": {

@@ -114,7 +114,14 @@
                 <input type="checkbox" id="tracking-domains-show-not-yet-blocked">
               </li>
           </ul>
-          <div id="blockedResources"></div>
+          <div id="blockedResources">
+            <div class="keyContainer">
+              <div class="key">
+                <img src="/icons/UI-icons-red.svg" class="tooltip" title="i18n_tooltip_block"><img src="/icons/UI-icons-yellow.svg" class="tooltip" title="i18n_tooltip_cookieblock"><img src="/icons/UI-icons-green.svg" class="tooltip" title="i18n_tooltip_allow">
+              </div>
+            </div>
+            <div id="blockedResourcesInner" class="clickerContainer"></div>
+          </div>
       </div>
     </div>
   </div>
@@ -195,12 +202,12 @@
           </span>
         </label>
       </div>
-      <div class="checkbox" id="disable-floc" style="display:none">
+      <div class="checkbox" id="disable-topics" style="display:none">
         <label>
-          <input type="checkbox" id="disable-floc-checkbox">
+          <input type="checkbox" id="disable-topics-checkbox">
           <span>
             <span class="i18n_options_disable_floc"></span>
-            <a href="https://www.eff.org/deeplinks/2021/03/googles-floc-terrible-idea" target="_blank"><span class="ui-icon ui-icon-circle-b-help"></span></a>
+            <a href="https://brave.com/web-standards-at-brave/7-googles-topics-api/" target="_blank"><span class="ui-icon ui-icon-circle-b-help"></span></a>
           </span>
         </label>
       </div>
