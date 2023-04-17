@@ -32,6 +32,7 @@ amazonaws.com
 coin.amazonpay.com
 coin-eu.amazonpay.com
 americanexpress.com
+ampproject.net
 amuniversal.com
 anchor.fm
 play.aniview.com
@@ -176,6 +177,7 @@ eurolandir.com
 eventbrite.com
 everyaction.com
 expedia.com
+privacy.ezodn.com
 s-static.ak.facebook.com
 staticxx.facebook.com
 fastly.net
@@ -329,8 +331,11 @@ cdnapisec.kaltura.com
 cdnbakmi.kaltura.com
 cdnsecakmi.kaltura.com
 cfvod.kaltura.com
+api.eu.kaltura.com
+cfvod.eu.kaltura.com
 kaf.kaltura.com
 klive.kaltura.com
+ott.kaltura.com
 upload.kaltura.com
 www.kaltura.com
 ssl.kaptcha.com
@@ -419,6 +424,7 @@ openload.co
 openstreetmap.org
 cdn.optimizely.com
 oraclecloud.com
+consent.api.osano.com
 cmp.osano.com
 paddle.com
 pandacommerce.net
