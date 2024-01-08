@@ -105,27 +105,32 @@ function BadgerPen(callback) {
 
     // see if we have any enterprise/admin/group policy overrides
     getManagedStorage(function (managedStore) {
-      // there are values in managed storage
-      if (utils.isObject(managedStore) && Object.keys(managedStore).length) {
-        ingestManagedStorage(managedStore);
-        setTimeout(function () {
-          badger.initWelcomePage();
-        }, 0);
-        return callback();
+      if (utils.isObject(managedStore)) {
+        // there are values in managed storage
+        if (Object.keys(managedStore).length) {
+          ingestManagedStorage(managedStore);
+          setTimeout(function () {
+            badger.initWelcomePage();
+          }, 0);
+          return callback();
+        }
+
+        // managed storage is an empty object and we just got installed
+        if (badger.isFirstRun) {
+          // poll for managed storage to work around Chromium bug
+          pollForManagedStorage(0, function () {
+            badger.initWelcomePage();
+          });
+          return callback();
+        }
       }
 
-      // managed storage is empty
+      // managed storage is not an object,
+      // or it is an empty object but this isn't the first run
 
-      if (badger.isFirstRun) {
-        // poll for managed storage to work around Chromium bug
-        pollForManagedStorage(0, function () {
-          badger.initWelcomePage();
-        });
-      } else {
-        setTimeout(function () {
-          badger.initWelcomePage();
-        }, 0);
-      }
+      setTimeout(function () {
+        badger.initWelcomePage();
+      }, 0);
 
       callback();
     });
@@ -147,7 +152,7 @@ BadgerPen.prototype = {
     // {
     //   <tracker_base>: {
     //     <site_base>: [
-    //       <tracking_type>, // "canvas" or "pixelcookieshare"
+    //       <tracking_type>, // "beacon", "canvas", or "pixelcookieshare"
     //       ...
     //     ],
     //     ...
@@ -155,6 +160,16 @@ BadgerPen.prototype = {
     //   ...
     // }
     "tracking_map",
+
+    // logs fingerprinter script domains and paths:
+    // {
+    //   <script_fqdn>: {
+    //     <script_path>: 1,
+    //     ...
+    //   },
+    //   ...
+    // }
+    "fp_scripts",
   ],
 
   getStore: function (key) {
@@ -170,7 +185,7 @@ BadgerPen.prototype = {
   clearTrackerData: function () {
     let self = this;
 
-    for (let store_name of ['action_map', 'snitch_map', 'tracking_map']) {
+    for (let store_name of ['action_map', 'snitch_map', 'tracking_map', 'fp_scripts']) {
       let store = self.getStore(store_name);
       for (let key of store.keys()) {
         store.deleteItem(key);
@@ -310,7 +325,7 @@ BadgerPen.prototype = {
    */
   getBestAction: function (fqdn) {
     let self = this,
-      action_map = self.getStore('action_map'),
+      actionStore = self.getStore('action_map'),
       best_action = constants.NO_TRACKING,
       subdomains = utils.explodeSubdomains(fqdn);
 
@@ -338,12 +353,11 @@ BadgerPen.prototype = {
     // and keep the one which has the best score.
     for (let i = subdomains.length - 1; i >= 0; i--) {
       let domain = subdomains[i];
-      if (action_map.hasItem(domain)) {
+      if (actionStore.hasItem(domain)) {
         let action = self.getAction(
-          action_map.getItem(domain),
+          actionStore.getItem(domain),
           // ignore DNT unless it's directly on the FQDN being checked
-          domain != fqdn
-        );
+          domain != fqdn);
         if (getScore(action) >= getScore(best_action)) {
           best_action = action;
         }
@@ -394,7 +408,9 @@ BadgerPen.prototype = {
     }
     actionObj[actionType] = action;
 
-    if (window.DEBUG) { // to avoid needless JSON.stringify calls
+    if (window.DEBUG && badger.INITIALIZED) {
+      // to avoid (A) needless JSON.stringify calls
+      // and (B) thousands of messages from loading seed data
       log(msg, domain, actionType, JSON.stringify(action));
     }
     action_map.setItem(domain, actionObj);
@@ -454,40 +470,6 @@ BadgerPen.prototype = {
   },
 
   /**
-   * Removes a base domain and its subdomains from snitch and action maps.
-   * Preserves action map entries with user overrides.
-   *
-   * @param {String} base_domain
-   */
-  forget: function (base_domain) {
-    let self = this,
-      dot_base = '.' + base_domain,
-      actionMap = self.getStore('action_map'),
-      actions = actionMap.getItemClones(),
-      snitchMap = self.getStore('snitch_map'),
-      trackingMap = self.getStore('tracking_map');
-
-    if (snitchMap.getItem(base_domain)) {
-      log("Removing %s from snitch_map", base_domain);
-      snitchMap.deleteItem(base_domain);
-    }
-
-    if (trackingMap.getItem(base_domain)) {
-      log("Removing %s from tracking_map", base_domain);
-      trackingMap.deleteItem(base_domain);
-    }
-
-    for (let domain in actions) {
-      if (domain == base_domain || domain.endsWith(dot_base)) {
-        if (actions[domain].userAction == "") {
-          log("Removing %s from action_map", domain);
-          actionMap.deleteItem(domain);
-        }
-      }
-    }
-  },
-
-  /**
    * Forces a write of a Badger storage object's contents to extension storage.
    */
   forceSync: function (store_name, callback) {
@@ -502,7 +484,7 @@ BadgerPen.prototype = {
   },
 
   /**
-   * Simplifies updating tracking_map.
+   * Helps update tracking_map.
    */
   recordTrackingDetails: function (tracker_base, site_base, tracking_type) {
     let self = this,
@@ -516,6 +498,16 @@ BadgerPen.prototype = {
     }
     trackingDataStore.setItem(tracker_base, entry);
   },
+
+  /**
+   * Helps update fp_scripts.
+   */
+  recordFingerprintingScript: function (script_fqdn, script_path) {
+    let fpStore = this.getStore('fp_scripts'),
+      entry = fpStore.getItem(script_fqdn) || {};
+    entry[script_path] = 1;
+    fpStore.setItem(script_fqdn, entry);
+  }
 };
 
 /**
@@ -629,7 +621,8 @@ BadgerStorage.prototype = {
    * @param {Object} mapData The storage object to merge into existing storage
    */
   merge: function (mapData) {
-    const self = this;
+    const self = this,
+      ignoredSiteBases = badger.getPrivateSettings().getItem('ignoredSiteBases');
 
     if (self.name == "settings_map") {
       for (let prop in mapData) {
@@ -661,31 +654,30 @@ BadgerStorage.prototype = {
       }
 
     } else if (self.name == "action_map") {
+      let snitchMap = badger.storage.getStore('snitch_map');
+
       for (let domain in mapData) {
         let newEntry = mapData[domain],
           existingEntry = self.getItem(domain);
 
-        // copy over any user settings from the merged-in data
-        if (newEntry.userAction) {
-          if (existingEntry) {
+        if (existingEntry) {
+          // for existing domains, overwrite with user action set in the import
+          if (newEntry.userAction) {
             existingEntry.userAction = newEntry.userAction;
             self.setItem(domain, existingEntry);
-          } else {
-            self.setItem(domain, Object.assign(_newActionMapObject(), newEntry));
           }
-        }
 
-        // handle Do Not Track
-        if (existingEntry) {
           // merge DNT settings if the imported data has a more recent update
           if (newEntry.nextUpdateTime > existingEntry.nextUpdateTime) {
             existingEntry.nextUpdateTime = newEntry.nextUpdateTime;
             existingEntry.dnt = newEntry.dnt;
             self.setItem(domain, existingEntry);
           }
+
         } else {
-          // import action map entries for new DNT-compliant domains
-          if (newEntry.dnt) {
+          // import user-set domains, DNT-compliant domains,
+          // and also domains present in snitch_map
+          if (newEntry.userAction || newEntry.dnt || snitchMap.getItem(getBaseDomain(domain))) {
             self.setItem(domain, Object.assign(_newActionMapObject(), newEntry));
           }
         }
@@ -695,19 +687,26 @@ BadgerStorage.prototype = {
       for (let tracker_base in mapData) {
         let siteBases = mapData[tracker_base];
         for (let site_base of siteBases) {
-          badger.heuristicBlocking.updateTrackerPrevalence(
-            tracker_base, tracker_base, site_base);
+          if (!ignoredSiteBases.includes(site_base)) {
+            badger.heuristicBlocking.updateTrackerPrevalence(
+              tracker_base, tracker_base, site_base);
+          }
         }
       }
 
     } else if (self.name == "tracking_map") {
+      // keep up to the number of entries in snitch_map for the tracker,
+      // favoring ones with matching site base domains in snitch_map
       let snitchMap = badger.storage.getStore('snitch_map');
+
       for (let tracker_base in mapData) {
         // merge only if we have a corresponding snitch_map entry
         let snitchItem = snitchMap.getItem(tracker_base);
         if (!snitchItem) {
           continue;
         }
+
+        // first add the entries found in snitch_map
         for (let site_base in mapData[tracker_base]) {
           if (!snitchItem.includes(site_base)) {
             continue;
@@ -716,6 +715,37 @@ BadgerStorage.prototype = {
             badger.storage.recordTrackingDetails(
               tracker_base, site_base, tracking_type);
           }
+        }
+
+        // now see if we should add any more entries up to the limit
+        let trackerItem = self.getItem(tracker_base);
+        if (trackerItem && Object.keys(trackerItem).length >= snitchItem.length) {
+          continue;
+        }
+        for (let site_base in mapData[tracker_base]) {
+          if (snitchItem.includes(site_base) || ignoredSiteBases.includes(site_base)) {
+            continue;
+          }
+          for (let tracking_type of mapData[tracker_base][site_base]) {
+            badger.storage.recordTrackingDetails(
+              tracker_base, site_base, tracking_type);
+          }
+          if (Object.keys(self.getItem(tracker_base)).length >= snitchItem.length) {
+            break;
+          }
+        }
+      }
+
+    } else if (self.name == "fp_scripts") {
+      let snitchMap = badger.storage.getStore('snitch_map');
+      for (let script_fqdn in mapData) {
+        // merge only if we have a corresponding snitch_map entry
+        let snitchItem = snitchMap.getItem(getBaseDomain(script_fqdn));
+        if (!snitchItem) {
+          continue;
+        }
+        for (let script_path in mapData[script_fqdn]) {
+          badger.storage.recordFingerprintingScript(script_fqdn, script_path);
         }
       }
     }

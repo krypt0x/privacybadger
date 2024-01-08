@@ -6,7 +6,7 @@
     "eslint": "~7.32.0"
   },
   "devDependencies": {
-    "jquery": "3.5.1",
+    "jquery": "3.7.0",
     "jquery-smooth-scroll": "2.2.0",
     "jquery-ui": "1.13.2",
     "jquery-ui-iconfont": "2.3.2",
@@ -14,7 +14,7 @@
     "select2": "4.0.11",
     "sinon": "2.0.0",
     "tooltipster": "4.2.6",
-    "web-ext": "~7.6.1"
+    "web-ext": "~7.7.0"
   },
   "private": true
 }

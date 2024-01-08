@@ -131,6 +131,13 @@ const hostnames = {
     ],
     widgetName: "Google reCAPTCHA"
   },
+  'platform.twitter.com': {
+    match: MATCH_PREFIX,
+    tokens: [
+      '/widgets.js',
+    ],
+    widgetName: "X (Twitter)"
+  },
   'www.youtube.com': {
     match: MATCH_PREFIX,
     tokens: [
@@ -138,6 +145,14 @@ const hostnames = {
       '/player_api',
     ],
     widgetName: "YouTube"
+  },
+  'cdn.jsdelivr.net': {
+    match: MATCH_SUFFIX,
+    tokens: [
+      '/npm/@fingerprintjs/fingerprintjs@3/dist/fp.js',
+      '/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js',
+      '/npm/@fingerprintjs/fingerprintjs@3.3.2/dist/fp.js',
+    ]
   },
 };
 
@@ -183,6 +198,12 @@ const surrogates = {
 
   '/iframe_api': 'youtube.js',
   '/player_api': 'youtube.js',
+
+  '/npm/@fingerprintjs/fingerprintjs@3/dist/fp.js': 'fingerprintjs3.js',
+  '/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js': 'fingerprintjs3.js',
+  '/npm/@fingerprintjs/fingerprintjs@3.3.2/dist/fp.js': 'fingerprintjs3.js',
+
+  '/widgets.js': 'twitter.js',
 
   '/omweb-v1.js': 'noop.js',
 

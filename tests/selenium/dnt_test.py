@@ -31,6 +31,9 @@ class DntTest(pbtest.PBSeleniumTest):
         text = self.driver.find_element(By.TAG_NAME, 'body').text
 
         try:
+            # work around MS Edge JSON viewer garbage
+            if text.startswith('1\n'):
+                text = '{' + text.partition('{')[2]
             headers = json.loads(text)['headers']
         except ValueError:
             print(f"\nFailed to parse JSON from {repr(text)}")
@@ -217,9 +220,13 @@ class DntTest(pbtest.PBSeleniumTest):
         self.load_url(DntTest.NAVIGATOR_DNT_TEST_URL, wait_for_body_text=True)
         body_text = self.driver.find_element(By.TAG_NAME, 'body').text
         assert body_text == 'no tracking (navigator.doNotTrack="1")', (
-            'navigator.DoNotTrack should have been set to "1"')
+            'navigator.doNotTrack should have been set to "1"')
         assert self.js("return navigator.globalPrivacyControl === true"), (
             "navigator.globalPrivacyControl should have been set to true")
+        assert self.js("""
+return Object.getOwnPropertyDescriptor(
+  Navigator.prototype, 'globalPrivacyControl')?.get?.call(navigator);
+"""), "GPC should be set on Navigator.prototype"
 
     def test_navigator_unmodified_when_disabled_on_site(self):
         self.disable_badger_on_site(DntTest.NAVIGATOR_DNT_TEST_URL)
@@ -229,9 +236,13 @@ class DntTest(pbtest.PBSeleniumTest):
         # navigator.doNotTrack defaults to null in Chrome, "unspecified" in Firefox
         body_text = self.driver.find_element(By.TAG_NAME, 'body').text
         assert body_text[0:5] == 'unset', (
-            "navigator.DoNotTrack should have been left unset")
-        assert self.js("return typeof navigator.globalPrivacyControl == 'undefined'"), (
-            "navigator.globalPrivacyControl should have been left unset")
+            "navigator.doNotTrack should be unset or \"unspecified\"")
+
+        # GPC on Navigator should be unset (Chrome) or False (Firefox)
+        assert self.js("""
+return typeof navigator.globalPrivacyControl == 'undefined' ||
+  navigator.globalPrivacyControl === false;
+"""), "navigator.globalPrivacyControl should be unset or False"
 
     def test_navigator_unmodified_when_dnt_disabled(self):
         self.load_url(self.options_url)
@@ -243,9 +254,13 @@ class DntTest(pbtest.PBSeleniumTest):
         # navigator.doNotTrack defaults to null in Chrome, "unspecified" in Firefox
         body_text = self.driver.find_element(By.TAG_NAME, 'body').text
         assert body_text[0:5] == 'unset', (
-            "navigator.DoNotTrack should have been left unset")
-        assert self.js("return typeof navigator.globalPrivacyControl == 'undefined'"), (
-            "navigator.globalPrivacyControl should have been left unset")
+            "navigator.doNotTrack should be unset or \"unspecified\"")
+
+        # GPC on Navigator should be unset (Chrome) or False (Firefox)
+        assert self.js("""
+return typeof navigator.globalPrivacyControl == 'undefined' ||
+  navigator.globalPrivacyControl === false;
+"""), "navigator.globalPrivacyControl should be unset or False"
 
 
 if __name__ == "__main__":

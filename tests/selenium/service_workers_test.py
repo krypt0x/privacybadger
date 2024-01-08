@@ -3,7 +3,12 @@
 
 import unittest
 
+import pytest
+
 import pbtest
+
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 class ServiceWorkersTest(pbtest.PBSeleniumTest):
@@ -54,6 +59,7 @@ class ServiceWorkersTest(pbtest.PBSeleniumTest):
         assert tab_data['host'] == self.FIXTURE_HOST, (
             "Unexpected first-tab hostname in tabData")
 
+    @pytest.mark.flaky(reruns=3)
     def test_redirect_to_sw_cached_page(self):
         self.init_sw_page()
 
@@ -61,6 +67,9 @@ class ServiceWorkersTest(pbtest.PBSeleniumTest):
         self.load_url("https://httpbin.org/redirect-to"
             "?url=https%3A%2F%2Fefforg.github.io%2Fprivacybadger-test-fixtures%2Fhtml%2Fservice_workers.html"
             "&status_code=302")
+
+        # wait for URL to change
+        WebDriverWait(self.driver, 10).until(EC.url_to_be(self.FIXTURE_URL))
 
         # open new window (to avoid clearing badger.tabData) and verify results
         self.open_window()

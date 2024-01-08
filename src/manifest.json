@@ -1,24 +1,26 @@
 {
-  "version": "2023.1.31",
+  "version": "2023.12.1",
   "author": {
     "email": "eff.software.projects@gmail.com"
   },
-  "applications": {
+  "browser_specific_settings": {
     "gecko": {
       "id": "jid1-MnnxcxisBPnSXQ@jetpack",
-      "strict_min_version": "60.0"
+      "strict_min_version": "78.0"
+    },
+    "gecko_android": {
+      "strict_min_version": "78.0"
     }
   },
   "incognito": "spanning",
   "permissions": [
+    "<all_urls>",
+    "alarms",
     "tabs",
-    "http://*/*",
-    "https://*/*",
     "webNavigation",
     "webRequest",
     "webRequestBlocking",
     "storage",
-    "cookies",
     "privacy"
   ],
   "background": {
@@ -42,9 +44,13 @@
     {
       "js": [
         "js/firstparties/lib/utils.js",
-        "js/firstparties/google-search.js"
+        "js/firstparties/google.js"
       ],
       "matches": [
+        "https://docs.google.com/*",
+        "http://docs.google.com/*",
+        "https://mail.google.com/*",
+        "http://mail.google.com/*",
         "https://www.google.com/*",
         "http://www.google.com/*",
         "https://www.google.ad/*",
@@ -426,20 +432,6 @@
         "https://www.google.cat/*",
         "http://www.google.cat/*"
       ],
-      "run_at": "document_idle"
-    },
-    {
-      "js": [
-        "js/firstparties/lib/utils.js",
-        "js/firstparties/google-static.js"
-      ],
-      "matches": [
-        "https://hangouts.google.com/*",
-        "http://hangouts.google.com/*",
-        "https://docs.google.com/*",
-        "http://docs.google.com/*"
-      ],
-      "all_frames": true,
       "run_at": "document_idle"
     },
     {

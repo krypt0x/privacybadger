@@ -4,6 +4,7 @@
  */
 let multiDomainFirstPartiesArray = [
   ["1800contacts.com", "800contacts.com"],
+  ["2gis.ru", "2gis.ae", "2gis.kg", "2gis.kz", "2gis.com"],
   ["360.cn", "360.com", "360kuai.com", "360safe.com", "qhimg.com", "qhupdate.com"],
   ["37signals.com", "basecamp.com", "basecamphq.com", "highrisehq.com"],
   ["9gag.com", "9cache.com"],
@@ -347,6 +348,7 @@ let multiDomainFirstPartiesArray = [
     "feizhu.com",
     "fliggy.com",
     "fliggy.hk",
+    "freshippo.com",
     "i52hz.com",
     "jiaoyimao.com",
     "jingguan.ai",
@@ -446,6 +448,8 @@ let multiDomainFirstPartiesArray = [
     "lazada.co.th",
     "lazada.sg",
     "lazada.vn",
+
+    "lazcdn.com",
   ],
   ["allstate.com", "myallstate.com"],
   ["altra.org", "altraonline.org"],
@@ -469,7 +473,9 @@ let multiDomainFirstPartiesArray = [
     "amazon.in",
     "amazon.it",
     "amazon.nl",
+    "amazon.pl",
     "amazon.sa",
+    "amazon.se",
     "amazon.sg",
 
     "audible.com",
@@ -486,6 +492,7 @@ let multiDomainFirstPartiesArray = [
     "abebooks.co.uk",
     "acx.com",
     "amazonaws.cn",
+    "boxofficemojo.com",
     "amazoninspire.com",
     "amazon.jobs",
     "aws.training",
@@ -510,11 +517,13 @@ let multiDomainFirstPartiesArray = [
     "ttvnw.net",
 
     "a2z.com",
+    "amazon.dev",
     "amazonpay.com",
     "media-amazon.com",
     "media-imdb.com",
     "ssl-images-amazon.com",
   ],
+  ["ameba.jp", "ameblo.jp"],
   [
     "americanexpress.com",
 
@@ -541,7 +550,6 @@ let multiDomainFirstPartiesArray = [
 
     "aexp-static.com",
   ],
-  ["ameritrade.com", "tdameritrade.com"],
   [
     "ancestry.com",
 
@@ -601,16 +609,20 @@ let multiDomainFirstPartiesArray = [
   [
     "thearenagroup.net",
 
+    "athlonsports.com",
     "dengarden.com",
     "exemplore.com",
     "fashionista.com",
     "howcast.com",
     "hubpages.com",
     "indiancountrytoday.com",
+    "lamag.com",
     "mensjournal.com",
+    "nationaldaycalendar.com",
     "pairedlife.com",
     "parade.com",
     "pethelpful.com",
+    "psmag.com",
     "si.com",
     "thespun.com",
     "thestreet.com",
@@ -692,6 +704,7 @@ let multiDomainFirstPartiesArray = [
   ["automattic.com", "wordpress.com", "wordpress.org", "wp.com"],
   ["avito.ru", "avito.st"],
   ["avon.com", "youravon.com"],
+  ["axept.io", "axeptio.eu"],
   ["bahn.de", "img-bahn.de", "static-bahn.de"],
   [
     "baidu.com",
@@ -703,9 +716,11 @@ let multiDomainFirstPartiesArray = [
     "iqiyi.com",
 
     "baidustatic.com",
+    "bcebos.com",
     "bdimg.com",
     "bdstatic.com",
   ],
+  ["bahnhof.se", "bahnhof.cloud", "bahnhof.net"],
   ["balsamiq.com", "balsamiq.cloud"],
   ["bancomer.com", "bancomer.com.mx", "bbvanet.com.mx"],
   [
@@ -785,9 +800,9 @@ let multiDomainFirstPartiesArray = [
     "vrak.tv",
     "ztele.com",
   ],
-  ["betfair.com", "betfair.it", "betfair.se", "cdnbf.net"],
+  ["betfair.com", "betfair.com.au", "betfair.es", "betfair.it", "betfair.se", "cdnbf.net"],
   ["bhphotovideo.com", "bandh.com", "bhphoto.com", "bnh.com"],
-  ["bilibili.com", "acgvideo.com", "biliapi.net", "biliapi.com", "biligame.com", "hdslb.com"],
+  ["bilibili.com", "acgvideo.com", "biliapi.net", "biliapi.com", "bilibilicomics.com", "biligame.com", "hdslb.com"],
   ["binance.com", "binance.cloud", "binance.vision", "bnbstatic.com"],
   ["bitrix24.com", "bitrix24.ru", "1c-bitrix.ru", "bitrix.info", "bitrix24.net"],
   [
@@ -800,6 +815,7 @@ let multiDomainFirstPartiesArray = [
     "worldofwarcraft.com",
   ],
   ["bloomberg.com", "bbthat.com", "bwbx.io", "bloomberg.co.jp"],
+  ["bmw.com", "bmw.de", "bmwgroup.com", "bmwusa.com", "mini.de", "bmwfs.com"],
   ["boardgamearena.com", "boardgamearena.net"],
   ["booking.com", "rentalcars.com", "bstatic.com"],
   ["bostonglobe.com", "boston.com", "statnews.com", "bostonglobemedia.com"],
@@ -808,6 +824,7 @@ let multiDomainFirstPartiesArray = [
     "bytedance.com",
 
     "douyin.com",
+    "ixigua.com",
     "tiktok.com",
 
     "byteoversea.com",
@@ -817,6 +834,8 @@ let multiDomainFirstPartiesArray = [
     "tiktokcdn.com",
     "tiktokcdn-us.com",
     "tiktokv.com",
+    "tiktokv.us",
+    "ttwstatic.com",
   ],
   [
     "bustle.company",
@@ -918,6 +937,7 @@ let multiDomainFirstPartiesArray = [
     "tibco.com",
   ],
   ["cms.gov", "medicare.gov", "mymedicare.gov"],
+  ["coach.com", "coachoutlet.com"],
   ["codepen.io", "cdpn.io"],
   ["concur.com", "concursolutions.com"],
   [
@@ -940,7 +960,9 @@ let multiDomainFirstPartiesArray = [
     "cntraveler.com",
     "epicurious.com",
     "glamour.com",
+    "glamourmagazine.co.uk",
     "gq.com",
+    "gq-magazine.co.uk",
     "lennyletter.com",
     "newyorker.com",
     "pitchfork.com",
@@ -949,15 +971,37 @@ let multiDomainFirstPartiesArray = [
     "them.us",
     "vanityfair.com",
     "vogue.com",
+    "vogue.fr",
+    "vogue.in",
+    "vogue.it",
     "wired.com",
+    "wired.co.uk",
+    "wired.it",
 
     "condenastdigital.com",
   ],
+  ["costco.com", "costco.ca"],
   ["cox.com", "cox.net"],
   ["cricketwireless.com", "aiowireless.com"],
-  ["ctrip.com", "c-ctrip.com", "trip.com"],
   ["datadoghq.eu", "datadoghq.com"],
   ["dcu.org", "dcu-online.org"],
+  [
+    "deliveroo.com",
+
+    "deliveroo.ae",
+    "deliveroo.be",
+    "deliveroo.com.au",
+    "deliveroo.com.kw",
+    "deliveroo.com.sg",
+    "deliveroo.co.uk",
+    "deliveroo.de",
+    "deliveroo.es",
+    "deliveroo.fr",
+    "deliveroo.ie",
+    "deliveroo.it",
+    "deliveroo.nl",
+  ],
+  ["dickssportinggoods.com", "goinggoinggone.com", "golfgalaxy.com", "publiclands.com", "vrst.com"],
   ["dictionary.com", "thesaurus.com", "sfdict.com"],
   [
     "digikey.com",
@@ -1108,6 +1152,7 @@ let multiDomainFirstPartiesArray = [
     "dmgmediaprivacy.co.uk",
   ],
   ["dmm.com", "dmm.co.jp"],
+  ["doctolib.fr", "doctolib.de", "doctolib.it", "doctolib.com"],
   [
     "dpgmediagroup.com",
 
@@ -1129,6 +1174,7 @@ let multiDomainFirstPartiesArray = [
     "hardware.info",
     "hln.be",
     "humo.be",
+    "independer.nl",
     "parool.nl",
     "persgroepinternational.be",
     "persgroepinternational.com",
@@ -1254,6 +1300,7 @@ let multiDomainFirstPartiesArray = [
     "ebaystatic.com",
     "ebay-us.com",
   ],
+  ["elcorteingles.es", "elcorteingles.pt", "primeriti.es", "grupoelcorteingles.es"],
   ["ename.com", "ename.cn", "ename.net"],
   [
     "enterprise.com",
@@ -1402,6 +1449,7 @@ let multiDomainFirstPartiesArray = [
     "evbuc.com",
     "eventbriteapi.com",
   ],
+  ["eventim.de", "eventim.com.br", "eventim.com", "ticketone.it"],
   [
     "expedia.com",
 
@@ -1415,6 +1463,7 @@ let multiDomainFirstPartiesArray = [
     "mrjet.se",
     "orbitz.com",
     "travelocity.com",
+    "travelocity.ca",
     "wotif.com",
 
     "expedia-aarp.com",
@@ -1577,6 +1626,7 @@ let multiDomainFirstPartiesArray = [
   ],
   ["fastmail.com", "fastmailusercontent.com"],
   ["firefox.com", "firefoxusercontent.com", "mozilla.org"],
+  ["focuschina.com", "doba.com", "made-in-china.com", "micstatic.com"],
   [
     "foxcorporation.com",
 
@@ -1589,6 +1639,8 @@ let multiDomainFirstPartiesArray = [
 
     "fox10phoenix.com",
     "fox13news.com",
+    "fox13seattle.com",
+    "fox26houston.com",
     "fox29.com",
     "fox2detroit.com",
     "fox32chicago.com",
@@ -1601,6 +1653,7 @@ let multiDomainFirstPartiesArray = [
     "fox7austin.com",
     "fox9.com",
     "foxla.com",
+    "ktvu.com",
     "q13fox.com",
 
     "fncstatic.com",
@@ -1654,6 +1707,67 @@ let multiDomainFirstPartiesArray = [
   ],
   ["g2.com", "g2crowd.com"],
   ["gamestar.de", "gamepro.de", "cgames.de"],
+  [
+    "gannettdigital.com",
+
+    "app.com",
+    "argusleader.com",
+    "azcentral.com",
+    "beaconjournal.com",
+    "burlingtonfreepress.com",
+    "capecodtimes.com",
+    "cincinnati.com",
+    "citizen-times.com",
+    "cjonline.com",
+    "clarionledger.com",
+    "commercialappeal.com",
+    "courier-journal.com",
+    "delawareonline.com",
+    "democratandchronicle.com",
+    "desertsun.com",
+    "desmoinesregister.com",
+    "detroitnews.com",
+    "dispatch.com",
+    "elpasotimes.com",
+    "floridatoday.com",
+    "freep.com",
+    "gainesville.com",
+    "greenvilleonline.com",
+    "heraldtribune.com",
+    "indystar.com",
+    "jacksonville.com",
+    "jsonline.com",
+    "knoxnews.com",
+    "lansingstatejournal.com",
+    "lohud.com",
+    "montgomeryadvertiser.com",
+    "naplesnews.com",
+    "news-journalonline.com",
+    "news-leader.com",
+    "news-press.com",
+    "northjersey.com",
+    "oklahoman.com",
+    "palmbeachpost.com",
+    "pjstar.com",
+    "pnj.com",
+    "providencejournal.com",
+    "registerguard.com",
+    "rgj.com",
+    "savannahnow.com",
+    "seacoastonline.com",
+    "sj-r.com",
+    "statesman.com",
+    "statesmanjournal.com",
+    "tallahassee.com",
+    "tcpalm.com",
+    "telegram.com",
+    "tennessean.com",
+    "theledger.com",
+    "usatoday.com",
+    "wickedlocal.com",
+
+    "gannettinnovation.com",
+  ],
   [
     "gap.com",
 
@@ -1713,6 +1827,7 @@ let multiDomainFirstPartiesArray = [
     "gedidigital.it",
     "repstatic.it",
   ],
+  ["gemini.media", "elconsolto.com", "masrawy.com", "shift-eg.com", "yallakora.com"],
   [
     "gettyimages.com",
 
@@ -1728,6 +1843,7 @@ let multiDomainFirstPartiesArray = [
     "thinkstockphotos.com",
     "thinkstockphotos.ca",
   ],
+  ["gismeteo.com", "gismeteo.by", "gismeteo.kz", "gismeteo.lt", "gismeteo.ru", "gismeteo.net"],
   ["gitlab.com", "gitlab-static.net"],
   [
     "g-omedia.com",
@@ -1755,21 +1871,40 @@ let multiDomainFirstPartiesArray = [
     "glassdoor.ca",
     "glassdoor.co.in",
     "glassdoor.com.au",
+    "glassdoor.com.br",
     "glassdoor.co.uk",
     "glassdoor.de",
     "glassdoor.fr",
     "glassdoor.ie",
     "glassdoor.nl",
+    "glassdoor.sg",
   ],
+  ["globo.com", "glbimg.com"],
+  ["gm.com", "buick.com", "cadillac.com", "chevrolet.com", "gmc.com", "gmcertified.com"],
   ["gogoair.com", "gogoinflight.com"],
-  ["gogoanime.tel", "gogoanime.bid", "gogoanime.ar", "gogo-load.com"],
+  [
+    "gogoanime.llc",
+
+    "gogoanime.ar",
+    "gogoanime.bid",
+    "gogoanime.cl",
+    "gogoanime.hu",
+    "gogoanime.tel",
+    "gogoanime3.net",
+    "gogoanimehd.io",
+    "gogoanimes.fi",
+
+    "gogo-load.com",
+  ],
   [
     "google.com",
-    "youtube.com",
-    "gmail.com",
+
+    "android.com",
     "blogger.com",
-    "googleblog.com",
     "chromium.org",
+    "gmail.com",
+    "googleblog.com",
+    "youtube.com",
 
     "ggpht.com",
     "googleusercontent.com",
@@ -1976,6 +2111,7 @@ let multiDomainFirstPartiesArray = [
     "storage.googleapis.com",
     "www.googleapis.com",
 
+    "autodraw.com",
     "nest.com",
     "thinkwithgoogle.com",
 
@@ -2118,7 +2254,6 @@ let multiDomainFirstPartiesArray = [
     "st-hatena.com",
   ],
   ["healthfusion.com", "healthfusionclaims.com"],
-  ["healthlinemedia.com", "greatist.com", "healthline.com", "medicalnewstoday.com", "psychcentral.com"],
   [
     "hearst.com",
 
@@ -2215,6 +2350,7 @@ let multiDomainFirstPartiesArray = [
     "hearstnp.com",
   ],
   ["himss.org", "healthcarefinancenews.com", "healthcareitnews.com", "mobihealthnews.com"],
+  ["hostinger.com", "hosting24.com", "hostinger.in", "hostinger.co.id", "hostinger.co.uk", "hostinger.com.br"],
   [
     "houzz.com",
 
@@ -2257,7 +2393,7 @@ let multiDomainFirstPartiesArray = [
     "stghouzz.com",
     "thathomesite.com",
   ],
-  ["hp.com", "hpconnected.com", "hpdaas.com", "hpsmart.com"],
+  ["hp.com", "hpconnected.com", "hpdaas.com", "hpsmart.com", "hyperx.com", "poly.com"],
   [
     "huobi.com",
 
@@ -2268,6 +2404,7 @@ let multiDomainFirstPartiesArray = [
     "huobi.me",
   ],
   ["hvfcu.org", "hvfcuonline.org"],
+  ["ibtimes.com", "ibtimes.co.uk", "myibtimes.com"],
   [
     "idealo.de",
 
@@ -2373,8 +2510,9 @@ let multiDomainFirstPartiesArray = [
     "indeed.nl",
     "indeed.pt",
   ],
-  ["independent.co.uk", "indy100.com"],
+  ["independent.co.uk", "indy100.com", "the-independent.com"],
   ["intercom.com", "intercom.io", "intercomassets.com", "intercomcdn.com"],
+  ["interia.pl", "pomponik.pl", "smaker.pl", "iplsc.com"],
   ["itmedia.co.jp", "itmedia.jp"],
   [
     "iu.edu",
@@ -2568,6 +2706,7 @@ let multiDomainFirstPartiesArray = [
 
     "r9cdn.net",
   ],
+  ["kingfisher.com", "diy.com", "castorama.fr", "castorama.pl"],
   ["kiwi.com", "skypicker.com"],
   [
     "kogan.com",
@@ -2595,7 +2734,7 @@ let multiDomainFirstPartiesArray = [
   ],
   ["lbry.com", "odysee.com", "lbry.tv"],
   ["likee.video", "like-video.com", "like.video", "likee.com", "likeevideo.com"],
-  ["linkedin.com", "licdn.com"],
+  ["livesport.eu", "diretta.it", "flashscore.com", "flashscore.com.br", "flashscore.fr", "flashscore.pl", "livescore.in", "rezultati.com"],
   ["lnk.to", "tix.to", "tck.to", "ticket.to", "linkfire.com", "assetlab.io", "linkfire.co", "lnkfi.re"],
   [
     "loveholidays.com",
@@ -2638,9 +2777,11 @@ let multiDomainFirstPartiesArray = [
     "vk.com",
     "vk.me",
     "vkontakte.ru",
+    "vkplay.live",
     "vk.ru",
   ],
   ["mandtbank.com", "mtb.com"],
+  ["marriott.com", "marriott.co.jp", "marriott.co.uk", "marriott.de"],
   ["marugroup.net", "maruhub.com", "marupanels.com", "maru-cdn.com"],
   ["matchtv.ru", "sportbox.ru"],
   ["mathletics.com", "mathletics.com.au", "mathletics.co.uk"],
@@ -2733,6 +2874,7 @@ let multiDomainFirstPartiesArray = [
     "ms-online.pl",
   ],
   ["meetup.com", "meetupstatic.com"],
+  ["megamedia.cl", "mega.cl", "meganoticias.cl", "mdstrm.com"],
   [
     "mercadolibre.com",
 
@@ -2761,6 +2903,9 @@ let multiDomainFirstPartiesArray = [
     "mercadopago.com.br",
     "mercadopago.com.co",
     "mercadopago.com.mx",
+    "mercadopago.com.pe",
+    "mercadopago.com.uy",
+    "mercadopago.cl",
 
     "mercadoshops.com",
     "mercadoshops.cl",
@@ -2853,6 +2998,7 @@ let multiDomainFirstPartiesArray = [
     "facebook.com",
     "instagram.com",
     "messenger.com",
+    "threads.net",
     "workplace.com",
 
     "oculus.com",
@@ -2885,10 +3031,12 @@ let multiDomainFirstPartiesArray = [
     "azureedge.net",
     "azure.net",
     "azurerms.com",
+    "azuresynapse.net",
     "bing.com",
     "bing.net",
     "cloudappsecurity.com",
     "dynamics.com",
+    "eng.ms",
     "gamesforwindows.com",
     "getgamesmart.com",
     "gfx.ms",
@@ -2990,6 +3138,9 @@ let multiDomainFirstPartiesArray = [
 
     "s-msft.com",
     "msftauth.net",
+
+    "linkedin.com",
+    "licdn.com",
 
     "github.com",
     "githubapp.com",
@@ -3281,11 +3432,14 @@ let multiDomainFirstPartiesArray = [
   [
     "newscorp.com",
 
+    "news.co.uk",
     "nypost.com",
     "pagesix.com",
+    "thescottishsun.co.uk",
+    "the-sun.com",
     "thesun.co.uk",
-    "thetimes.co.uk",
     "thesun.ie",
+    "thetimes.co.uk",
 
     "barrons.com",
     "dowjones.com",
@@ -3339,7 +3493,45 @@ let multiDomainFirstPartiesArray = [
   ],
   ["newgrounds.com", "ngfiles.com"],
   ["nextdoor.com", "nextdoor.co.uk"],
-  ["nfl.com", "nflgamepass.com"],
+  [
+    "nfl.com",
+    "nflgamepass.com",
+
+    "49ers.com",
+    "atlantafalcons.com",
+    "azcardinals.com",
+    "baltimoreravens.com",
+    "bengals.com",
+    "buccaneers.com",
+    "buffalobills.com",
+    "chargers.com",
+    "chicagobears.com",
+    "chiefs.com",
+    "clevelandbrowns.com",
+    "colts.com",
+    "commanders.com",
+    "dallascowboys.com",
+    "denverbroncos.com",
+    "detroitlions.com",
+    "dolphins.com",
+    "giants.com",
+    "jaguars.com",
+    "miamidolphins.com",
+    "neworleanssaints.com",
+    "newyorkjets.com",
+    "packers.com",
+    "panthers.com",
+    "patriots.com",
+    "philadelphiaeagles.com",
+    "redskins.com",
+    "seahawks.com",
+    "steelers.com",
+    "tennesseetitans.com",
+    "therams.com",
+    "vikings.com",
+
+    "nfltags.com",
+  ],
   [
     "ngs.ru",
 
@@ -3614,6 +3806,7 @@ let multiDomainFirstPartiesArray = [
 
     "ovh.net",
   ],
+  ["ozon.ru", "ozon.by", "ozon.kz", "ozone.ru"],
   ["paypal.com", "paypal-search.com", "paypalobjects.com"],
   [
     "pconline.cn",
@@ -3655,6 +3848,7 @@ let multiDomainFirstPartiesArray = [
 
     "pearsoncmg.com",
   ],
+  ["pmc.com", "deadline.com", "indiewire.com", "rollingstone.com", "variety.com"],
   ["people.com.cn", "people.cn", "peopledaily.com.cn"],
   ["pepco.com", "pepcoholdings.com"],
   [
@@ -3826,6 +4020,15 @@ let multiDomainFirstPartiesArray = [
 
     "postmedia.digital",
   ],
+  [
+    "prensaiberica360.es",
+
+    "elperiodico.com",
+    "levante-emv.com",
+    "lne.es",
+
+    "prensaiberica.es",
+  ],
   ["pressreader.com", "prcdn.co"],
   [
     "pricerunner.com",
@@ -3836,6 +4039,20 @@ let multiDomainFirstPartiesArray = [
     "pricerunner.net",
     "pricerunner.se",
     "pricerunner.uk",
+  ],
+  [
+    "prisa.com",
+
+    "as.com",
+    "cadenaser.com",
+    "caracol.com.co",
+    "elpais.com",
+    "huffingtonpost.es",
+    "wradio.com.co",
+    "wradio.com.mx",
+
+    "epimg.net",
+    "prisasd.com",
   ],
   [
     "prosiebensat1.de",
@@ -4006,6 +4223,8 @@ let multiDomainFirstPartiesArray = [
 
     "rakuten-static.com",
   ],
+  ["raygun.com", "raygun.io"],
+  ["rbcroyalbank.com", "royalbank.com", "rbc.com"],
   [
     "reachplc.com",
 
@@ -4112,6 +4331,18 @@ let multiDomainFirstPartiesArray = [
   ["reddit.com", "redditmedia.com", "redditstatic.com", "redd.it", "redditenhancementsuite.com", "reddituploads.com", "imgur.com"],
   ["redhat.com", "openshift.com", "openshift.org", "okd.io"],
   [
+    "redventures.com",
+
+    "greatist.com",
+    "healthgrades.com",
+    "healthline.com",
+    "healthlinemedia.com",
+    "medicalnewstoday.com",
+    "psychcentral.com",
+
+    "rvohealth.com",
+  ],
+  [
     "reebok.at",
     "reebok.be",
     "reebok.ca",
@@ -4146,6 +4377,7 @@ let multiDomainFirstPartiesArray = [
     "jbc.org",
     "lexisnexis.com",
     "mayoclinicproceedings.org",
+    "mendeley.com",
     "plu.mx",
     "sciencedirectassets.com",
     "sciencedirect.com",
@@ -4178,7 +4410,7 @@ let multiDomainFirstPartiesArray = [
     "thomsonreuters.ru",
   ],
   [
-    "ringieraxelspringer.com",
+    "ringieraxelspringer.pl",
 
     "aktuality.sk",
     "auto-swiat.pl",
@@ -4187,6 +4419,7 @@ let multiDomainFirstPartiesArray = [
     "cash.ch",
     "fakt.pl",
     "komputerswiat.pl",
+    "libertatea.ro",
     "medonet.pl",
     "newsweek.pl",
     "nk.pl",
@@ -4196,12 +4429,15 @@ let multiDomainFirstPartiesArray = [
     "ofeminin.pl",
     "onet.pl",
     "plejada.pl",
+    "ringieraxelspringer.com",
     "ringpublishing.com",
     "skapiec.pl",
     "vod.pl",
 
     "dreamlab.pl",
     "grupaonet.pl",
+
+    "ocdn.eu",
   ],
   [
     "riotgames.com",
@@ -4310,6 +4546,8 @@ let multiDomainFirstPartiesArray = [
     "sberlogistics.ru",
     "sbermobile.ru",
 
+    "sber.ru",
+
     "rambler-co.ru",
 
     "championat.com",
@@ -4327,11 +4565,26 @@ let multiDomainFirstPartiesArray = [
     "wmj.ru",
 
     "eaglecdn.com",
+    "eagleplatform.com",
     "livejournal.net",
     "lj-toys.com",
     "rambler.ru",
   ],
-  ["schwab.com", "schwabplan.com"],
+  [
+    "schwab.com",
+
+    "schwab.com.hk",
+    "schwabassetmanagement.com",
+    "schwabcharitable.org",
+    "schwabcdn.com",
+
+    "tdameritrade.com",
+    "advisorclient.com",
+    "ameritrade.com",
+    "tdameritrade.com.sg",
+    "thinkorswim.com",
+    "thinkorswim.com.sg",
+  ],
   ["scmp.com", "i-scmp.com"],
   ["sears.com", "shld.net"],
   [
@@ -4391,6 +4644,7 @@ let multiDomainFirstPartiesArray = [
     "shopify.in",
     "shopify.nl",
 
+    "shopifysvc.com",
     "shopifycdn.com",
     "shopifyapps.com",
     "shopifycloud.com",
@@ -4414,6 +4668,7 @@ let multiDomainFirstPartiesArray = [
   ["skysports.com", "skybet.com", "skyvegas.com"],
   ["slashdot.org", "sourceforge.net", "fsdn.com", "slashdotmedia.com"],
   ["slickdeals.net", "slickdealscdn.com"],
+  ["snapchat.com", "bitmoji.com"],
   ["snapfish.com", "snapfish.ca"],
   [
     "sony.com",
@@ -4559,6 +4814,7 @@ let multiDomainFirstPartiesArray = [
     "stacksnippets.net",
   ],
   ["steampowered.com", "steamstatic.com", "steamcommunity.com"],
+  ["stripchat.com", "xhamsterlive.com", "strpst.com"],
   ["stripe.com", "stripe.network", "stripecdn.com"],
   ["suning.com", "suning.cn", "hksuning.com"],
   [
@@ -4584,7 +4840,9 @@ let multiDomainFirstPartiesArray = [
   ["telegraaf.nl", "tcdn.nl", "tmgonlinemedia.nl", "tnet.nl"],
   ["telegram.org", "telegram.me", "t.me"],
   ["telekom.com", "t-online.de"],
+  ["terabox.com", "4funbox.com", "mirrobox.com", "teraboxcdn.com"],
   ["tesla.com", "teslamotors.com"],
+  ["thegioididong.com", "dienmayxanh.com", "tgdd.vn"],
   ["thelocal.com", "thelocal.de", "thelocal.fr", "thelocal.se"],
   ["theregister.com", "theregister.co.uk", "regmedia.co.uk"],
   ["tilda.cc", "tildacdn.com"],
@@ -4669,6 +4927,7 @@ let multiDomainFirstPartiesArray = [
     "b93.net",
     "bigcat921.com",
     "bigcat953.com",
+    "brooklynvegan.com",
     "clrvynt.com",
     "cnynews.com",
     "comicsalliance.com",
@@ -4704,6 +4963,7 @@ let multiDomainFirstPartiesArray = [
     "wzozfm.com",
     "xxlmag.com",
 
+    "townsquare.media",
     "townsquareblogs.com",
   ],
   [
@@ -4775,6 +5035,24 @@ let multiDomainFirstPartiesArray = [
     "pilotonline.com",
     "sun-sentinel.com",
     "thedailymeal.com",
+  ],
+  [
+    "trip.com",
+
+    "ctrip.com",
+    "c-ctrip.com",
+
+    "skyscanner.com",
+
+    "skyscanner.co.in",
+    "skyscanner.com.br",
+    "skyscanner.com.sg",
+    "skyscanner.de",
+    "skyscanner.es",
+    "skyscanner.fr",
+    "skyscanner.it",
+
+    "skyscanner.net",
   ],
   [
     "tripadvisor.com",
@@ -5073,6 +5351,14 @@ let multiDomainFirstPartiesArray = [
     "uicdn.net",
     "uimserv.net",
   ],
+  [
+    "universalmusic.com",
+
+    "taylorswift.com",
+    "udiscovermusic.com",
+
+    "umusic.com",
+  ],
   ["vanguard.com", "investornews.vanguard", "vanguardblog.com", "vanguardcanada.ca", "vanguardinvestor.co.uk", "vgcontent.info"],
   [
     "verizonmedia.com",
@@ -5102,7 +5388,6 @@ let multiDomainFirstPartiesArray = [
     "huffingtonpost.co.uk",
     "huffingtonpost.co.za",
     "huffingtonpost.de",
-    "huffingtonpost.es",
     "huffingtonpost.fr",
     "huffingtonpost.gr",
     "huffingtonpost.in",
@@ -5126,6 +5411,7 @@ let multiDomainFirstPartiesArray = [
 
     "yahoo.net",
     "yahooapis.com",
+    "yahoodns.net",
     "yahoosandbox.com",
     "yimg.com",
   ],
@@ -5141,6 +5427,7 @@ let multiDomainFirstPartiesArray = [
     "cbsnews.com",
     "cbssports.com",
     "cc.com",
+    "cmt.com",
     "collegesports.com",
     "comedycentral.com",
     "comicbook.com",
@@ -5149,7 +5436,9 @@ let multiDomainFirstPartiesArray = [
     "insideedition.com",
     "last.fm",
     "maxpreps.com",
+    "mtv.com",
     "nick.com",
+    "paramountnetwork.com",
     "paramountplus.com",
     "popculture.com",
     "scout.com",
@@ -5157,11 +5446,15 @@ let multiDomainFirstPartiesArray = [
     "sho.com",
     "southparkstudios.com",
     "sportsline.com",
+    "startrek.com",
+    "vh1.com",
 
     "cbsig.net",
     "cbsimg.net",
     "cbsistatic.com",
+    "cbsivideo.com",
     "cbsstatic.com",
+    "paramount.com",
     "paramount.tech",
   ],
   ["vimeo.com", "vimeocdn.com"],
@@ -5173,13 +5466,16 @@ let multiDomainFirstPartiesArray = [
 
     "vinted.co.uk",
     "vinted.cz",
+    "vinted.de",
     "vinted.es",
     "vinted.fr",
+    "vinted.it",
     "vinted.lt",
     "vinted.nl",
     "vinted.pl",
   ],
   ["vnexpress.net", "ngoisao.net", "vnecdn.net"],
+  ["vodafone.com", "vodafone.es", "vodafone.com.tr", "vodafone.co.uk"],
   ["volvooceanrace.com", "virtualregatta.com"],
   ["vonage.com", "vonagebusiness.com"],
   [
@@ -5188,13 +5484,16 @@ let multiDomainFirstPartiesArray = [
     "curbed.com",
     "eater.com",
     "grubstreet.com",
+    "mmafighting.com",
     "nymag.com",
     "polygon.com",
     "racked.com",
     "recode.net",
     "sbnation.com",
     "thecut.com",
+    "theringer.com",
     "theverge.com",
+    "thrillist.com",
     "vox.com",
     "vulture.com",
 
@@ -5226,6 +5525,7 @@ let multiDomainFirstPartiesArray = [
     "samsclub.com",
     "sams.com.mx",
 
+    "asda.com",
     "bodegaaurrera.com.mx",
 
     "wal.co",
@@ -5236,7 +5536,13 @@ let multiDomainFirstPartiesArray = [
     "thewaltdisneycompany.com",
 
     "6abc.com",
+    "abc10.com",
+    "abc11.com",
+    "abc13.com",
+    "abc30.com",
+    "abc7chicago.com",
     "abc7.com",
+    "abc7news.com",
     "abc7ny.com",
     "abc.com",
     "abcnews.com",
@@ -5266,31 +5572,48 @@ let multiDomainFirstPartiesArray = [
     "espn.es",
     "espn.in",
     "espn.nl",
+    "espn.ph",
 
+    "andscape.com",
     "espncricinfo.com",
+    "footytips.com.au",
     "secsports.com",
 
     "espnfc.com",
     "espnfc.us",
 
     "fivethirtyeight.com",
+    "freeform.com",
+    "fxnetworks.com",
     "nationalgeographic.com",
+    "starplus.com",
 
+    "20thcenturystudios.com",
     "babble.com",
     "d23.com",
     "dadt.com",
+    "disneyaccount.com",
     "disneyaulani.com",
     "disneybaby.com",
+    "disneygiftcard.com",
     "disneyinteractive.com",
     "disneyinternationalhd.com",
+    "disneylandparis.com",
     "disneymovieinsiders.com",
     "disneymoviesanywhere.com",
     "disneyplus.com",
+    "disneyrewards.com",
     "disneyweddings.com",
+    "disneyworld.co.uk",
+    "disneyworld.eu",
     "ilm.com",
     "marvel.com",
     "readriordan.com",
+    "rundisney.com",
     "shopdisney.com",
+    "shopdisney.co.uk",
+    "shopdisney.es",
+    "shopdisney.fr",
     "skysound.com",
     "starwars.com",
 
@@ -5381,6 +5704,8 @@ let multiDomainFirstPartiesArray = [
     "d-league.com",
     "e-league.com",
     "eleague.com",
+    "eurosport.com",
+    "extratv.com",
     "filmstruck.com",
     "greatbig.com",
     "greatbigstory.com",
@@ -5392,6 +5717,7 @@ let multiDomainFirstPartiesArray = [
     "hlntv.com",
     "iamthenight.com",
     "juniorrydercup.com",
+    "max.com",
     "maxgo.com",
     "nba.com",
     "nba.net",
@@ -5426,7 +5752,6 @@ let multiDomainFirstPartiesArray = [
     "trutv.com",
     "vgtf.net",
     "warnerbros.com",
-    "warnermediacdn.com",
     "warnermedia.com",
     "warnermediafitnation.com",
     "warnermediaready.com",
@@ -5437,6 +5762,8 @@ let multiDomainFirstPartiesArray = [
     "webarebears.com",
     "wnba.com",
     "yzzerdd.com",
+
+    "warnermediacdn.com",
 
     "turner.com",
     "ugdturner.com",
@@ -5546,10 +5873,25 @@ let multiDomainFirstPartiesArray = [
   ],
   ["wellsfargo.com", "wf.com"],
   ["wetter.com", "tiempo.es", "wettercomassets.com"],
-  ["wikipedia.org", "wikimedia.org", "wikimediafoundation.org", "wiktionary.org",
-    "wikiquote.org", "wikibooks.org", "wikisource.org", "wikinews.org",
-    "wikiversity.org", "mediawiki.org", "wikidata.org", "wikivoyage.org",
-    "wmfusercontent.org", "tools.wmflabs.org"],
+  [
+    "wikimediafoundation.org",
+
+    "mediawiki.org",
+    "wikibooks.org",
+    "wikidata.org",
+    "wikifunctions.org",
+    "wikimedia.org",
+    "wikinews.org",
+    "wikipedia.org",
+    "wikiquote.org",
+    "wikisource.org",
+    "wikiversity.org",
+    "wikivoyage.org",
+    "wiktionary.org",
+    "tools.wmflabs.org",
+
+    "wmfusercontent.org",
+  ],
   [
     "williams-sonomainc.com",
 
@@ -5645,6 +5987,7 @@ let multiDomainFirstPartiesArray = [
     "yandex.uz",
     "ya.ru",
   ],
+  ["yomiuri.co.jp", "fujinkoron.jp", "hochi.news"],
   ["yoox.com", "mrporter.com", "theoutnet.com", "yoox.it"],
   [
     "sph.com.sg",
@@ -5672,12 +6015,14 @@ let multiDomainFirstPartiesArray = [
     "zoho.com.au",
     "zoho.eu",
     "zoho.in",
+    "zoho.jp",
 
     "zohositescontent.com",
     "zohositescontent.com.au",
     "zohositescontent.eu",
 
     "manageengine.com",
+    "qntrl.com",
 
     "zohocdn.com",
     "zohocorp.com",
@@ -5686,6 +6031,7 @@ let multiDomainFirstPartiesArray = [
     "zohostatic.com",
   ],
   ["zonealarm.com", "zonelabs.com"],
+  ["zoom.us", "zoom.com", "zoomgov.com"],
 ];
 
 /**

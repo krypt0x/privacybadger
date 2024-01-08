@@ -38,12 +38,18 @@ import utils from "./utils.js";
  * @param {Boolean} from_qunit don't intercept requests when run by unit tests
  */
 function Badger(from_qunit) {
+  log("Initializing Privacy Badger ...");
   let self = this;
 
   self.isFirstRun = false;
   self.isUpdate = false;
 
-  self.firstPartyDomainPotentiallyRequired = testCookiesFirstPartyDomain();
+  (function () {
+    let manifestJson = chrome.runtime.getManifest();
+    self.manifestVersion = manifestJson.manifest_version;
+    self.isEventPage = (utils.hasOwn(manifestJson.background, "persistent") &&
+      manifestJson.background.persistent === false);
+  }());
 
   self.widgetList = [];
   let widgetListPromise = widgetLoader.loadWidgetsFromFile(
@@ -116,6 +122,7 @@ function Badger(from_qunit) {
       self.runMigrations();
     }
 
+    log("Privacy Badger initialization complete");
     console.log("Privacy Badger is ready to rock!");
     console.log("Set DEBUG=1 to view console messages.");
     self.INITIALIZED = true;
@@ -126,30 +133,6 @@ function Badger(from_qunit) {
     }
   }
 
-  /**
-   * Checks for availability of firstPartyDomain chrome.cookies API parameter.
-   * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/cookies/getAll#Parameters
-   *
-   * firstPartyDomain is required when privacy.websites.firstPartyIsolate is enabled,
-   * and is in Firefox since Firefox 59. (firstPartyIsolate is in Firefox since 58).
-   *
-   * We don't care whether firstPartyIsolate is enabled, but rather whether
-   * firstPartyDomain is supported. Assuming firstPartyDomain is supported,
-   * setting it to null in chrome.cookies.getAll() produces the same result
-   * regardless of the state of firstPartyIsolate.
-   *
-   * firstPartyDomain is not currently supported in Chrome.
-   */
-  function testCookiesFirstPartyDomain() {
-    try {
-      chrome.cookies.getAll({
-        firstPartyDomain: null
-      }, function () {});
-    } catch (ex) {
-      return false;
-    }
-    return true;
-  }
 } /* end of Badger constructor */
 
 Badger.prototype = {
@@ -344,6 +327,84 @@ Badger.prototype = {
     });
   },
 
+  /**
+   * If the background process is an event page or a service worker,
+   * it can get terminated while the user is still on the welcome page.
+   *
+   * When the user spends >= 30s on the welcome page, the background process
+   * will get terminated and another welcome page will unexpectedly appear
+   * following any user action that restarts the background process.
+   *
+   * (We reopen the welcome page via firstRunTimerFinished, our workaround
+   * for restoring the welcome page when Firefox restarts the extension
+   * in response to interaction with the private browsing permission hanger.)
+   *
+   * Let's periodically call a low-overhead, no-side effects API to keep
+   * the background process running as long as the welcome page stays open.
+   *
+   * While extension alarm events reset the idle timer in both Firefox and
+   * Chrome, Chrome enforces a minimum resolution of one minute. However,
+   * since most extension API calls also reset the idle timer in Chrome,
+   * simply looking up whether the welcome page is still open is enough
+   * to reset the idle timer.
+  */
+  keepBackgroundAliveForWelcomePage: function () {
+    let self = this,
+      ALARM_NAME = "welcome-page-keepalive",
+      INTERVAL = utils.oneSecond() * 10;
+
+    if (self.manifestVersion == 2 && !self.isEventPage) {
+      return; // noop
+    }
+
+    function getWelcomeTab(callback) {
+      chrome.tabs.query({
+        url: chrome.runtime.getURL("/skin/firstRun.html")
+      }, function (tabs) {
+        callback(tabs[0]);
+      });
+    }
+
+    function workaroundForChrome() {
+      setTimeout(function () {
+        getWelcomeTab(function (tab) {
+          // if the welcome page is still open,
+          // or if first run timer hasn't finished yet
+          if (tab || !self.getPrivateSettings().getItem('firstRunTimerFinished')) {
+            // trigger another check
+            workaroundForChrome();
+          }
+        });
+      }, INTERVAL);
+    }
+
+    function workaroundForFirefox(alarm) {
+      if (alarm.name != ALARM_NAME) {
+        return;
+      }
+      getWelcomeTab(function (tab) {
+        // if the welcome page is still open,
+        // or if first run timer hasn't finished yet
+        if (tab || !self.getPrivateSettings().getItem('firstRunTimerFinished')) {
+          // create another alarm
+          chrome.alarms.create(ALARM_NAME, { when: Date.now() + INTERVAL });
+        } else {
+          chrome.alarms.onAlarm.removeListener(workaroundForFirefox);
+        }
+      });
+    }
+
+    if (self.isEventPage) {
+      // an alarms extension event that triggers a listener
+      // resets the idle timer in Firefox
+      chrome.alarms.onAlarm.addListener(workaroundForFirefox);
+      // create the first alarm
+      chrome.alarms.create(ALARM_NAME, { when: Date.now() + INTERVAL });
+    } else {
+      workaroundForChrome();
+    }
+  },
+
   initWelcomePage: function () {
     let self = this,
       privateStore = self.getPrivateSettings();
@@ -365,10 +426,14 @@ Badger.prototype = {
   },
 
   showWelcomePage: function () {
-    let settings = this.getSettings();
+    let self = this,
+      settings = self.getSettings();
+
     if (settings.getItem("showIntroPage")) {
       chrome.tabs.create({
         url: chrome.runtime.getURL("/skin/firstRun.html")
+      }, function () {
+        self.keepBackgroundAliveForWelcomePage();
       });
     } else {
       // don't remind users to look at the intro page either
@@ -809,6 +874,7 @@ Badger.prototype = {
     let privateDefaultSettings = {
       blockThreshold: constants.TRACKING_THRESHOLD,
       firstRunTimerFinished: true,
+      ignoredSiteBases: [],
       nextDntHashesUpdateTime: 0,
       nextYellowlistUpdateTime: 0,
       showLearningPrompt: false,
@@ -985,8 +1051,25 @@ Badger.prototype = {
     );
   },
 
-  isDNTSignalEnabled: function() {
-    return this.getSettings().getItem("sendDNTSignal");
+  /**
+   * Returns whether we should send DNT/GPC signals on a given website.
+   *
+   * @param {String} site_host the FQDN of the website
+   *
+   * @returns {Boolean}
+   */
+  isDntSignalEnabled: function (site_host) {
+    if (!this.getSettings().getItem("sendDNTSignal")) {
+      return false;
+    }
+    // temp. exception list for sites
+    // where sending DNT/GPC signals causes major breakages
+    // TODO indicate when this happens in the UI somehow
+    const gpcDisabledWebsites = {
+      'www.costco.com': true,
+      'fivethirtyeight.com': true,
+    };
+    return !utils.hasOwn(gpcDisabledWebsites, site_host);
   },
 
   isCheckingDNTPolicyEnabled: function() {
@@ -1175,11 +1258,11 @@ Badger.prototype = {
 
     // The order of these keys is also the order in which they should be imported.
     // It's important that snitch_map be imported before action_map (#1972)
-    ["snitch_map", "action_map", "settings_map", "tracking_map"].forEach(function (key) {
+    for (let key of ["snitch_map", "action_map", "settings_map", "tracking_map", "fp_scripts"]) {
       if (utils.hasOwn(data, key)) {
         self.storage.getStore(key).merge(data[key]);
       }
-    });
+    }
   }
 
 };

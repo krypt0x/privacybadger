@@ -15,6 +15,19 @@
             "type": 2
         }
     },
+    "Aparat Player": {
+        "domain": "www.aparat.com",
+        "buttonSelectors": [
+            "iframe[src^='https://www.aparat.com/embed/']",
+            "iframe[src^='https://www.aparat.com/video/']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "www.aparat.com"
+            ],
+            "type": 3
+        }
+    },
     "Apple Music": {
         "domains": [
             "embed.music.apple.com"
@@ -29,6 +42,19 @@
             "type": 3
         }
     },
+    "Bilibili Player": {
+        "domain": "player.bilibili.com",
+        "buttonSelectors": [
+            "iframe[src^='//player.bilibili.com/player.html']",
+            "iframe[src^='https://player.bilibili.com/player.html']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "player.bilibili.com"
+            ],
+            "type": 3
+        }
+    },
     "BitChute": {
         "domains": [
             "www.bitchute.com"
@@ -39,6 +65,19 @@
         "replacementButton": {
             "unblockDomains": [
                 "www.bitchute.com"
+            ],
+            "type": 3
+        }
+    },
+    "Captivate Player": {
+        "domain": "player.captivate.fm",
+        "buttonSelectors": [
+            "iframe[src^='https://player.captivate.fm/']",
+            "iframe[src^='//player.captivate.fm/']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "player.captivate.fm"
             ],
             "type": 3
         }
@@ -67,17 +106,6 @@
                 "www.dailymotion.com"
             ],
             "type": 3
-        }
-    },
-    "Digg": {
-        "domain": "widgets.digg.com",
-        "buttonSelectors": [
-            ".DiggThisButton"
-        ],
-        "replacementButton": {
-            "details": "http://www.digg.com/submit?url=",
-            "imagePath": "Digg.svg",
-            "type": 0
         }
     },
     "Discord": {
@@ -271,27 +299,14 @@
             "type": 3
         }
     },
-    "Pinterest": {
+    "Pinterest Image": {
         "domain": "assets.pinterest.com",
         "buttonSelectors": [
-            "script[src='//assets.pinterest.com/js/pinit.js']",
-            ".pin-it-button"
-        ],
-        "replacementButton": {
-            "details": "http://pinterest.com/pin/create/button/?url=",
-            "imagePath": "Pinterest.svg",
-            "type": 0
-        }
-    },
-    "PodBean Player": {
-        "domain": "www.podbean.com",
-        "buttonSelectors": [
-            "iframe[src^='https://www.podbean.com/media/player/']",
-            "iframe[src^='https://www.podbean.com/player-v2/']"
+            "iframe[src^='https://assets.pinterest.com/ext/embed.html']"
         ],
         "replacementButton": {
             "unblockDomains": [
-                "www.podbean.com"
+                "assets.pinterest.com"
             ],
             "type": 3
         }
@@ -367,6 +382,7 @@
         "replacementButton": {
             "unblockDomains": [
                 "embed.spotify.com",
+                "embed-standalone.spotify.com",
                 "open.spotify.com",
                 "podcasters.spotify.com"
             ],
@@ -392,11 +408,16 @@
         ],
         "buttonSelectors": [
             "iframe[src^='https://www.tiktok.com/embed/']",
-            "iframe[src^='//www.tiktok.com/embed/']"
+            "iframe[src^='//www.tiktok.com/embed/']",
+            "blockquote[cite^='https://www.tiktok.com/@']"
+        ],
+        "scriptSelectors": [
+            "script[src^='https://www.tiktok.com/embed.js']"
         ],
         "replacementButton": {
             "unblockDomains": [
-                "www.tiktok.com"
+                "www.tiktok.com",
+                "*.tiktokcdn-us.com"
             ],
             "type": 3
         }
@@ -414,17 +435,6 @@
             "type": 3
         }
     },
-    "Twitter": {
-        "domain": "platform.twitter.com",
-        "buttonSelectors": [
-            ".twitter-share-button"
-        ],
-        "replacementButton": {
-            "details": "https://twitter.com/intent/tweet?url=",
-            "imagePath": "Twitter.svg",
-            "type": 0
-        }
-    },
     "Vimeo": {
         "domains": [
             "player.vimeo.com",
@@ -439,6 +449,26 @@
             "unblockDomains": [
                 "player.vimeo.com",
                 "vimeo.com"
+            ],
+            "type": 3
+        }
+    },
+    "X (Twitter)": {
+        "domain": "platform.twitter.com",
+        "buttonSelectors": [
+            "blockquote[class*='twitter-tweet']",
+            "blockquote[class*='twitter-video']",
+            "iframe[src^='https://platform.twitter.com/embed/Tweet.html']"
+        ],
+        "scriptSelectors": [
+            "script[src='https://platform.twitter.com/widgets.js']",
+            "script[src='//platform.twitter.com/widgets.js']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "platform.twitter.com",
+                "syndication.twitter.com",
+                "twitter.com"
             ],
             "type": 3
         }

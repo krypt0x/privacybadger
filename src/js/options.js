@@ -33,7 +33,13 @@ window.SLIDERS_DONE = false;
 const TOOLTIP_CONF = {
   maxWidth: 400
 };
-const USER_DATA_EXPORT_KEYS = ["action_map", "snitch_map", "settings_map", "tracking_map"];
+const USER_DATA_EXPORT_KEYS = [
+  "action_map",
+  "snitch_map",
+  "settings_map",
+  "tracking_map",
+  "fp_scripts",
+];
 
 let i18n = chrome.i18n;
 
@@ -1029,14 +1035,6 @@ $(function () {
     chrome.runtime.sendMessage({
       type: "getOptionsData",
     }, (response) => {
-      if (!response) {
-        // event page/extension service worker is still starting up, retry
-        // async w/ non-zero delay to avoid locking up the messaging channel
-        setTimeout(function () {
-          getOptionsData();
-        }, 10);
-        return;
-      }
       OPTIONS_DATA = response;
       loadOptions();
     });

@@ -17,7 +17,8 @@
 
 /* globals badger:false */
 
-import { getBaseDomain, URI } from "../lib/basedomain.js";
+import { extractHostFromURL, getBaseDomain, URI } from "../lib/basedomain.js";
+import { getInitiatorUrl } from "../lib/webrequestUtils.js";
 
 import { log } from "./bootstrap.js";
 import constants from "./constants.js";
@@ -26,7 +27,9 @@ import utils from "./utils.js";
 /*********************** heuristicblocking scope **/
 // make heuristic obj with utils and storage properties and put the things on it
 function HeuristicBlocker(pbStorage) {
-  this.storage = pbStorage;
+  let self = this;
+
+  self.storage = pbStorage;
 
   // TODO roll into tabData? -- 6/10/2019 not for now, since tabData is populated
   // by the synchronous listeners in webrequests.js and tabOrigins is used by the
@@ -34,8 +37,19 @@ function HeuristicBlocker(pbStorage) {
   // those two. Also, tabData is cleaned up every time a tab is closed, so
   // dangling requests that don't trigger listeners until after the tab closes are
   // impossible to attribute to a tab.
-  this.tabOrigins = {};
-  this.tabUrls = {};
+  self.tabOrigins = {};
+  self.tabUrls = {};
+
+  // initialize tab bases and URLs for already-open tabs
+  chrome.tabs.query({}, function (res) {
+    for (let tab of res) {
+      if (utils.isRestrictedUrl(tab.url)) {
+        continue;
+      }
+      self.tabOrigins[tab.id] = getBaseDomain((new URI(tab.url)).host);
+      self.tabUrls[tab.id] = tab.url;
+    }
+  });
 }
 
 HeuristicBlocker.prototype = {
@@ -96,29 +110,34 @@ HeuristicBlocker.prototype = {
   },
 
   /**
-   * Wraps _recordPrevalence for use from webRequest listeners.
+   * Checks whether `details` is a third-party Beacon API request.
+   *
+   * Otherwise, checks third-party requests/responses for tracking cookies.
+   *
+   * This wraps _recordPrevalence for use from webRequest listeners.
    * Use updateTrackerPrevalence for non-webRequest initiated bookkeeping.
    *
-   * @param {Object} details request/response details
+   * @param {Object} details webRequest request/response details object
    */
-  // TODO more like heuristicLearningFromCookies ... check DESIGN doc
-  heuristicBlockingAccounting: function (details) {
+  checkForTrackingCookies: function (details) {
     // ignore requests that are outside a tabbed window
     if (details.tabId < 0 || !badger.isLearningEnabled(details.tabId)) {
       return;
     }
 
-    let self = this;
+    let self = this,
+      tab_id = details.tabId,
+      from_current_tab = true;
 
     // if this is a main window request, update tab data and quit
     if (details.type == "main_frame") {
-      let request_host = (new URI(details.url)).host;
-      self.tabOrigins[details.tabId] = getBaseDomain(request_host);
-      self.tabUrls[details.tabId] = details.url;
+      let tab_host = (new URI(details.url)).host;
+      self.tabOrigins[tab_id] = getBaseDomain(tab_host);
+      self.tabUrls[tab_id] = details.url;
       return;
     }
 
-    let tab_base = self.tabOrigins[details.tabId];
+    let tab_base = self.tabOrigins[tab_id];
     if (!tab_base) {
       return;
     }
@@ -131,6 +150,12 @@ HeuristicBlocker.prototype = {
     }
     let request_base = getBaseDomain(request_host);
 
+    let initiator_url = getInitiatorUrl(self.tabUrls[tab_id], details);
+    if (initiator_url) {
+      from_current_tab = false;
+      tab_base = getBaseDomain(extractHostFromURL(initiator_url));
+    }
+
     // ignore first-party requests
     if (!utils.isThirdPartyDomain(request_base, tab_base)) {
       return;
@@ -143,181 +168,27 @@ HeuristicBlocker.prototype = {
     }
 
     // short-circuit if we already made a decision for this FQDN
-    let action = self.storage.getAction(request_host);
+    let action = self.storage.getBestAction(request_host);
     if (action != constants.NO_TRACKING && action != constants.ALLOW) {
+      return;
+    }
+
+    if (details.type == "beacon" || details.type == "ping") {
+      self._recordPrevalence(request_host, request_base, tab_base);
+      // update tracking_map
+      badger.storage.recordTrackingDetails(request_base, tab_base, 'beacon');
+      // log in popup
+      if (from_current_tab) {
+        badger.logThirdPartyOriginOnTab(
+          tab_id, request_host, badger.storage.getBestAction(request_host));
+      }
+      // don't bother checking for tracking cookies
       return;
     }
 
     // check if there are tracking cookies
     if (hasCookieTracking(details)) {
       self._recordPrevalence(request_host, request_base, tab_base);
-      return;
-    }
-  },
-
-  /**
-   * Calls the pixel cookie sharing checking function
-   * iff the request is for an image in the top-level frame,
-   * and the request URL has querystring parameters.
-   *
-   * @param {Object} details webRequest onResponseStarted details object
-   */
-  checkForPixelCookieSharing: function (details) {
-    if (!badger.isLearningEnabled(details.tabId)) {
-      return;
-    }
-
-    if (details.type != 'image' || details.frameId !== 0 || details.url.indexOf('?') == -1) {
-      return;
-    }
-
-    let self = this,
-      tab_base = self.tabOrigins[details.tabId];
-    if (!tab_base) {
-      return;
-    }
-    let tab_url = self.tabUrls[details.tabId];
-
-    let request_host = (new URI(details.url)).host;
-    // CNAME uncloaking
-    if (utils.hasOwn(badger.cnameDomains, request_host)) {
-      request_host = badger.cnameDomains[request_host];
-    }
-    let request_base = getBaseDomain(request_host);
-
-    // ignore first-party requests
-    if (!utils.isThirdPartyDomain(request_base, tab_base)) {
-      return;
-    }
-
-    // short-circuit if we already observed this eTLD+1 tracking on this site
-    let firstParties = self.storage.getStore('snitch_map').getItem(request_base);
-    if (firstParties && firstParties.includes(tab_base)) {
-      return;
-    }
-
-    // short-circuit if we already made a decision for this FQDN
-    let action = self.storage.getAction(request_host);
-    if (action != constants.NO_TRACKING && action != constants.ALLOW) {
-      return;
-    }
-
-    // get all non-HttpOnly cookies for the top-level frame
-    // and pass those to the pixel cookie-share accounting function
-    let config = {
-      url: tab_url
-    };
-    if (badger.firstPartyDomainPotentiallyRequired) {
-      config.firstPartyDomain = null;
-    }
-    chrome.cookies.getAll(config, function (cookies) {
-      cookies = cookies.filter(cookie => !cookie.httpOnly);
-      if (cookies.length < 1) {
-        return;
-      }
-
-      // TODO refactor with new URI() above?
-      let searchParams = (new URL(details.url)).searchParams;
-
-      self.pixelCookieShareAccounting(tab_url, tab_base, searchParams, request_host, request_base, cookies);
-    });
-  },
-
-  /**
-   * Checks for cookie sharing: requests to third-party domains
-   * that include high entropy data from first-party cookies.
-   *
-   * Only catches plain-text verbatim sharing (b64 encoding etc. defeat it).
-   *
-   * Assumes any long string that doesn't contain URL fragments
-   * or stopwords is an identifier.
-   *
-   * Doesn't catch cookie syncing (3rd party -> 3rd party),
-   * but most of those tracking cookies should be blocked anyway.
-   */
-  pixelCookieShareAccounting: function (tab_url, tab_base, searchParams, request_host, request_base, cookies) {
-    const TRACKER_ENTROPY_THRESHOLD = 33,
-      MIN_STR_LEN = 8;
-
-    let self = this;
-
-    for (let p of searchParams) {
-      let key = p[0],
-        value = p[1];
-
-      // the argument must be sufficiently long
-      if (!value || value.length < MIN_STR_LEN) {
-        continue;
-      }
-
-      // check if this argument is derived from a high-entropy first-party cookie
-      for (let cookie of cookies) {
-        // the cookie value must be sufficiently long
-        if (!cookie.value || cookie.value.length < MIN_STR_LEN) {
-          continue;
-        }
-
-        // find the longest common substring between this arg and the cookies
-        // associated with the document
-        let substrings = utils.findCommonSubstrings(cookie.value, value) || [];
-        for (let s of substrings) {
-          // ignore the substring if it's part of the first-party URL. sometimes
-          // content servers take the url of the page they're hosting content
-          // for as an argument. e.g.
-          // https://example-cdn.com/content?u=http://example.com/index.html
-          if (tab_url.indexOf(s) != -1) {
-            continue;
-          }
-
-          // elements of the user agent string are also commonly included in
-          // both cookies and arguments; e.g. "Mozilla/5.0" might be in both.
-          // This is not a special tracking risk since third parties can see
-          // this info anyway.
-          if (navigator.userAgent.indexOf(s) != -1) {
-            continue;
-          }
-
-          // Sometimes the entire url and then some is included in the
-          // substring -- the common string might be "https://example.com/:true"
-          // In that case, we only care about the information around the URL.
-          if (s.indexOf(tab_url) != -1) {
-            s = s.replace(tab_url, "");
-          }
-
-          // During testing we found lots of common values like "homepage",
-          // "referrer", etc. were being flagged as high entropy. This searches
-          // for a few of those and removes them before we go further.
-          let lower = s.toLowerCase();
-          lowEntropyQueryValues.forEach(function (qv) {
-            let start = lower.indexOf(qv);
-            if (start != -1) {
-              s = s.replace(s.substring(start, start + qv.length), "");
-            }
-          });
-
-          // at this point, since we might have removed things, make sure the
-          // string is still long enough to bother with
-          if (s.length < MIN_STR_LEN) {
-            continue;
-          }
-
-          // compute the entropy of this common substring. if it's greater than
-          // our threshold, record the tracking action and exit the function.
-          let entropy = utils.estimateMaxEntropy(s);
-          if (entropy > TRACKER_ENTROPY_THRESHOLD) {
-            log("Found high-entropy cookie share from", tab_base, "to", request_host,
-              ":", entropy, "bits\n  cookie:", cookie.name, '=', cookie.value,
-              "\n  arg:", key, "=", value, "\n  substring:", s);
-            self._recordPrevalence(request_host, request_base, tab_base);
-
-            // record pixel cookie sharing
-            badger.storage.recordTrackingDetails(
-              request_base, tab_base, 'pixelcookieshare');
-
-            return;
-          }
-        }
-      }
     }
   },
 
@@ -330,7 +201,7 @@ HeuristicBlocker.prototype = {
    */
   updateTrackerPrevalence: function (tracker_fqdn, tracker_base, site_base) {
     // short-circuit if we already made a decision for this fqdn
-    let action = this.storage.getAction(tracker_fqdn);
+    let action = this.storage.getBestAction(tracker_fqdn);
     if (action != constants.NO_TRACKING && action != constants.ALLOW) {
       return;
     }
@@ -347,7 +218,7 @@ HeuristicBlocker.prototype = {
    * than constants.TRACKING_THRESHOLD pages.
    *
    * NOTE: This is a private function and should never be called directly.
-   * All calls should be routed through heuristicBlockingAccounting for normal usage
+   * All calls should be routed through checkForTrackingCookies for normal usage
    * and updateTrackerPrevalence for manual modifications (e.g. importing
    * tracker lists).
    *
@@ -369,7 +240,15 @@ HeuristicBlocker.prototype = {
 
     let self = this,
       firstParties = [],
+      actionMap = self.storage.getStore('action_map'),
       snitchMap = self.storage.getStore('snitch_map');
+
+    if (!actionMap.hasItem(tracker_fqdn)) {
+      self.storage.setupHeuristicAction(tracker_fqdn, constants.ALLOW);
+      if (!actionMap.hasItem(tracker_base)) {
+        self.storage.setupHeuristicAction(tracker_base, constants.ALLOW);
+      }
+    }
 
     if (snitchMap.hasItem(tracker_base)) {
       firstParties = snitchMap.getItem(tracker_base);
@@ -384,16 +263,9 @@ HeuristicBlocker.prototype = {
     firstParties.push(site_base);
     snitchMap.setItem(tracker_base, firstParties);
 
-    // ALLOW indicates this is a tracker still below TRACKING_THRESHOLD
-    // (vs. NO_TRACKING for resources we haven't seen perform tracking yet).
-    // see https://github.com/EFForg/privacybadger/pull/1145#discussion_r96676710
-    self.storage.setupHeuristicAction(tracker_fqdn, constants.ALLOW);
-    self.storage.setupHeuristicAction(tracker_base, constants.ALLOW);
-
     // (cookie)block if domain was seen tracking on enough first party domains
     if (firstParties.length >=
         self.storage.getStore('private_storage').getItem('blockThreshold')) {
-      log("blocklisting", tracker_fqdn);
       self.blocklistOrigin(tracker_base, tracker_fqdn);
     }
   }
@@ -615,51 +487,6 @@ var lowEntropyCookieValues = {
   "zu":8
 };
 
-const lowEntropyQueryValues = [
-  "https",
-  "http",
-  "://",
-  "%3A%2F%2F",
-  "www",
-  "url",
-  "undefined",
-  "impression",
-  "session",
-  "homepage",
-  "client",
-  "version",
-  "business",
-  "title",
-  "get",
-  "site",
-  "name",
-  "category",
-  "account_id",
-  "smartadserver",
-  "front",
-  "page",
-  "view",
-  "first",
-  "visit",
-  "platform",
-  "language",
-  "automatic",
-  "disabled",
-  "landing",
-  "entertainment",
-  "amazon",
-  "official",
-  "webvisor",
-  "anonymous",
-  "across",
-  "narrative",
-  "\":null",
-  "\":false",
-  "\":\"",
-  "\",\"",
-  "\",\"",
-];
-
 /**
  * Extract cookies from onBeforeSendHeaders
  *
@@ -740,22 +567,18 @@ function hasCookieTracking(details) {
 }
 
 function startListeners() {
-  /**
-   * Adds heuristicBlockingAccounting as listened to onBeforeSendHeaders request
-   */
+  // inspect cookies in outgoing headers
   let extraInfoSpec = ['requestHeaders'];
   if (utils.hasOwn(chrome.webRequest.OnBeforeSendHeadersOptions, 'EXTRA_HEADERS')) {
     extraInfoSpec.push('extraHeaders');
   }
   chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
     if (badger.INITIALIZED) {
-      badger.heuristicBlocking.heuristicBlockingAccounting(details);
+      badger.heuristicBlocking.checkForTrackingCookies(details);
     }
-  }, {urls: ["<all_urls>"]}, extraInfoSpec);
+  }, {urls: ["http://*/*", "https://*/*"]}, extraInfoSpec);
 
-  /**
-   * Adds onResponseStarted listener. Monitor for cookies
-   */
+  // inspect cookies in incoming headers
   extraInfoSpec = ['responseHeaders'];
   if (utils.hasOwn(chrome.webRequest.OnResponseStartedOptions, 'EXTRA_HEADERS')) {
     extraInfoSpec.push('extraHeaders');
@@ -767,20 +590,19 @@ function startListeners() {
 
     // check for cookie tracking if there are any set-cookie headers
     let has_setcookie_header = false;
-    for (let i = 0; i < details.responseHeaders.length; i++) {
-      if (details.responseHeaders[i].name.toLowerCase() == "set-cookie") {
-        has_setcookie_header = true;
-        break;
+    if (details.responseHeaders) {
+      for (let i = 0; i < details.responseHeaders.length; i++) {
+        if (details.responseHeaders[i].name.toLowerCase() == "set-cookie") {
+          has_setcookie_header = true;
+          break;
+        }
       }
     }
     if (has_setcookie_header) {
-      badger.heuristicBlocking.heuristicBlockingAccounting(details);
+      badger.heuristicBlocking.checkForTrackingCookies(details);
     }
 
-    // check for pixel cookie sharing if the response appears to be for an image pixel
-    badger.heuristicBlocking.checkForPixelCookieSharing(details);
-
-  }, {urls: ["<all_urls>"]}, extraInfoSpec);
+  }, {urls: ["http://*/*", "https://*/*"]}, extraInfoSpec);
 }
 
 export default {

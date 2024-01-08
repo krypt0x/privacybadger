@@ -167,7 +167,7 @@ class Shim:
 
         # TODO not yet in Firefox (w/o hacks anyway):
         # https://github.com/mozilla/geckodriver/issues/284#issuecomment-456073771
-        opts.set_capability("loggingPrefs", {'browser': 'ALL'})
+        opts.set_capability("goog:loggingPrefs", {'browser': 'ALL'})
 
         for i in range(5):
             try:
@@ -223,11 +223,11 @@ class Shim:
                 opts.set_preference('network.http.referer.disallowCrossSiteRelaxingDefault', False)
 
                 # to produce a trace-level geckodriver.log,
-                # remove the log_path argument to FirefoxService()
+                # remove the log_output argument to FirefoxService()
                 # and uncomment the line below
                 #opts.log.level = "trace"
 
-                service = FirefoxService(log_path=os.path.devnull)
+                service = FirefoxService(log_output=os.path.devnull)
                 driver = webdriver.Firefox(options=opts, service=service)
 
             except WebDriverException as e:
@@ -325,8 +325,16 @@ class PBSeleniumTest(unittest.TestCase):
                 "chrome.runtime.sendMessage({"
                 "  type: 'updateSettings',"
                 "  data: { showIntroPage: false }"
-                "}, done);")
-
+                "}, () => {"
+                "   chrome.tabs.query({}, (res) => {"
+                "     let welcome_tab = res && res.find("
+                "       tab => tab.url == chrome.runtime.getURL('skin/firstRun.html'));"
+                "     if (!welcome_tab) {"
+                "       return done();"
+                "     }"
+                "     chrome.tabs.remove(welcome_tab.id, done);"
+                "   });"
+                "});")
             super().run(result)
 
     def is_firefox_nightly(self):

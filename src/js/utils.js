@@ -51,28 +51,40 @@ function fetchResource(url, callback) {
 }
 
 /**
- * Return an array of all subdomains in an FQDN, ordered from the FQDN to the
- * eTLD+1. e.g. [a.b.eff.org, b.eff.org, eff.org]
- * if 'all' is passed in then the array will include all domain levels, not
- * just down to the base domain
+ * Splits a given FQDN into an array of FQDNs present inside the FQDN,
+ * ordered from the FQDN itself down to the eTLD+1.
+ *
+ * For example: ['a.b.eff.org', 'b.eff.org', 'eff.org']
+ *
  * @param {String} fqdn the domain to split
- * @param {boolean} all whether to include all domain levels
- * @returns {Array} the subdomains
+ * @param {Boolean} [all] whether to go past eTLD+1: ['bbc.co.uk', 'co.uk', 'uk']
+ *
+ * @returns {Array}
  */
 function explodeSubdomains(fqdn, all) {
-  var baseDomain;
+  let subdomains = [],
+    base_domain,
+    dot = -1,
+    piece;
+
   if (all) {
-    baseDomain = fqdn.split('.').pop();
+    base_domain = fqdn.slice(fqdn.lastIndexOf('.') + 1);
   } else {
-    baseDomain = getBaseDomain(fqdn);
+    base_domain = getBaseDomain(fqdn);
   }
-  var baseLen = baseDomain.split('.').length;
-  var parts = fqdn.split('.');
-  var numLoops = parts.length - baseLen;
-  var subdomains = [];
-  for (var i=0; i<=numLoops; i++) {
-    subdomains.push(parts.slice(i).join('.'));
+
+  for (;;) {
+    piece = fqdn.slice(dot + 1);
+    subdomains.push(piece);
+    if (base_domain == piece) {
+      break;
+    }
+    dot = fqdn.indexOf('.', dot + 1);
+    if (dot < 0) {
+      break;
+    }
   }
+
   return subdomains;
 }
 
@@ -159,48 +171,6 @@ function estimateMaxEntropy(str) {
   let max_bits = (Math.log(max_symbols) / Math.LN2) * str.length;
 
   return max_bits;
-}
-
-// Adapted from https://gist.github.com/jaewook77/cd1e3aa9449d7ea4fb4f
-// Find all common substrings more than 8 characters long, using DYNAMIC
-// PROGRAMMING
-function findCommonSubstrings(str1, str2) {
-  /*
-   Let D[i,j] be the length of the longest matching string suffix between
-   str1[1]..str1[i] and a segment of str2 between str2[1]..str2[j].
-   If the ith character in str1 doesn’t match the jth character in str2, then
-   D[i,j] is zero to indicate that there is no matching suffix
-   */
-
-  // we only care about strings >= 8 chars
-  let D = [], LCS = [], LCS_MIN = 8;
-
-  // runs in O(M x N) time!
-  for (let i = 0; i < str1.length; i++) {
-    D[i] = [];
-    for (let j = 0; j < str2.length; j++) {
-      if (str1[i] == str2[j]) {
-        if (i == 0 || j == 0) {
-          D[i][j] = 1;
-        } else {
-          D[i][j] = D[i-1][j-1] + 1;
-        }
-
-        // store all common substrings longer than the minimum length
-        if (D[i][j] == LCS_MIN) {
-          LCS.push(str1.substring(i-D[i][j]+1, i+1));
-        } else if (D[i][j] > LCS_MIN) {
-          // remove the shorter substring and add the new, longer one
-          LCS.pop();
-          LCS.push(str1.substring(i-D[i][j]+1, i+1));
-        }
-      } else {
-        D[i][j] = 0;
-      }
-    }
-  }
-
-  return LCS;
 }
 
 function oneSecond() {
@@ -551,7 +521,6 @@ let utils = {
   explodeSubdomains,
   fetchResource,
   filter,
-  findCommonSubstrings,
   firstPartyProtectionsEnabled,
   getHostFromDomainInput,
   hasOwn,

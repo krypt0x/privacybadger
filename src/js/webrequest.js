@@ -24,6 +24,7 @@
 /* globals badger:false */
 
 import { extractHostFromURL, getBaseDomain, isPrivateDomain } from "../lib/basedomain.js";
+import { getInitiatorUrl, guessTabIdFromInitiator } from "../lib/webrequestUtils.js";
 
 import { log } from "./bootstrap.js";
 import constants from "./constants.js";
@@ -31,18 +32,14 @@ import incognito from "./incognito.js";
 import surrogates from "./surrogates.js";
 import utils from "./utils.js";
 
-/************ Local Variables *****************/
-
-let tempAllowlist = {},
-  tempAllowedWidgets = {};
-
 /***************** Blocking Listener Functions **************/
 
 /**
- * Event handling of http requests, main logic to collect data what to block
+ * This is where we block or replace requests with empty "surrogates".
  *
- * @param {Object} details The event details
- * @returns {Object} Can cancel requests
+ * @param {Object} details webRequest request details object
+ *
+ * @returns {Object|undefined} Can cancel requests
  */
 function onBeforeRequest(details) {
   if (!badger.INITIALIZED) {
@@ -53,7 +50,10 @@ function onBeforeRequest(details) {
     tab_id = details.tabId,
     type = details.type,
     url = details.url,
-    sw_request = false;
+    // is this a service worker-initiated request?
+    sw_request = false,
+    // did this request originate from the tab's current document?
+    from_current_tab = true;
 
   if (type == "main_frame") {
     let oldTabData = badger.tabData.getFrameData(tab_id),
@@ -73,7 +73,7 @@ function onBeforeRequest(details) {
 
   if (tab_id < 0) {
     // TODO may also want to apply this workaround in onBeforeSendHeaders(),
-    // TODO onHeadersReceived() and heuristicBlockingAccounting()
+    // TODO onHeadersReceived() and heuristicBlocking.checkForTrackingCookies()
     tab_id = guessTabIdFromInitiator(details);
     if (tab_id < 0) {
       // TODO we still miss SW requests that show up after on-tab close cleanup
@@ -85,13 +85,12 @@ function onBeforeRequest(details) {
       // TODO or miss them entirely (when the more recently opened tab
       // TODO gets closed while the older tab is still loading)
       return;
-    } else {
-      // NOTE details.type is always xmlhttprequest for SW-initiated requests in Chrome,
-      // which means surrogation won't work and frames won't get collapsed.
-      // As a workaround, let's perform surrogation checks for all SW requests,
-      // although we may redirect a non-script resource request to a matching surrogate.
-      sw_request = true;
     }
+    // NOTE details.type is always xmlhttprequest for SW-initiated requests in Chrome,
+    // which means surrogation won't work and frames won't get collapsed.
+    // As a workaround, let's perform surrogation checks for all SW requests,
+    // although we may redirect a non-script resource request to a matching surrogate.
+    sw_request = true;
   }
 
   let request_host = extractHostFromURL(url);
@@ -106,32 +105,87 @@ function onBeforeRequest(details) {
     return;
   }
 
-  if (type == "sub_frame") {
-    badger.tabData.recordFrame(tab_id, frame_id, url);
+  let tab_host = frameData.host;
+
+  let initiator_url = getInitiatorUrl(frameData.url, details);
+  if (initiator_url) {
+    // if we are no longer on the page the request originated from,
+    // don't log in popup or attempt to replace widgets
+    // but do block request/modify headers
+    from_current_tab = false;
+    tab_host = extractHostFromURL(initiator_url);
   }
 
-  let tab_host = frameData.host;
+  if (type == "sub_frame" && from_current_tab) {
+    badger.tabData.recordFrame(tab_id, frame_id, url);
+  }
 
   if (!utils.isThirdPartyDomain(request_host, tab_host)) {
     return;
   }
 
+  // TODO !from_current_tab requests shouldn't go through allowedOnTab()
   let action = checkAction(tab_id, request_host, frame_id);
   if (!action) {
     return;
   }
 
-  badger.logThirdPartyOriginOnTab(tab_id, request_host, action);
+  if (from_current_tab) {
+    badger.logThirdPartyOriginOnTab(tab_id, request_host, action);
+  }
 
   if (!badger.isPrivacyBadgerEnabled(tab_host)) {
     return;
+  }
+
+  // block requests to known fingerprinter scripts
+  // hosted by (user)cookieblocked CDNs
+  if (type == 'script' || sw_request) {
+    if (action == constants.COOKIEBLOCK || action == constants.USER_COOKIEBLOCK) {
+      if (request_host == 'cdn.jsdelivr.net' ||
+        request_host == 'cdnjs.cloudflare.com' ||
+        request_host == 'd1af033869koo7.cloudfront.net' ||
+        request_host == 'd38xvr37kwwhcm.cloudfront.net' ||
+        request_host == 'd.alicdn.com' ||
+        request_host == 'fp-cdn.azureedge.net' ||
+        request_host == 'sdtagging.azureedge.net' ||
+        request_host == 'gadasource.storage.googleapis.com') {
+
+        let fpScripts = badger.storage.getStore('fp_scripts').getItem(request_host);
+
+        if (fpScripts) {
+          let script_path = url.slice(url.indexOf(request_host) + request_host.length),
+            qs_start = script_path.indexOf('?');
+          if (qs_start != -1) {
+            script_path = script_path.slice(0, qs_start);
+          }
+          if (utils.hasOwn(fpScripts, script_path)) {
+            if (!from_current_tab) {
+              return { cancel: true };
+            }
+
+            badger.tabData.logFpScript(tab_id, request_host, url);
+
+            let surrogate = surrogates.getSurrogateUri(url, request_host);
+            if (surrogate) {
+              let secret = getWarSecret(tab_id, frame_id, surrogate);
+              return {
+                redirectUrl: surrogate + '?key=' + secret
+              };
+            }
+
+            return { cancel: true };
+          }
+        }
+      }
+    }
   }
 
   if (action != constants.BLOCK && action != constants.USER_BLOCK) {
     return;
   }
 
-  if (type == 'script' || sw_request) {
+  if ((type == 'script' || sw_request) && from_current_tab) {
     let surrogate;
 
     if (utils.hasOwn(surrogates.WIDGET_SURROGATES, request_host)) {
@@ -153,11 +207,13 @@ function onBeforeRequest(details) {
   }
 
   // notify the widget replacement content script
-  chrome.tabs.sendMessage(tab_id, {
-    type: "replaceWidget",
-    trackerDomain: request_host,
-    frameId: (type == 'sub_frame' ? details.parentFrameId : frame_id)
-  });
+  if (from_current_tab) {
+    chrome.tabs.sendMessage(tab_id, {
+      type: "replaceWidget",
+      trackerDomain: request_host,
+      frameId: (type == 'sub_frame' ? details.parentFrameId : frame_id)
+    });
+  }
 
   // if this is a heuristically- (not user-) blocked domain
   if (action == constants.BLOCK && incognito.learningEnabled(tab_id)) {
@@ -167,13 +223,13 @@ function onBeforeRequest(details) {
     }, 0);
   }
 
-  if (type == 'sub_frame') {
+  if (type == 'sub_frame' && from_current_tab) {
     setTimeout(function () {
       hideBlockedFrame(tab_id, details.parentFrameId, url, request_host);
     }, 0);
   }
 
-  return {cancel: true};
+  return { cancel: true };
 }
 
 /**
@@ -265,11 +321,70 @@ function blockMozCspReports(details) {
 }
 
 /**
+ * A backstop to remove undesirable redirects for when our JS approach fails.
+ *
+ * Some Google properties (such as Google Docs in Firefox) rewrite clicked
+ * link actions via some mix of capturing all events, window.open() with
+ * document.write(), and meta refresh.
+ *
+ * @param {Object} details webRequest request details object
+ *
+ * @returns {Object|undefined} Can redirect requests
+ */
+function bypassGoogleRedirects(details) {
+  if (!badger.INITIALIZED) { return; }
+  let request_host = extractHostFromURL(details.url);
+  if (!badger.isPrivacyBadgerEnabled(request_host)) { return; }
+  let urlObj, redirect_url;
+  try {
+    urlObj = new URL(details.url);
+  } catch (e) { /* ignore */ }
+  if (urlObj && urlObj.searchParams) {
+    redirect_url = urlObj.searchParams.get('url') || urlObj.searchParams.get('q');
+  }
+  if (redirect_url) {
+    if (redirect_url.startsWith("https://") || redirect_url.startsWith("http://")) {
+      if (utils.isThirdPartyDomain(extractHostFromURL(redirect_url), request_host)) {
+        return {
+          redirectUrl: redirect_url
+        };
+      }
+    }
+  }
+}
+
+/**
+ * Blocks Google's /gen_204 requests.
+ *
+ * @param {Object} details webRequest request details object
+ *
+ * @returns {Object|undefined} Can cancel requests
+ */
+function blockGoogleGen204s(details) {
+  if (!badger.INITIALIZED) { return; }
+
+  let frameData = badger.tabData.getFrameData(details.tabId);
+  if (!frameData) {
+    return;
+  }
+  let tab_host = frameData.host,
+    initiator_url = getInitiatorUrl(frameData.url, details);
+  if (initiator_url) {
+    tab_host = extractHostFromURL(initiator_url);
+  }
+  if (!badger.isPrivacyBadgerEnabled(tab_host)) {
+    return;
+  }
+
+  return { cancel: true };
+}
+
+/**
  * Filters outgoing cookies and referer
  * Injects DNT
  *
  * @param {Object} details Event details
- * @returns {Object} modified headers
+ * @returns {Object} Contains the modified headers
  */
 function onBeforeSendHeaders(details) {
   if (!badger.INITIALIZED) {
@@ -279,7 +394,8 @@ function onBeforeSendHeaders(details) {
   let frame_id = details.frameId,
     tab_id = details.tabId,
     url = details.url,
-    frameData = badger.tabData.getFrameData(tab_id);
+    frameData = badger.tabData.getFrameData(tab_id),
+    from_current_tab = true;
 
   if (!frameData || tab_id < 0) {
     // strip cookies from DNT policy requests
@@ -304,7 +420,7 @@ function onBeforeSendHeaders(details) {
   let tab_host = frameData.host;
 
   if (details.type == 'main_frame') {
-    if (badger.isDNTSignalEnabled() && badger.isPrivacyBadgerEnabled(tab_host)) {
+    if (badger.isDntSignalEnabled(tab_host) && badger.isPrivacyBadgerEnabled(tab_host)) {
       details.requestHeaders.push({name: "DNT", value: "1"}, {name: "Sec-GPC", value: "1"});
       return { requestHeaders: details.requestHeaders };
     }
@@ -319,14 +435,16 @@ function onBeforeSendHeaders(details) {
     request_host = badger.cnameDomains[request_host];
   }
 
+  let initiator_url = getInitiatorUrl(frameData.url, details);
+  if (initiator_url) {
+    from_current_tab = false;
+    tab_host = extractHostFromURL(initiator_url);
+  }
+
   if (!utils.isThirdPartyDomain(request_host, tab_host)) {
-    if (badger.isDNTSignalEnabled() && badger.isPrivacyBadgerEnabled(tab_host)) {
+    if (badger.isDntSignalEnabled(tab_host) && badger.isPrivacyBadgerEnabled(tab_host)) {
       // send Do Not Track header even when HTTP and cookie blocking are disabled
-      if (tab_host == 'www.costco.com') {
-        details.requestHeaders.push({name: "Sec-GPC", value: "1"});
-      } else {
-        details.requestHeaders.push({name: "DNT", value: "1"}, {name: "Sec-GPC", value: "1"});
-      }
+      details.requestHeaders.push({name: "DNT", value: "1"}, {name: "Sec-GPC", value: "1"});
       return { requestHeaders: details.requestHeaders };
     }
 
@@ -335,7 +453,7 @@ function onBeforeSendHeaders(details) {
 
   let action = checkAction(tab_id, request_host, frame_id);
 
-  if (action) {
+  if (action && from_current_tab) {
     badger.logThirdPartyOriginOnTab(tab_id, request_host, action);
   }
 
@@ -369,7 +487,7 @@ function onBeforeSendHeaders(details) {
     }
 
     // add DNT header
-    if (badger.isDNTSignalEnabled()) {
+    if (badger.isDntSignalEnabled(tab_host)) {
       newHeaders.push({name: "DNT", value: "1"}, {name: "Sec-GPC", value: "1"});
     }
 
@@ -378,17 +496,19 @@ function onBeforeSendHeaders(details) {
 
   // if we are here, we're looking at a third-party request
   // that's not yet blocked or cookieblocked
-  if (badger.isDNTSignalEnabled()) {
+  if (badger.isDntSignalEnabled(tab_host)) {
     details.requestHeaders.push({name: "DNT", value: "1"}, {name: "Sec-GPC", value: "1"});
   }
-  return {requestHeaders: details.requestHeaders};
+  return { requestHeaders: details.requestHeaders };
 }
 
 /**
- * Filters incoming cookies out of the response header
+ * Filters incoming cookies out of the response header,
+ * and opts out from Google's Topics API.
  *
- * @param {Object} details The event details
- * @returns {Object} The new response headers
+ * @param {Object} details webRequest response details object
+ *
+ * @returns {Object} Contains the new response headers
  */
 function onHeadersReceived(details) {
   if (!badger.INITIALIZED) {
@@ -412,7 +532,8 @@ function onHeadersReceived(details) {
 
   let tab_id = details.tabId,
     url = details.url,
-    frameData = badger.tabData.getFrameData(tab_id);
+    frameData = badger.tabData.getFrameData(tab_id),
+    from_current_tab = true;
 
   if (!frameData || tab_id < 0 || utils.isRestrictedUrl(url)) {
     // strip cookies, reject redirects from DNT policy responses
@@ -449,6 +570,12 @@ function onHeadersReceived(details) {
     response_host = badger.cnameDomains[response_host];
   }
 
+  let initiator_url = getInitiatorUrl(frameData.url, details);
+  if (initiator_url) {
+    from_current_tab = false;
+    tab_host = extractHostFromURL(initiator_url);
+  }
+
   if (!utils.isThirdPartyDomain(response_host, tab_host)) {
     return;
   }
@@ -458,7 +585,9 @@ function onHeadersReceived(details) {
     return;
   }
 
-  badger.logThirdPartyOriginOnTab(tab_id, response_host, action);
+  if (from_current_tab) {
+    badger.logThirdPartyOriginOnTab(tab_id, response_host, action);
+  }
 
   if (!badger.isPrivacyBadgerEnabled(tab_host)) {
     return;
@@ -468,7 +597,7 @@ function onHeadersReceived(details) {
     let newHeaders = details.responseHeaders.filter(function(header) {
       return (header.name.toLowerCase() != "set-cookie");
     });
-    return {responseHeaders: newHeaders};
+    return { responseHeaders: newHeaders };
   }
 }
 
@@ -477,12 +606,12 @@ function onHeadersReceived(details) {
 /**
  * Event handler when a tab gets removed
  *
- * @param {Integer} tabId Id of the tab
+ * @param {Integer} tab_id ID of the tab
  */
-function onTabRemoved(tabId) {
-  if (badger.INITIALIZED) {
-    forgetTab(tabId);
-  }
+function onTabRemoved(tab_id) {
+  setTimeout(function () {
+    forgetTab(tab_id);
+  }, utils.oneSecond() * 20);
 }
 
 /**
@@ -534,7 +663,7 @@ function onNavigate(details) {
 
   initAllowedWidgets(tab_id, tab_host);
 
-  // initialize tab data bookkeeping used by heuristicBlockingAccounting()
+  // initialize tab data bookkeeping used by heuristicBlocking.checkForTrackingCookies()
   // to avoid missing or misattributing learning
   // when there is no "main_frame" webRequest callback
   // (such as on Service Worker pages)
@@ -602,37 +731,6 @@ function hideBlockedFrame(tab_id, parent_frame_id, frame_url, frame_host) {
 }
 
 /**
- * Tries to work around tab ID of -1 for requests
- * originated by a Service Worker in Chrome.
- *
- * https://bugs.chromium.org/p/chromium/issues/detail?id=766433#c13
- *
- * @param {Object} details webRequest request/response details object
- *
- * @returns {Integer} the tab ID or -1
- */
-function guessTabIdFromInitiator(details) {
-  if (!details.initiator || details.initiator == "null") {
-    return -1;
-  }
-
-  if (details.tabId != -1 || details.frameId != -1 || details.parentFrameId != -1 || details.type != "xmlhttprequest") {
-    return -1;
-  }
-
-  // ignore trivially first party requests
-  if (details.url.startsWith(details.initiator)) {
-    return -1;
-  }
-
-  if (utils.hasOwn(badger.tabData.tabIdsByInitiator, details.initiator)) {
-    return badger.tabData.tabIdsByInitiator[details.initiator];
-  }
-
-  return -1;
-}
-
-/**
  * Record "supercookie" tracking
  *
  * @param {Integer} tab_id browser tab ID
@@ -672,7 +770,15 @@ function recordFingerprinting(tab_id, msg) {
   }
 
   let document_host = badger.tabData.getFrameData(tab_id).host,
-    script_host = extractHostFromURL(msg.scriptUrl);
+    script_host = "", script_path = "";
+
+  try {
+    let parsedScriptUrl = new URL(msg.scriptUrl);
+    script_host = parsedScriptUrl.hostname;
+    script_path = parsedScriptUrl.pathname;
+  } catch (e) {
+    console.error("Failed to parse URL of %s\n", msg.scriptUrl, e);
+  }
 
   // CNAME uncloaking
   if (utils.hasOwn(badger.cnameDomains, script_host)) {
@@ -728,6 +834,8 @@ function recordFingerprinting(tab_id, msg) {
           // record canvas fingerprinting
           badger.storage.recordTrackingDetails(
             script_base, document_base, 'canvas');
+          badger.storage.recordFingerprintingScript(
+            script_host, script_path);
         }
       }
       // This is a canvas write
@@ -741,14 +849,10 @@ function recordFingerprinting(tab_id, msg) {
  * Cleans up tab-specific data.
  *
  * @param {Integer} tab_id the ID of the tab
- * @param {Boolean} is_reload whether the page is simply being reloaded
+ * @param {Boolean} is_reload whether the page is being reloaded
  */
 function forgetTab(tab_id, is_reload) {
-  badger.tabData.forget(tab_id);
-  if (!is_reload) {
-    delete tempAllowlist[tab_id];
-    delete tempAllowedWidgets[tab_id];
-  }
+  badger.tabData.forget(tab_id, is_reload);
 }
 
 /**
@@ -836,8 +940,8 @@ let getWidgetList = (function () {
       // like Tumblr do the right thing after a widget is allowed
       // (but the page hasn't yet been reloaded)
       // and don't keep replacing an already allowed widget type in those frames
-      if (utils.hasOwn(tempAllowedWidgets, tab_id) &&
-          tempAllowedWidgets[tab_id].includes(widget.name)) {
+      if (utils.hasOwn(badger.tabData.tempAllowedWidgets, tab_id) &&
+          badger.tabData.tempAllowedWidgets[tab_id].includes(widget.name)) {
         continue;
       }
 
@@ -904,11 +1008,11 @@ let getWidgetList = (function () {
  * @returns {Boolean} true if FQDN is on the temporary allow list
  */
 function allowedOnTab(tab_id, request_host, frame_id) {
-  if (!utils.hasOwn(tempAllowlist, tab_id)) {
+  if (!utils.hasOwn(badger.tabData.tempAllowlist, tab_id)) {
     return false;
   }
 
-  let exceptions = tempAllowlist[tab_id];
+  let exceptions = badger.tabData.tempAllowlist[tab_id];
 
   for (let exception of exceptions) {
     if (exception == request_host) {
@@ -961,29 +1065,6 @@ function getWidgetDomains(widget_name) {
 }
 
 /**
- * Marks a set of (widget) domains to be (temporarily) allowed on a tab.
- *
- * @param {Integer} tab_id the ID of the tab
- * @param {Array} domains the domains
- * @param {String} widget_name the name (ID) of the widget
- */
-function allowOnTab(tab_id, domains, widget_name) {
-  if (!utils.hasOwn(tempAllowlist, tab_id)) {
-    tempAllowlist[tab_id] = [];
-  }
-  for (let domain of domains) {
-    if (!tempAllowlist[tab_id].includes(domain)) {
-      tempAllowlist[tab_id].push(domain);
-    }
-  }
-
-  if (!utils.hasOwn(tempAllowedWidgets, tab_id)) {
-    tempAllowedWidgets[tab_id] = [];
-  }
-  tempAllowedWidgets[tab_id].push(widget_name);
-}
-
-/**
  * Called upon navigation to prepopulate the temporary allowlist
  * with domains for widgets marked as always allowed on a given site.
  */
@@ -993,7 +1074,7 @@ function initAllowedWidgets(tab_id, tab_host) {
     for (let widget_name of allowedWidgets[tab_host]) {
       let widgetDomains = getWidgetDomains(widget_name);
       if (widgetDomains) {
-        allowOnTab(tab_id, widgetDomains, widget_name);
+        badger.tabData.allowOnTab(tab_id, widgetDomains, widget_name);
       }
     }
   }
@@ -1103,8 +1184,16 @@ function getSurrogateWidget(name, data, frame_url) {
 
 // NOTE: sender.tab is available for content script (not popup) messages only
 function dispatcher(request, sender, sendResponse) {
+  // messages may arrive before Privacy Badger is ready
+  // for example, user clicks to open the popup when the ephemeral background
+  // process is not running; the getPopupData message from the popup causes
+  // the background to start but the background is not yet ready to respond
   if (!badger.INITIALIZED) {
-    return sendResponse();
+    setTimeout(function () {
+      dispatcher(request, sender, sendResponse);
+    }, 50);
+    // indicate this is an async response to chrome.runtime.onMessage
+    return true;
   }
 
   // messages from content scripts are to be treated with greater caution:
@@ -1127,7 +1216,12 @@ function dispatcher(request, sender, sendResponse) {
       "widgetFromSurrogate",
       "widgetReplacementReady",
     ];
-    if (!KNOWN_CONTENT_SCRIPT_MESSAGES.includes(request.type)) {
+    if (KNOWN_CONTENT_SCRIPT_MESSAGES.includes(request.type)) {
+      if (!sender.tab) {
+        console.error("Dropping malformed content script message %o from %s", request, sender.url);
+        return sendResponse();
+      }
+    } else {
       console.error("Rejected unknown message %o from %s", request, sender.url);
       return sendResponse();
     }
@@ -1193,7 +1287,7 @@ function dispatcher(request, sender, sendResponse) {
     if (!widgetDomains) {
       return sendResponse();
     }
-    allowOnTab(sender.tab.id, widgetDomains, request.widgetName);
+    badger.tabData.allowOnTab(sender.tab.id, widgetDomains, request.widgetName);
     sendResponse();
     break;
   }
@@ -1314,6 +1408,7 @@ function dispatcher(request, sender, sendResponse) {
     }
 
     sendResponse({
+      blockedFpScripts: badger.tabData._tabData[tab_id].blockedFpScripts,
       cookieblocked,
       criticalError: badger.criticalError,
       enabled: badger.isPrivacyBadgerEnabled(tab_host),
@@ -1462,6 +1557,15 @@ function dispatcher(request, sender, sendResponse) {
     let value = +request.value;
     if (value > 0) {
       badger.getPrivateSettings().setItem("blockThreshold", value);
+    }
+    sendResponse();
+    break;
+  }
+
+  // used by Badger Sett
+  case "setIgnoredSiteBases": {
+    if (request.value && Array.isArray(request.value)) {
+      badger.getPrivateSettings().setItem("ignoredSiteBases", request.value);
     }
     sendResponse();
     break;
@@ -1653,8 +1757,9 @@ function dispatcher(request, sender, sendResponse) {
   }
 
   case "removeOrigin": {
-    badger.storage.getStore("snitch_map").deleteItem(request.origin);
-    badger.storage.getStore("action_map").deleteItem(request.origin);
+    for (let name of ['snitch_map', 'action_map', 'tracking_map', 'fp_scripts']) {
+      badger.storage.getStore(name).deleteItem(request.origin);
+    }
     sendResponse({
       origins: badger.storage.getTrackingDomains()
     });
@@ -1676,10 +1781,10 @@ function dispatcher(request, sender, sendResponse) {
   // called from contentscripts/dnt.js
   // to check if it should set DNT on Navigator
   case "checkDNT": {
+    let tab_host = extractHostFromURL(sender.tab.url);
     sendResponse(
-      badger.isDNTSignalEnabled()
-      && badger.isPrivacyBadgerEnabled(extractHostFromURL(sender.tab.url))
-    );
+      badger.isDntSignalEnabled(tab_host) &&
+      badger.isPrivacyBadgerEnabled(tab_host));
     break;
   }
 
@@ -1689,6 +1794,17 @@ function dispatcher(request, sender, sendResponse) {
     let tab_host = extractHostFromURL(sender.tab.url);
     if (!badger.isPrivacyBadgerEnabled(tab_host)) {
       break;
+    }
+
+    if (request.name == "X (Twitter)") {
+      // no need to build a custom widget,
+      // merely rescan the page for Twitter embeds
+      chrome.tabs.sendMessage(sender.tab.id, {
+        type: "replaceWidget",
+        trackerDomain: "platform.twitter.com",
+        frameId: sender.frameId
+      });
+      return;
     }
 
     // NOTE: request.name and request.data are not to be trusted
@@ -1750,7 +1866,9 @@ function dispatcher(request, sender, sendResponse) {
 function startListeners() {
   chrome.webNavigation.onCommitted.addListener(onNavigate);
 
-  chrome.webRequest.onBeforeRequest.addListener(onBeforeRequest, {urls: ["http://*/*", "https://*/*"]}, ["blocking"]);
+  chrome.webRequest.onBeforeRequest.addListener(onBeforeRequest, {
+    urls: ["http://*/*", "https://*/*", "ws://*/*", "wss://*/*"]
+  }, ["blocking"]);
 
   chrome.webRequest.onBeforeRequest.addListener(filterWarRequests, {
     urls: chrome.runtime.getManifest().web_accessible_resources.map(
@@ -1761,21 +1879,55 @@ function startListeners() {
   if (utils.hasOwn(chrome.webRequest.OnBeforeRequestOptions, 'REQUESTBODY')) {
     chrome.webRequest.onBeforeRequest.addListener(blockMozCspReports, {
       types: ['csp_report'],
-      urls: ['<all_urls>']
+      urls: ["http://*/*", "https://*/*"]
     }, ['blocking', 'requestBody']);
+  }
+
+  let googleHosts;
+  try {
+    googleHosts = chrome.runtime.getManifest().content_scripts
+      .find(i => i.js.includes("js/firstparties/google.js")
+        || i.js.includes(chrome.runtime.getURL("js/firstparties/google.js")))
+      .matches.filter(i => i.startsWith("https://www.") && i.endsWith("/*"))
+      .map(i => i.slice(8).slice(0, -2));
+  } catch (e) { /* ignore */ }
+
+  if (googleHosts && googleHosts.length) {
+    chrome.webRequest.onBeforeRequest.addListener(bypassGoogleRedirects, {
+      types: ["main_frame"],
+      urls: googleHosts.map(d => `https://${d}/url?*`)
+    }, ["blocking"]);
+
+    let gen204MatchPatterns = googleHosts.map(d => `https://${d}/gen_204?*`);
+    try {
+      chrome.webRequest.onBeforeRequest.addListener(blockGoogleGen204s, {
+        types: ["ping", "beacon"], urls: gen204MatchPatterns
+      }, ["blocking"]);
+    } catch (e) {
+      // must be Chrome where the "beacon" request type errors out
+      chrome.webRequest.onBeforeRequest.addListener(blockGoogleGen204s, {
+        types: ["ping"], urls: gen204MatchPatterns
+      }, ["blocking"]);
+    }
+  } else {
+    console.error("No Google hosts found!");
   }
 
   let extraInfoSpec = ['requestHeaders', 'blocking'];
   if (utils.hasOwn(chrome.webRequest.OnBeforeSendHeadersOptions, 'EXTRA_HEADERS')) {
     extraInfoSpec.push('extraHeaders');
   }
-  chrome.webRequest.onBeforeSendHeaders.addListener(onBeforeSendHeaders, {urls: ["http://*/*", "https://*/*"]}, extraInfoSpec);
+  chrome.webRequest.onBeforeSendHeaders.addListener(onBeforeSendHeaders, {
+    urls: ["http://*/*", "https://*/*"]
+  }, extraInfoSpec);
 
   extraInfoSpec = ['responseHeaders', 'blocking'];
   if (utils.hasOwn(chrome.webRequest.OnHeadersReceivedOptions, 'EXTRA_HEADERS')) {
     extraInfoSpec.push('extraHeaders');
   }
-  chrome.webRequest.onHeadersReceived.addListener(onHeadersReceived, {urls: ["<all_urls>"]}, extraInfoSpec);
+  chrome.webRequest.onHeadersReceived.addListener(onHeadersReceived, {
+    urls: ["http://*/*", "https://*/*"]
+  }, extraInfoSpec);
 
   chrome.tabs.onRemoved.addListener(onTabRemoved);
   chrome.tabs.onReplaced.addListener(onTabReplaced);

@@ -440,6 +440,10 @@ function _make_id(prefix) {
 }
 
 function createReplacementWidget(widget, elToReplace) {
+  if (!elToReplace.parentNode) {
+    return null;
+  }
+
   let name = widget.name;
 
   let widgetFrame = document.createElement('iframe');
@@ -532,6 +536,17 @@ function createReplacementWidget(widget, elToReplace) {
   } else if (elToReplace.nodeName.toLowerCase() == 'iframe' && elToReplace.src && !widget.noDirectLink) {
     // use the frame URL for framed widgets
     widget_url = elToReplace.src;
+  } else if (elToReplace.nodeName.toLowerCase() == 'blockquote') {
+    if (elToReplace.cite && elToReplace.cite.startsWith('https://')) {
+      // special case for TikTok
+      widget_url = elToReplace.cite;
+    } else if (elToReplace.className.includes("twitter-tweet") || elToReplace.className.includes("twitter-video")) {
+      // special case for Twitter
+      let lastLink = Array.from(elToReplace.querySelectorAll("a[href^='https://twitter.com/']")).slice(-1)[0];
+      if (lastLink) {
+        widget_url = lastLink.href;
+      }
+    }
   }
 
   if (widget_url) {
@@ -786,8 +801,18 @@ function replaceIndividualButton(widget) {
     if (doNotReplace.has(el)) {
       continue;
     }
+    // also don't replace if we think we currently have a placeholder
+    // for this widget type attached to the same parent element
+    if (hasOwn(WIDGET_ELS, widget.name)) {
+      if (WIDGET_ELS[widget.name].some(d => d.parent == el.parentNode)) {
+        // something went wrong, give up
+        continue;
+      }
+    }
     createReplacementElement(widget, el, function (replacementEl) {
-      el.parentNode.replaceChild(replacementEl, el);
+      if (replacementEl) {
+        el.parentNode.replaceChild(replacementEl, el);
+      }
     });
   }
 }

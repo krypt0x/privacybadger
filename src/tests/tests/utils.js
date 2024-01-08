@@ -8,12 +8,81 @@ let getSurrogateUri = surrogates.getSurrogateUri;
 
 QUnit.module("Utils", function (/*hooks*/) {
 
-  QUnit.test("explodeSubdomains", function (assert) {
-    var fqdn = "test.what.yea.eff.org";
-    var subs = utils.explodeSubdomains(fqdn);
-    assert.equal(subs.length, 4);
-    assert.equal(subs[0], fqdn);
-    assert.equal(subs[3], "eff.org");
+  QUnit.test("explodeSubdomains()", (assert) => {
+    let TESTS = [
+      {
+        desc: "basic",
+        fqdn: "test.what.yea.eff.org",
+        expected: [
+          "test.what.yea.eff.org",
+          "what.yea.eff.org",
+          "yea.eff.org",
+          "eff.org"
+        ]
+      },
+      {
+        desc: "multi-dot country code eTLD",
+        fqdn: "cdn.bbc.co.uk",
+        expected: [
+          "cdn.bbc.co.uk",
+          "bbc.co.uk"
+        ]
+      },
+      {
+        desc: "multi-dot eTLD; `all` is set",
+        fqdn: "cdn.bbc.co.uk",
+        all: true,
+        expected: [
+          "cdn.bbc.co.uk",
+          "bbc.co.uk",
+          "co.uk",
+          "uk"
+        ]
+      },
+      {
+        desc: "PSL domain",
+        fqdn: "storage.googleapis.com",
+        expected: [
+          "storage.googleapis.com"
+        ]
+      },
+      {
+        desc: "PSL domain; `all` is set",
+        fqdn: "storage.googleapis.com",
+        all: true,
+        expected: [
+          "storage.googleapis.com",
+          "googleapis.com",
+          "com"
+        ]
+      },
+      {
+        desc: "no dots at all",
+        fqdn: "localhost",
+        expected: ["localhost"]
+      },
+      {
+        desc: "no dots at all; `all` is set",
+        fqdn: "localhost",
+        all: true,
+        expected: ["localhost"]
+      },
+      {
+        desc: "empty string",
+        fqdn: "",
+        expected: [""]
+      },
+      {
+        desc: "empty string; `all` is set",
+        fqdn: "",
+        all: true,
+        expected: [""]
+      },
+    ];
+    for (let test of TESTS) {
+      let subs = utils.explodeSubdomains(test.fqdn, !!test.all);
+      assert.deepEqual(subs, test.expected, test.desc);
+    }
   });
 
   QUnit.module("fetchResource", function (hooks) {
@@ -173,6 +242,21 @@ QUnit.module("Utils", function (/*hooks*/) {
         url: `https://${TEST_FQDN}/?${TEST_TOKEN}`,
         expected: false,
         msg: "should not match (token in querystring)"
+      },
+      {
+        url: `https://${TEST_FQDN}${TEST_TOKEN}#foo`,
+        expected: true,
+        msg: "ga.js URL should still match regardless of trailing hash"
+      },
+      {
+        url: `https://${TEST_FQDN}${TEST_TOKEN}#?foo=bar`,
+        expected: true,
+        msg: "ga.js URL should still match if the trailing hash contains ?"
+      },
+      {
+        url: `https://${TEST_FQDN}${TEST_TOKEN}?foo=bar#?foo=bar`,
+        expected: true,
+        msg: "ga.js URL with querystring and hash should still match"
       },
     ];
 
@@ -737,30 +821,6 @@ QUnit.module("Utils", function (/*hooks*/) {
       false,
       "Valid URIs with empty hosts are rejected."
     );
-  });
-
-  // Tests algorithm used in the pixel tracking heuristic
-  // It should return a common substring between two given values
-  QUnit.test("findCommonSubstrings", assert => {
-
-    assert.deepEqual(
-      utils.findCommonSubstrings('www.foo.bar', 'www.foob.ar'),
-      [],
-      "substrings under the length threshold of 8 are ignored"
-    );
-
-    assert.equal(
-      utils.findCommonSubstrings('foobar.com/foo/fizz/buzz/bar', 'foobar.com/foo/bizz/fuzz/bar')[0],
-      'foobar.com/foo/',
-      "returns longest matching value from the pair of URLs"
-    );
-
-    assert.deepEqual(
-      utils.findCommonSubstrings('foobar.com/fizz/buzz/bar/foo', 'foobar.com/fizzbuzz/buzz/bar/foo'),
-      ['foobar.com/fizz', "zz/buzz/bar/foo"],
-      "returns multiple substrings if multiple are present in comparison"
-    );
-
   });
 
   // used in pixel tracking heuristic, given a string the estimateMaxEntropy function

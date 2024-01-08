@@ -28,13 +28,14 @@ rm -f /tmp/changelog$$
 MSG=/tmp/email$$
 
 echo "Privacy Badger $TARGET has been released for all supported browsers." > $MSG
-echo "As always, you can get it from https://privacybadger.org/ or from your browser's add-on gallery." >> $MSG
 echo "" >> $MSG
 echo "Notable updates:" >> $MSG
 echo "" >> $MSG
 tail -n+4 ../doc/Changelog | sed '/^$/q' | grep -Ev '^[0-9]{4}\.[0-9\.]+$' >> $MSG
 echo "For further details, consult our release notes on GitHub:" >> $MSG
 echo "https://github.com/EFForg/privacybadger/releases/tag/release-$TARGET" >> $MSG
+echo "" >> $MSG
+echo "To install Privacy Badger, visit https://privacybadger.org/" >> $MSG
 
 echo To send email to the mailing list...
 echo mutt -s "Privacy\ Badger\ version\ $TARGET\ released" privacybadger@eff.org '<' $MSG
@@ -44,8 +45,9 @@ echo "{"
 echo "  \"version\": \"$TARGET\","
 echo "  \"update_link\": \"https://eff.org/files/privacy-badger-eff-$TARGET.xpi\","
 echo "  \"update_hash\": \"sha256:$(sha256sum "$PKG" | cut -c 1-64)\","
-echo "  \"applications\": {"
-echo "    \"gecko\": { \"strict_min_version\": \"60.0\" }"
+echo "  \"browser_specific_settings\": {"
+echo "    \"gecko\": { \"strict_min_version\": \"78.0\" },"
+echo "    \"gecko_android\": { \"strict_min_version\": \"78.0\" }"
 echo "  }"
 echo "}"
 
