@@ -283,16 +283,6 @@
         "message": "Будь ласка, <a href='https://www.eff.org/privacybadger#faq-I-found-a-bug!-What-do-I-do-now?' target='_blank'>розкажіть нам</a> про наступну помилку:",
         "description": "Shown in the popup when there is an extension error we want to encourage the user to tell us about."
     },
-    "popup_error_text_low_disk_space_issue": {
-        "message": "Збій запису до сховища розширення: $ERROR_TEXT$.<br><br>На вашому диску бракує місця?",
-        "description": "Special error message for the 'An unexpected error occurred' text that sometimes occurs on Firefox browsers with low disk space",
-        "placeholders": {
-            "error_text": {
-                "content": "$1",
-                "example": "An unexpected error occurred"
-            }
-        }
-    },
     "firstRun_title": {
         "message": "Дякуємо за встановлення Privacy Badger!",
         "description": "Title and header of the intro page."
@@ -563,8 +553,12 @@
         "description": "Dropdown control setting on the Tracking Domains options page tab."
     },
     "options_show_not_yet_blocked": {
-        "message": "Показати домени, які Badger ще не вирішив блокувати:",
-        "description": "Label for a checkbox on the Tracking Domains options page tab. Should match wording used in the 'not_yet_blocked_header' message."
+        "message": "Показати домени, які Badger ще не вирішив блокувати",
+        "description": "Checkbox label on the Tracking Domains tab. Should match wording used in the 'not_yet_blocked_header' message. Only visible when 'learn to block new trackers' is enabled."
+    },
+    "options_hide_in_seed": {
+        "message": "Hide domains present in the latest pre-trained list",
+        "description": "Checkbox label on the Tracking Domains tab. Only visible when 'learn to block new trackers' is enabled."
     },
     "options_domain_list_sites": {
         "message": "Виявлено стеження $DOMAIN$ на таких вебсайтах:",

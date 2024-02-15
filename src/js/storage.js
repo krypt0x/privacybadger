@@ -461,9 +461,11 @@ BadgerPen.prototype = {
     this._setupDomainAction(domain, "", "userAction");
 
     // if Privacy Badger never recorded tracking for this domain,
+    // and it's not a DNT-compliant domain,
     // remove the domain's entry from Privacy Badger's database
-    const actionMap = this.getStore("action_map");
-    if (actionMap.getItem(domain).heuristicAction == "") {
+    const actionMap = this.getStore("action_map"),
+      actions = actionMap.getItem(domain);
+    if (actions.heuristicAction == "" && !actions.dnt) {
       log("Removing %s from action_map", domain);
       actionMap.deleteItem(domain);
     }
@@ -471,16 +473,47 @@ BadgerPen.prototype = {
 
   /**
    * Forces a write of a Badger storage object's contents to extension storage.
+   *
+   * @param {?String} store_name storage object's name or null (sync all)
+   * @param {Function} callback
    */
   forceSync: function (store_name, callback) {
-    let self = this;
-    if (!self.KEYS.includes(store_name)) {
-      setTimeout(function () {
-        callback("Error: Unknown Badger storage name");
-      }, 0);
-      return;
+    let self = this,
+      stores = [],
+      num_done = 0;
+
+    if (!callback) {
+      callback = function () {};
     }
-    _syncStorage(self.getStore(store_name), true, callback);
+
+    if (store_name) {
+      if (!self.KEYS.includes(store_name)) {
+        setTimeout(function () {
+          callback("Error: Unknown Badger storage name");
+        }, 0);
+        return;
+      }
+      stores.push(store_name);
+    } else {
+      for (let name of self.KEYS) {
+        stores.push(name);
+      }
+    }
+
+    function done() {
+      num_done++;
+      if (num_done == stores.length) {
+        return callback();
+      }
+      sync(stores[num_done]);
+    }
+
+    function sync(name) {
+      log("Forcing storage sync for " + name);
+      _syncStorage(self.getStore(name), true, done);
+    }
+
+    sync(stores[0]);
   },
 
   /**
@@ -815,7 +848,8 @@ let _syncStorage = (function () {
         return;
       }
       let err = chrome.runtime.lastError.message;
-      if (!err.startsWith("IO error:") && !err.startsWith("Corruption:") &&
+      if (err != "An unexpected error occurred" &&
+        !err.startsWith("IO error:") && !err.startsWith("Corruption:") &&
         !err.startsWith("InvalidStateError:") && !err.startsWith("AbortError:") &&
         !err.startsWith("QuotaExceededError:")) {
         badger.criticalError = err;

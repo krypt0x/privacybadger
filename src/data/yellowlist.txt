@@ -44,6 +44,7 @@ interactives.ap.org
 appconsent.io
 apple.com
 appspot.com
+arcade.software
 arcgis.com
 arcgisonline.com
 archive.org
@@ -69,6 +70,7 @@ client.axept.io
 static.axept.io
 dev.azure.com
 logic.azure.com
+webpubsub.azure.com
 azure-api.net
 azureedge.net
 azurefd.net
@@ -175,6 +177,8 @@ digitalriver.com
 digitalrivercontent.net
 cdn.discordapp.com
 media.discordapp.net
+images-ext-1.discordapp.net
+images-ext-2.discordapp.net
 discoverevvnt.com
 pics.dmm.co.jp
 api.docodoco.jp
