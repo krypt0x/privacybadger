@@ -798,53 +798,24 @@ QUnit.module("Utils", function (/*hooks*/) {
   });
 
   QUnit.test("getHostFromDomainInput", assert => {
-    assert.equal(
-      utils.getHostFromDomainInput("www.spiegel.de"),
+    assert.equal(utils.getHostFromDomainInput("www.spiegel.de"),
       "www.spiegel.de",
-      "Valid domains are accepted"
-    );
+      "Valid domains are accepted");
 
-    assert.equal(
-      utils.getHostFromDomainInput("http://www.spiegel.de/"),
+    assert.equal(utils.getHostFromDomainInput("http://www.spiegel.de/"),
       "www.spiegel.de",
-      "URLs get transformed into domains"
-    );
+      "URLs get transformed into domains");
 
-    assert.equal(
-      utils.getHostFromDomainInput("http://www.spiegel.de"),
+    assert.equal(utils.getHostFromDomainInput("http://www.spiegel.de"),
       "www.spiegel.de",
-      "Trailing slashes are not required"
-    );
+      "Trailing slashes are not required");
 
-    assert.equal(
-      utils.getHostFromDomainInput("@"),
-      false,
-      "Valid URIs with empty hosts are rejected."
-    );
-  });
+    assert.notOk(utils.getHostFromDomainInput("@"),
+      "Valid URIs with empty hosts are rejected");
 
-  // Tests algorithm used in the pixel tracking heuristic
-  // It should return a common substring between two given values
-  QUnit.test("findCommonSubstrings", assert => {
-
-    assert.deepEqual(
-      utils.findCommonSubstrings('www.foo.bar', 'www.foob.ar'),
-      [],
-      "substrings under the length threshold of 8 are ignored"
-    );
-
-    assert.equal(
-      utils.findCommonSubstrings('foobar.com/foo/fizz/buzz/bar', 'foobar.com/foo/bizz/fuzz/bar')[0],
-      'foobar.com/foo/',
-      "returns longest matching value from the pair of URLs"
-    );
-
-    assert.deepEqual(
-      utils.findCommonSubstrings('foobar.com/fizz/buzz/bar/foo', 'foobar.com/fizzbuzz/buzz/bar/foo'),
-      ['foobar.com/fizz', "zz/buzz/bar/foo"],
-      "returns multiple substrings if multiple are present in comparison"
-    );
-
+    assert.equal(utils.getHostFromDomainInput("httpbin.org"),
+      "httpbin.org",
+      "Domains that begin with http are valid entries");
   });
 
   // used in pixel tracking heuristic, given a string the estimateMaxEntropy function

@@ -1,5 +1,5 @@
 {
-  "version": "2024.2.6",
+  "version": "2024.6.14",
   "author": {
     "email": "eff.software.projects@gmail.com"
   },
@@ -21,7 +21,6 @@
     "webRequest",
     "webRequestBlocking",
     "storage",
-    "cookies",
     "privacy"
   ],
   "background": {

@@ -23,6 +23,53 @@ import { log } from "./bootstrap.js";
 import constants from "./constants.js";
 import utils from "./utils.js";
 
+function getLocalStorage(keys, callback) {
+  function _cb(store) {
+    if (chrome.runtime.lastError) {
+      console.error("Error reading from chrome.storage.local:",
+        chrome.runtime.lastError.message);
+    }
+    callback(store);
+  }
+
+  try {
+    chrome.storage.local.get(keys, _cb);
+  } catch (ex) {
+    console.error("Error reading from chrome.storage.local:", ex);
+    callback(null);
+  }
+}
+
+let readFromStorageWithRetrying = (function () {
+  const MAX_TRIES = 5,
+    WAIT_TIME = 200;
+
+  let num_tries = 0;
+
+  /**
+   * @param {Array} the list of keys to get from extension storage
+   * @param {Function} callback
+   */
+  function _tryReading(keys, callback) {
+    getLocalStorage(keys, function (store) {
+      if (store) {
+        return callback(store);
+      }
+
+      num_tries++;
+      if (num_tries >= MAX_TRIES) {
+        return callback(null);
+      }
+
+      setTimeout(function () {
+        _tryReading(keys, callback);
+      }, WAIT_TIME);
+    });
+  }
+
+  return _tryReading;
+}());
+
 function getManagedStorage(callback) {
   chrome.storage.managed.get(null, function (res) {
     if (chrome.runtime.lastError) {
@@ -83,16 +130,22 @@ function BadgerPen(callback) {
   }
 
   // initialize from extension local storage
-  chrome.storage.local.get(self.KEYS, function (store) {
-    self.KEYS.forEach(key => {
-      if (utils.hasOwn(store, key)) {
+  readFromStorageWithRetrying(self.KEYS, function (store) {
+    for (let key of self.KEYS) {
+      if (store && utils.hasOwn(store, key)) {
         self[key] = new BadgerStorage(key, store[key]);
       } else {
         let storageObj = new BadgerStorage(key, {});
         self[key] = storageObj;
         _syncStorage(storageObj);
       }
-    });
+    }
+
+    if (!store) {
+      console.error("Failed to read from extension storage");
+      self.settings_map.setItem("showIntroPage", false);
+      self.settings_map.setItem("seenComic", true);
+    }
 
     badger.initSettings();
 
@@ -104,36 +157,34 @@ function BadgerPen(callback) {
     }
 
     // see if we have any enterprise/admin/group policy overrides
-    getManagedStorage(function (managedStore) {
-      if (utils.isObject(managedStore)) {
-        // there are values in managed storage
-        if (Object.keys(managedStore).length) {
-          ingestManagedStorage(managedStore);
-          setTimeout(function () {
+    // but do it async; don't wait on it to finish initializing
+    setTimeout(function () {
+      getManagedStorage(function (managedStore) {
+        if (utils.isObject(managedStore)) {
+          // there are values in managed storage
+          if (Object.keys(managedStore).length) {
+            ingestManagedStorage(managedStore);
             badger.initWelcomePage();
-          }, 0);
-          return callback();
+            return;
+          }
+
+          // managed storage is an empty object and we just got installed
+          if (badger.isFirstRun) {
+            // poll for managed storage to work around Chromium bug
+            pollForManagedStorage(0, function () {
+              badger.initWelcomePage();
+            });
+            return;
+          }
         }
 
-        // managed storage is an empty object and we just got installed
-        if (badger.isFirstRun) {
-          // poll for managed storage to work around Chromium bug
-          pollForManagedStorage(0, function () {
-            badger.initWelcomePage();
-          });
-          return callback();
-        }
-      }
-
-      // managed storage is not an object,
-      // or it is an empty object but this isn't the first run
-
-      setTimeout(function () {
+        // managed storage is not an object,
+        // or it is an empty object but this isn't the first run
         badger.initWelcomePage();
-      }, 0);
+      });
+    }, 0);
 
-      callback();
-    });
+    callback();
   });
 }
 
@@ -194,6 +245,46 @@ BadgerPen.prototype = {
   },
 
   /**
+   * Merges Privacy Badger user data.
+   *
+   * Used to load pre-trained/"seed" data on installation and updates.
+   * Also used to import user data from other Privacy Badger instances.
+   *
+   * @param {Object} data the user data to merge in
+   */
+  mergeUserData: function (data) {
+    let self = this;
+
+    window.DATA_LOAD_IN_PROGRESS = true;
+
+    // fix incoming snitch map entries with current MDFP data
+    if (utils.hasOwn(data, "snitch_map")) {
+      let correctedSites = {};
+
+      for (let domain in data.snitch_map) {
+        let newSnitches = data.snitch_map[domain].filter(
+          site => utils.isThirdPartyDomain(site, domain));
+
+        if (newSnitches.length) {
+          correctedSites[domain] = newSnitches;
+        }
+      }
+
+      data.snitch_map = correctedSites;
+    }
+
+    // The order of these keys is also the order in which they should be imported.
+    // It's important that snitch_map be imported before action_map (#1972)
+    for (let key of ["snitch_map", "action_map", "settings_map", "tracking_map", "fp_scripts"]) {
+      if (utils.hasOwn(data, key)) {
+        self.getStore(key).merge(data[key]);
+      }
+    }
+
+    window.DATA_LOAD_IN_PROGRESS = false;
+  },
+
+  /**
    * Get the current presumed action for a specific fully qualified domain name (FQDN),
    * ignoring any rules for subdomains below or above it
    *
@@ -245,8 +336,10 @@ BadgerPen.prototype = {
     let addedDomains = utils.difference(newDomains, oldDomains),
       removedDomains = utils.difference(oldDomains, newDomains);
 
-    log('adding to cookie blocklist:', addedDomains);
-    addedDomains.forEach(function (domain) {
+    if (addedDomains.length) {
+      log("Adding to cookie blocklist:", addedDomains);
+    }
+    for (let domain of addedDomains) {
       ylistStorage.setItem(domain, true);
 
       const base = getBaseDomain(domain);
@@ -258,10 +351,12 @@ BadgerPen.prototype = {
           self.setupHeuristicAction(domain, constants.COOKIEBLOCK);
         }
       }
-    });
+    }
 
-    log('removing from cookie blocklist:', removedDomains);
-    removedDomains.forEach(function (domain) {
+    if (removedDomains.length) {
+      log("Removing from cookie blocklist:", removedDomains);
+    }
+    for (let domain of removedDomains) {
       ylistStorage.deleteItem(domain);
 
       const base = getBaseDomain(domain);
@@ -273,7 +368,7 @@ BadgerPen.prototype = {
           }
         }
       }
-    });
+    }
   },
 
   /**
@@ -373,17 +468,17 @@ BadgerPen.prototype = {
    * @return {Object} An object with domains as keys and actions as values.
    */
   getTrackingDomains: function () {
-    let action_map = this.getStore('action_map');
-    let origins = {};
+    let self = this,
+      domains = {};
 
-    for (let domain in action_map.getItemClones()) {
-      let action = badger.storage.getBestAction(domain);
+    for (let fqdn of self.getStore('action_map').keys()) {
+      let action = self.getBestAction(fqdn);
       if (action != constants.NO_TRACKING) {
-        origins[domain] = action;
+        domains[fqdn] = action;
       }
     }
 
-    return origins;
+    return domains;
   },
 
   /**
@@ -391,29 +486,33 @@ BadgerPen.prototype = {
    *
    * @param {String} domain the domain to set the action for
    * @param {String} action the action to take e.g. BLOCK || COOKIEBLOCK || DNT
-   * @param {String} actionType the type of action we are setting, one of "userAction", "heuristicAction", "dnt"
+   * @param {String} action_type the type of action we are setting, one of "userAction", "heuristicAction", "dnt"
+   *
    * @private
    */
-  _setupDomainAction: function (domain, action, actionType) {
-    let msg = "action_map['%s'].%s = %s",
-      action_map = this.getStore("action_map"),
+  _setupDomainAction: function (domain, action, action_type) {
+    let actionStore = this.getStore("action_map"),
       actionObj = {};
 
-    if (action_map.hasItem(domain)) {
-      actionObj = action_map.getItem(domain);
-      msg = "Updating " + msg;
+    if (actionStore.hasItem(domain)) {
+      actionObj = actionStore.getItem(domain);
     } else {
       actionObj = _newActionMapObject();
-      msg = "Initializing " + msg;
     }
-    actionObj[actionType] = action;
+    actionObj[action_type] = action;
 
-    if (window.DEBUG && badger.INITIALIZED) {
-      // to avoid (A) needless JSON.stringify calls
-      // and (B) thousands of messages from loading seed data
-      log(msg, domain, actionType, JSON.stringify(action));
+    // avoid thousands of messages from loading seed/user data
+    if (window.DEBUG && !window.DATA_LOAD_IN_PROGRESS) {
+      let msg = "action_map['%s'].%s = %s";
+      if (actionStore.hasItem(domain)) {
+        msg = "Updating " + msg;
+      } else {
+        msg = "Initializing " + msg;
+      }
+      log(msg, domain, action_type, JSON.stringify(action));
     }
-    action_map.setItem(domain, actionObj);
+
+    actionStore.setItem(domain, actionObj);
   },
 
   /**
@@ -429,15 +528,16 @@ BadgerPen.prototype = {
   /**
    * Set up a domain for DNT
    *
-   * @param {String} domain Domain to add
+   * @param {String} domain
    */
   setupDNT: function (domain) {
     this._setupDomainAction(domain, true, "dnt");
   },
 
   /**
-   * Remove DNT setting from a domain*
-   * @param {String} domain FQDN string
+   * Remove DNT setting from a domain
+   *
+   * @param {String} domain
    */
   revertDNT: function (domain) {
     this._setupDomainAction(domain, false, "dnt");
@@ -509,7 +609,6 @@ BadgerPen.prototype = {
     }
 
     function sync(name) {
-      log("Forcing storage sync for " + name);
       _syncStorage(self.getStore(name), true, done);
     }
 
@@ -800,6 +899,11 @@ BadgerStorage.prototype = {
           fn.call(self, val_clone, key);
         }
       }
+    }
+
+    // don't notify when there is no change
+    if (val === self.getItem(key)) {
+      return;
     }
 
     // exact match subscribers

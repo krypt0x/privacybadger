@@ -2,8 +2,6 @@
 
 import unittest
 
-import pytest
-
 import pbtest
 
 
@@ -12,6 +10,7 @@ class ContentFilteringTest(pbtest.PBSeleniumTest):
 
     # for blocking tests
     FIXTURE_DOMAIN = "efforg.github.io"
+    FIXTURE_PARENT_DOMAIN = "github.io"
     FIXTURE_URL = (
         f"https://{FIXTURE_DOMAIN}/privacybadger-test-fixtures/html/"
         "3p_script_with_load_status.html"
@@ -62,13 +61,8 @@ class ContentFilteringTest(pbtest.PBSeleniumTest):
 
         self.load_url(self.COOKIE_FIXTURE_URL)
         self.load_url(f"https://{self.COOKIE_DOMAIN}/")
-        try:
-            assert len(self.driver.get_cookies()) == 1, (
-                "Cookie fixture should have set a cookie")
-        except AssertionError:
-            if not self.is_firefox_nightly():
-                raise
-            pytest.xfail("Something changed in Nightly ...")
+        assert len(self.driver.get_cookies()) == 1, (
+            "Cookie fixture should have set a cookie")
 
         self.driver.delete_all_cookies()
         self.cookieblock_domain(self.COOKIE_DOMAIN)
@@ -88,14 +82,8 @@ class ContentFilteringTest(pbtest.PBSeleniumTest):
         self.load_url(self.COOKIE_FIXTURE_URL)
         self.wait_for_and_switch_to_frame("iframe[src]", timeout=1)
         self.wait_for_status_output('body')
-
-        try:
-            assert self.find_el_by_css('body').text == "cookies=1", (
-                "We should have sent a cookie at this point")
-        except AssertionError:
-            if not self.is_firefox_nightly():
-                raise
-            pytest.xfail("Something changed in Nightly ...")
+        assert self.find_el_by_css('body').text == "cookies=1", (
+            "We should have sent a cookie at this point")
 
         self.cookieblock_domain(self.COOKIE_DOMAIN)
 
@@ -108,6 +96,15 @@ class ContentFilteringTest(pbtest.PBSeleniumTest):
     def test_cookieblocking_subdomain_of_blocked_domain(self):
         self.block_domain(self.THIRD_PARTY_DOMAIN)
         self.cookieblock_domain(self.THIRD_PARTY_SUBDOMAIN)
+        self.load_url(self.FIXTURE_URL + '?alt3p')
+        self.assert_load()
+
+    def test_cookieblocking_base_overwrites_subdomain_block(self):
+        self.block_domain(self.THIRD_PARTY_SUBDOMAIN)
+        self.load_url(self.FIXTURE_URL + '?alt3p')
+        self.assert_block()
+
+        self.cookieblock_domain(self.THIRD_PARTY_DOMAIN)
         self.load_url(self.FIXTURE_URL + '?alt3p')
         self.assert_load()
 
@@ -210,6 +207,20 @@ class ContentFilteringTest(pbtest.PBSeleniumTest):
         self.load_url(self.FIXTURE_URL)
         self.assert_load()
 
+    def test_disabling_on_site_parent_domain(self):
+        self.block_domain(self.THIRD_PARTY_DOMAIN)
+        self.disable_badger_on_site(self.FIXTURE_PARENT_DOMAIN)
+
+        self.load_url(self.FIXTURE_URL)
+        self.assert_block()
+
+    def test_disabling_on_site_wildcard(self):
+        self.block_domain(self.THIRD_PARTY_DOMAIN)
+        self.disable_badger_on_site("*." + self.FIXTURE_PARENT_DOMAIN)
+
+        self.load_url(self.FIXTURE_URL)
+        self.assert_load()
+
     def test_reenabling_on_site(self):
         self.block_domain(self.THIRD_PARTY_DOMAIN)
         self.disable_badger_on_site(self.FIXTURE_URL)
@@ -241,6 +252,20 @@ class ContentFilteringTest(pbtest.PBSeleniumTest):
         assert self.get_domain_slider_state(self.THIRD_PARTY_DOMAIN) == "block", (
             "DNT-compliant resource should now be blocked")
 
+    def test_reenabling_dnt_policy_checking(self):
+        self.block_domain(self.THIRD_PARTY_DOMAIN)
+        self.set_dnt(self.THIRD_PARTY_DOMAIN)
+
+        # toggle EFF's DNT policy checking
+        self.wait_for_script("return window.OPTIONS_INITIALIZED")
+        self.find_el_by_css('#check_dnt_policy_checkbox').click()
+        self.driver.refresh()
+        self.wait_for_script("return window.OPTIONS_INITIALIZED")
+        self.find_el_by_css('#check_dnt_policy_checkbox').click()
+
+        self.load_url(self.FIXTURE_URL)
+        self.assert_load()
+
     def test_removing_dnt(self):
         self.block_domain(self.THIRD_PARTY_DOMAIN)
         self.set_dnt(self.THIRD_PARTY_DOMAIN)
@@ -253,6 +278,21 @@ class ContentFilteringTest(pbtest.PBSeleniumTest):
 
         self.load_url(self.FIXTURE_URL)
         self.assert_block()
+
+    def test_removing_domain(self):
+        # first block the domain
+        self.block_domain(self.THIRD_PARTY_DOMAIN)
+
+        # now remove it
+        self.js(
+            "chrome.runtime.sendMessage({"
+            "  type: 'removeOrigin',"
+            "  origin: arguments[0]"
+            "});", self.THIRD_PARTY_DOMAIN)
+
+        # the domain should now load
+        self.load_url(self.FIXTURE_URL)
+        self.assert_load()
 
 
 if __name__ == "__main__":

@@ -221,6 +221,12 @@ class Shim:
                 # https://bugzilla.mozilla.org/show_bug.cgi?id=1720294
                 opts.set_preference('network.http.referer.disallowCrossSiteRelaxingDefault', False)
 
+                # disable tracker cookie blocking as it breaks cookie tests
+                # that use trackersimulator.org, a "known tracker",
+                # and disable cookie site isolation, as it breaks the cookie
+                # tracking detection test
+                opts.set_preference("network.cookie.cookieBehavior", 0)
+
                 # to produce a trace-level geckodriver.log,
                 # remove the log_output argument to FirefoxService()
                 # and uncomment the line below
@@ -390,6 +396,21 @@ class PBSeleniumTest(unittest.TestCase):
     def find_el_by_xpath(self, xpath, timeout=SEL_DEFAULT_WAIT_TIMEOUT):
         return WebDriverWait(self.driver, timeout).until(
             EC.visibility_of_element_located((By.XPATH, xpath)))
+
+    @contextmanager
+    def wait_for_reload(self, timeout=SEL_DEFAULT_WAIT_TIMEOUT):
+        """Context manager that waits for the page to reload,
+        to be used with actions that reload the page."""
+        page = self.driver.find_element(By.TAG_NAME, 'html')
+        yield
+        try:
+            WebDriverWait(self.driver, timeout).until(EC.staleness_of(page))
+        except WebDriverException as e:
+            # work around Firefox nonsense
+            if str(e).startswith("Message: TypeError: can't access dead object"):
+                pass
+            else:
+                raise e
 
     def wait_for_script(self, script, *script_args,
         timeout=SEL_DEFAULT_WAIT_TIMEOUT, execute_async=False,

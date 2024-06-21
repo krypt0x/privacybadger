@@ -279,6 +279,10 @@
             }
         }
     },
+    "popup_info_youtube": {
+        "message": "O YouTube não está a funcionar? Provavelmente não é devido ao Privacy Badger.",
+        "description": "Message in the popup when users visit YouTube.com"
+    },
     "extension_error_text": {
         "message": "Por favor, <a href='https://www.eff.org/privacybadger#faq-I-found-a-bug!-What-do-I-do-now?' target='_blank'>reporte-nos</a> o seguinte erro:",
         "description": "Shown in the popup when there is an extension error we want to encourage the user to tell us about."
@@ -365,6 +369,10 @@
     },
     "share_button_title_twitter": {
         "message": "Partilhar no Twitter",
+        "description": "Text shown when you hover over the social sharing buttons on the intro page."
+    },
+    "share_button_title_mastodon": {
+        "message": "Partilhar no Mastodon",
         "description": "Text shown when you hover over the social sharing buttons on the intro page."
     },
     "options_title": {

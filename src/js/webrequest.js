@@ -398,22 +398,6 @@ function onBeforeSendHeaders(details) {
     from_current_tab = true;
 
   if (!frameData || tab_id < 0) {
-    // strip cookies from DNT policy requests
-    if (details.type == "xmlhttprequest" && url.endsWith("/.well-known/dnt-policy.txt")) {
-      // remove Cookie headers
-      let newHeaders = [];
-      for (let i = 0, count = details.requestHeaders.length; i < count; i++) {
-        let header = details.requestHeaders[i];
-        if (header.name.toLowerCase() != "cookie") {
-          newHeaders.push(header);
-        }
-      }
-      return {
-        requestHeaders: newHeaders
-      };
-    }
-
-    // ignore otherwise
     return;
   }
 
@@ -536,29 +520,6 @@ function onHeadersReceived(details) {
     from_current_tab = true;
 
   if (!frameData || tab_id < 0 || utils.isRestrictedUrl(url)) {
-    // strip cookies, reject redirects from DNT policy responses
-    if (details.type == "xmlhttprequest" && url.endsWith("/.well-known/dnt-policy.txt")) {
-      // if it's a redirect, cancel it
-      if (details.statusCode >= 300 && details.statusCode < 400) {
-        return {
-          cancel: true
-        };
-      }
-
-      // remove Set-Cookie headers
-      let headers = details.responseHeaders,
-        newHeaders = [];
-      for (let i = 0, count = headers.length; i < count; i++) {
-        if (headers[i].name.toLowerCase() != "set-cookie") {
-          newHeaders.push(headers[i]);
-        }
-      }
-      return {
-        responseHeaders: newHeaders
-      };
-    }
-
-    // ignore otherwise
     return;
   }
 
@@ -922,7 +883,7 @@ let getWidgetList = (function () {
 
       // TODO duplicated in src/lib/i18n.js
       const RTL_LOCALES = ['ar', 'he', 'fa'],
-        UI_LOCALE = chrome.i18n.getMessage('@@ui_locale');
+        UI_LOCALE = chrome.i18n.getMessage('@@ui_locale').replace('-', '_');
       translations.rtl = RTL_LOCALES.indexOf(UI_LOCALE) > -1;
     }
 
@@ -1189,11 +1150,32 @@ function dispatcher(request, sender, sendResponse) {
   // process is not running; the getPopupData message from the popup causes
   // the background to start but the background is not yet ready to respond
   if (!badger.INITIALIZED) {
-    setTimeout(function () {
-      dispatcher(request, sender, sendResponse);
-    }, 50);
-    // indicate this is an async response to chrome.runtime.onMessage
-    return true;
+    if ((Date.now() - badger.startTime) > 15000) {
+      // too much time elapsed for this to be a normal initialization,
+      // give up to avoid an infinite loop
+      badger.criticalError = "Privacy Badger failed to initialize";
+      // update badge
+      chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
+        if (tabs[0]) {
+          badger.updateBadge(tabs[0].id);
+        }
+      });
+      // show error in popup
+      if (request.type == "getPopupData") {
+        return sendResponse({
+          criticalError: badger.criticalError,
+          noTabData: true,
+          settings: { seenComic: true },
+        });
+      }
+      return sendResponse();
+    } else {
+      setTimeout(function () {
+        dispatcher(request, sender, sendResponse);
+      }, 50);
+      // indicate this is an async response to chrome.runtime.onMessage
+      return true;
+    }
   }
 
   // messages from content scripts are to be treated with greater caution:
@@ -1360,11 +1342,16 @@ function dispatcher(request, sender, sendResponse) {
   }
 
   case "detectFingerprinting": {
-    let tab_host = extractHostFromURL(sender.tab.url);
+    if (sender.frameId > 0) {
+      // do not modify the JS environment in Cloudflare CAPTCHA frames
+      if (sender.url.startsWith("https://challenges.cloudflare.com/")) {
+        sendResponse(false);
+        break;
+      }
+    }
 
-    sendResponse(
-      badger.isLearningEnabled(sender.tab.id) &&
-      badger.isPrivacyBadgerEnabled(tab_host));
+    sendResponse(badger.isLearningEnabled(sender.tab.id) &&
+      badger.isPrivacyBadgerEnabled(extractHostFromURL(sender.tab.url)));
 
     break;
   }
@@ -1462,14 +1449,18 @@ function dispatcher(request, sender, sendResponse) {
 
   case "resetData": {
     badger.storage.clearTrackerData();
-    badger.loadSeedData(err => {
-      if (err) {
-        console.error(err);
-      }
+
+    badger.loadSeedData().then(function () {
+      window.DATA_LOAD_IN_PROGRESS = true;
       badger.blockWidgetDomains();
       badger.blockPanopticlickDomains();
+      window.DATA_LOAD_IN_PROGRESS = false;
+      sendResponse();
+    }).catch(function (err) {
+      console.error(err);
       sendResponse();
     });
+
     // indicate this is an async response to chrome.runtime.onMessage
     return true;
   }
@@ -1676,22 +1667,17 @@ function dispatcher(request, sender, sendResponse) {
 
   // used by Badger Sett
   case "mergeData": {
-    badger.mergeUserData(request.data);
+    badger.storage.mergeUserData(request.data);
     sendResponse();
     break;
   }
 
   // called when a user imports data exported from another Badger instance
   case "mergeUserData": {
-    badger.mergeUserData(request.data);
+    badger.storage.mergeUserData(request.data);
     badger.blockWidgetDomains();
     badger.setPrivacyOverrides();
     badger.initDeprecations();
-
-    // for exports from older Privacy Badger versions:
-    // fix yellowlist getting out of sync, remove non-tracking domains, etc.
-    badger.runMigrations();
-
     sendResponse();
     break;
   }
