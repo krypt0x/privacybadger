@@ -2,9 +2,6 @@
  * This file is part of Privacy Badger <https://privacybadger.org/>
  * Copyright (C) 2016 Electronic Frontier Foundation
  *
- * Derived from Adblock Plus
- * Copyright (C) 2006-2013 Eyeo GmbH
- *
  * Derived from Chameleon <https://github.com/ghostwords/chameleon>
  * Copyright (C) 2015 ghostwords
  *
@@ -487,8 +484,7 @@ function onBeforeSendHeaders(details) {
 }
 
 /**
- * Filters incoming cookies out of the response header,
- * and opts out from Google's Topics API.
+ * Filters incoming cookies out of the response header.
  *
  * @param {Object} details webRequest response details object
  *
@@ -499,18 +495,7 @@ function onHeadersReceived(details) {
     return;
   }
 
-  // Google's Topics API: opt out all websites from topics generation
   if (details.type == 'main_frame') {
-    if (badger.isTopicsOverwriteEnabled()) {
-      let responseHeaders = details.responseHeaders || [];
-      responseHeaders.push({
-        name: 'permissions-policy',
-        // https://github.com/GoogleChrome/developer.chrome.com/issues/2296#issuecomment-1075478309
-        value: 'interest-cohort=()'
-      });
-      return { responseHeaders };
-    }
-
     return;
   }
 
