@@ -53,6 +53,24 @@
             "type": 3
         }
     },
+    "Bluesky": {
+        "domain": "embed.bsky.app",
+        "buttonSelectors": [
+            "blockquote.bluesky-embed[data-bluesky-cid]",
+            "iframe[src^='https://embed.bsky.app/embed/']"
+        ],
+        "scriptSelectors": [
+            "script[src^='https://embed.bsky.app/static/embed.js']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "public.api.bsky.app",
+                "cdn.bsky.app",
+                "embed.bsky.app"
+            ],
+            "type": 3
+        }
+    },
     "Captivate Player": {
         "domain": "player.captivate.fm",
         "buttonSelectors": [
@@ -259,6 +277,29 @@
             "type": 3
         }
     },
+    "Instagram": {
+        "domains": [
+            "www.instagram.com",
+            "platform.instagram.com"
+        ],
+        "buttonSelectors": [
+            "blockquote.instagram-media[data-instgrm-permalink]",
+            "blockquote.instagram-media-registered[data-instgrm-permalink]",
+            "amp-instagram"
+        ],
+        "scriptSelectors": [
+            "script[src^='//www.instagram.com/embed.js']",
+            "script[src^='https://www.instagram.com/embed.js']",
+            "script[src^='//platform.instagram.com/en_US/embeds.js']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "www.instagram.com",
+                "platform.instagram.com"
+            ],
+            "type": 3
+        }
+    },
     "LinkedIn": {
         "domain": "platform.linkedin.com",
         "buttonSelectors": [
@@ -330,7 +371,9 @@
             "iframe[src^='https://rutube.ru/pl/']",
             "iframe[src^='https://rutube.ru/embed/']",
             "iframe[src^='https://rutube.ru/play/embed/']",
-            "iframe[src^='https://www.rutube.ru/play/embed/']"
+            "iframe[src^='//rutube.ru/play/embed/']",
+            "iframe[src^='https://www.rutube.ru/play/embed/']",
+            "iframe[src^='https://rutube.ru/video/embed/']"
         ],
         "replacementButton": {
             "unblockDomains": [
@@ -342,8 +385,13 @@
     },
     "SoundCloud": {
         "domain": "w.soundcloud.com",
-        "buttonSelectors": [
-            "iframe[src^='https://w.soundcloud.com/player']"
+        "selectors": [
+            {
+                "elm": "iframe",
+                "urls": [
+                    "https://w.soundcloud.com/player"
+                ]
+            }
         ],
         "replacementButton": {
             "unblockDomains": [
@@ -358,10 +406,15 @@
             "open.spotify.com",
             "podcasters.spotify.com"
         ],
-        "buttonSelectors": [
-            "iframe[src^='https://embed.spotify.com/']",
-            "iframe[src^='https://open.spotify.com/embed']",
-            "iframe[src^='https://podcasters.spotify.com/pod/']"
+        "selectors": [
+            {
+                "elm": "iframe",
+                "urls": [
+                    "https://embed.spotify.com/",
+                    "https://open.spotify.com/embed",
+                    "https://podcasters.spotify.com/pod/"
+                ]
+            }
         ],
         "replacementButton": {
             "unblockDomains": [
@@ -382,6 +435,21 @@
         "replacementButton": {
             "unblockDomains": [
                 "streamable.com"
+            ],
+            "type": 3
+        }
+    },
+    "Threads": {
+        "domain": "www.threads.net",
+        "buttonSelectors": [
+            "blockquote.text-post-media[data-text-post-permalink^='https://www.threads.net/']"
+        ],
+        "scriptSelectors": [
+            "script[src^='https://www.threads.net/embed.js']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "www.threads.net"
             ],
             "type": 3
         }
@@ -407,14 +475,26 @@
         }
     },
     "Twitch Player": {
-        "domain": "player.twitch.tv",
+        "domains": [
+            "clips.twitch.tv",
+            "embed.twitch.tv",
+            "player.twitch.tv",
+            "www.twitch.tv",
+            "twitch.tv"
+        ],
         "buttonSelectors": [
+            "iframe[src^='https://clips.twitch.tv/embed?']",
+            "iframe[src^='https://embed.twitch.tv?']",
             "iframe[src^='https://player.twitch.tv/']",
-            "iframe[src^='//player.twitch.tv/']"
+            "iframe[src^='https://player.twitch.tv?']",
+            "iframe[src^='//player.twitch.tv/']",
+            "iframe[src^='https://www.twitch.tv/embed/']",
+            "iframe[src^='https://twitch.tv/embed/']"
         ],
         "replacementButton": {
             "unblockDomains": [
-                "player.twitch.tv"
+                "twitch.tv",
+                "*.twitch.tv"
             ],
             "type": 3
         }
@@ -437,12 +517,32 @@
             "type": 3
         }
     },
+    "Viqeo Player": {
+        "domains": [
+            "cdn.viqeo.tv"
+        ],
+        "selectors": [
+            {
+                "elm": "iframe",
+                "urls": [
+                    "https://cdn.viqeo.tv/embed/?"
+                ]
+            }
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "cdn.viqeo.tv"
+            ],
+            "type": 3
+        }
+    },
     "X (Twitter)": {
         "domain": "platform.twitter.com",
         "buttonSelectors": [
             "blockquote[class*='twitter-tweet']",
             "blockquote[class*='twitter-video']",
-            "iframe[src^='https://platform.twitter.com/embed/Tweet.html']"
+            "iframe[src^='https://platform.twitter.com/embed/Tweet.html']",
+            "amp-twitter"
         ],
         "scriptSelectors": [
             "script[src='https://platform.twitter.com/widgets.js']",
@@ -463,15 +563,20 @@
             "www.youtube.com",
             "www.youtube-nocookie.com"
         ],
-        "buttonSelectors": [
-            "iframe[src^='//youtube.com/embed']",
-            "iframe[src^='//www.youtube.com/embed']",
-            "iframe[src^='http://www.youtube.com/embed']",
-            "iframe[src^='https://www.youtube.com/embed']",
-            "iframe[src^='https://youtube.com/embed']",
-            "iframe[src^='https://www.youtube.com/v/']",
-            "iframe[src^='//www.youtube-nocookie.com/embed']",
-            "iframe[src^='https://www.youtube-nocookie.com/embed']"
+        "selectors": [
+            {
+                "elm": "iframe",
+                "urls": [
+                    "//youtube.com/embed",
+                    "//www.youtube.com/embed",
+                    "http://www.youtube.com/embed",
+                    "https://www.youtube.com/embed",
+                    "https://youtube.com/embed",
+                    "https://www.youtube.com/v/",
+                    "//www.youtube-nocookie.com/embed",
+                    "https://www.youtube-nocookie.com/embed"
+                ]
+            }
         ],
         "replacementButton": {
             "unblockDomains": [

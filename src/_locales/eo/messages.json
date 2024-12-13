@@ -31,6 +31,10 @@
         "message": "Privata Melo ne funkcias sur specialaj paĝoj kiel tiu ĉi. Provu malfermi alian paĝon.",
         "description": "Shown in the popup for special browser pages such as the New Tab page and 'about:' pages."
     },
+    "popup_first_run_header": {
+        "message": "Gratulon pro malfermi ŝprucmenuon!",
+        "description": "Heading in the popup when opened from the intro page."
+    },
     "popup_disabled_site_header": {
         "message": "Privata Melo estas malaktivigita por tiu ĉi retejo",
         "description": "Shown in the popup on disabled sites."
@@ -45,7 +49,7 @@
     },
     "report_broken_site": {
         "message": "Raporti probleman retejon",
-        "description": "Button in the popup."
+        "description": "Button in the popup and title of the error reporting form overlay."
     },
     "version": {
         "message": "versio $VERSION_STRING$",
@@ -185,6 +189,10 @@
         "message": "Via Melĉjo ankoraŭ ne decidiĝis ĉu tiuj ĉi nomregnoj estu blokitaj",
         "description": "Popup domain slider list header text. Separates blocked domains from domains that haven't yet been seen perform tracking on enough sites."
     },
+    "intro_not_an_adblocker_paragraph": {
+        "message": "Privata Melo komencas bloki kiam ĝi rimarkas la saman spurilon ĉe tri diversaj retejoj. Tri aperoj kaj ĝi malaperas!",
+        "description": "Tooltip for the 'not_yet_blocked_header' message"
+    },
     "non_tracker": {
         "message": "La subaj nomregnoj verŝajne ne spuras vin",
         "description": "Popup domain slider list header text. Separates domains with detected tracking from domains where no tracking has yet been detected."
@@ -193,16 +201,8 @@
         "message": "Nune Privata Melo nur kontrolas ĉu eksteraj liverantoj uzas kuketojn, lokan konservejon HTML5 aŭ fingrospuradon per elemento «canvas» por spuri vian retumadon. Iuj de tiuj nomregnoj povas uzi aliajn spurajn rimedojn, kiujn Privata Melo ne povas malkovri.",
         "description": "Tooltip for the 'non_tracker' message."
     },
-    "report_title": {
-        "message": "Raporti eraron",
-        "description": "Title of the 'Report broken site' popup overlay."
-    },
-    "report_text": {
-        "message": "Koncize priskribu la eraron sube.",
-        "description": "The 'below' refers to a text input located below this text. This asks the user to describe what problem the user experienced."
-    },
     "report_input_label": {
-        "message": "Priskribo",
+        "message": "Koncize priskribu la eraron:",
         "description": "Label for the text input in the 'Report broken site' overlay."
     },
     "error_input": {
@@ -214,7 +214,7 @@
         "description": ""
     },
     "report_button": {
-        "message": "Raporti eraron",
+        "message": "Sendi raporton",
         "description": "Button text."
     },
     "report_cancel": {
@@ -280,7 +280,7 @@
         }
     },
     "popup_info_youtube": {
-        "message": "Ĉu YouTube ne funkcias? Probable ne pro Privata Melo.",
+        "message": "Ĉu reklamoj ne estas blokataj? Ĉu YouTube ne funkcias? Probable ne pro Privata Melo.",
         "description": "Message in the popup when users visit YouTube.com"
     },
     "extension_error_text": {
@@ -303,45 +303,45 @@
         "message": "Enkonduko",
         "description": "Intro page welcome button."
     },
-    "intro_learns": {
-        "message": "Aŭtomate lernas",
-        "description": "Intro page paragraph heading."
-    },
-    "intro_learns_paragraph": {
-        "message": "Anstataŭ prizorgi liston de blokataj elementoj, Privata Melo aŭtomate malkovras spurilojn surbaze de ilia sinteno.",
-        "description": "Intro page paragraph."
-    },
     "intro_beyond_ads": {
         "message": "Kaptas trompajn spurilojn",
         "description": "Intro page paragraph heading."
     },
     "intro_beyond_ads_paragraph": {
-        "message": "Nevidebla spurado okazas plurmaniere; reklamoj estas nur videbla parteto de tutaĵo. Privata Melo sendas la <a href='https://globalprivacycontrol.org/' target='_blank'>signalon Global Privacy Control</a> por peti pri ne kunhavigi kaj vendi viajn datumojn, kaj la <a href='https://www.eff.org/issues/do-not-track' target='_blank'>signalon “Ne Spuri Min” (DNT)</a> por peti firmaojn pri ne spuri vin. Se ili ignoros vian peton, Privata Melo lernos pri bloki ilin – ĉu ili estas reklamoj aŭ spuriloj aŭ aliaj aĉaĵoj.",
-        "description": "Intro page paragraph."
+        "message": "Privata Melo sendas la <a href='https://globalprivacycontrol.org/' target='_blank'>signalon Global Privacy Control</a> por peti pri ne kunhavigi kaj vendi viajn datumojn, kaj la <a href='https://www.eff.org/issues/do-not-track' target='_blank'>signalon “Ne Spuri Min” (DNT)</a> por peti firmaojn pri ne spuri vin.",
+        "description": "Intro page paragraph"
+    },
+    "intro_beyond_ads_paragraph2": {
+        "message": "Se ili ignoros la menciitajn signalojn, Privata Melo lernos bloki ilin – ne gravas, ĉu ili estas reklamoj, spuriloj aŭ aliaj elementoj.",
+        "description": "Intro page paragraph"
     },
     "intro_not_an_adblocker": {
         "message": "Malsama ol reklam-spuriloj",
         "description": "Intro page paragraph heading."
     },
-    "intro_not_an_adblocker_paragraph": {
-        "message": "Privata Melo komencas bloki kiam ĝi rimarkas la saman spurilon ĉe tri diversaj retejoj. Tri aperoj kaj ĝi malaperas!",
-        "description": "Intro page paragraph. Also a tooltip for the 'not_yet_blocked_header' message."
+    "intro_learns_paragraph": {
+        "message": "Privata Melo aŭtomate malkovras spurilojn surbaze de ilia sinteno.",
+        "description": "Intro page paragraph."
+    },
+    "intro_not_an_adblocker_paragraph2": {
+        "message": "Nevidebla spurado okazas plurmaniere, reklamoj estas nur la videbla “pinto de glacimonto”. Privata Melo ne blokas reklamojn, escepte se ili provas spuri vin.",
+        "description": "Intro page paragraph"
     },
     "next_section": {
         "message": "antaŭen",
         "description": "Image alt. text on a couple of \"scroll down\" arrow buttons on the intro page."
     },
+    "intro_open_popup": {
+        "message": "Provu malfermi ŝprucmenuon de Privata Melo",
+        "description": "Shown above an image of the Privacy Badger icon circled on the browser toolbar."
+    },
+    "intro_open_popup_alt": {
+        "message": "Retumila ilaro kun emfazita bildsimbolo de Privata Melo",
+        "description": "Alt text for toolbar icon image, which is shown below the intro_open_popup header."
+    },
     "intro_disable_button": {
-        "message": "Se viaopinie Privata Melo difektas retpaĝon (ekzemple filmeto ne ludas), vi povas alklaki la butonon “malaktivigi” por malaktivigi Privatan Melon por tiu retejo.",
+        "message": "Se viaopinie Privata Melo difektas retpaĝon (ekzemple filmeto ne ludas), vi povas alklaki la butonon “Malaktivigi” por malaktivigi Privatan Melon por tiu retejo.",
         "description": "Intro page paragraph. The quoted string ('Disable') should match the verb used for the 'popup_disable_for_site' message."
-    },
-    "intro_report_button": {
-        "message": "Bonvolu ne forgesi alklaki “Raporti probleman retejon”. Ni estimas vian privatecon, do ni ne sendas aŭtomatajn raportojn.",
-        "description": "Intro page paragraph. The quoted message ('Report broken site') should match the translation for the 'report_broken_site' message."
-    },
-    "intro_privacy_note": {
-        "message": "Privata Melo NENIAM diskonigos datumojn pri via retumado escepte se vi decidos alie.",
-        "description": "Intro page paragraph."
     },
     "intro_donate_heading": {
         "message": "Privateco estas kunlaboro!",
@@ -364,7 +364,7 @@
         "description": "Shown at the bottom of the intro page."
     },
     "intro_pin_nudge": {
-        "message": "First, $START_SPAN_TAG$pin Privacy Badger to your toolbar$END_SPAN_TAG$ for easy access to the \"$DISABLE_FOR_SITE$\" button.",
+        "message": "Unue $START_SPAN_TAG$alpinglu Privatan Melon al via ilarstrio$END_SPAN_TAG$ por rapide aliri la butonon “$DISABLE_FOR_SITE$”.",
         "description": "Part of a Chrome-only overlay on the intro page",
         "placeholders": {
             "start_span_tag": {
@@ -380,7 +380,7 @@
         }
     },
     "intro_pin_instructions": {
-        "message": "To pin Privacy Badger's icon, click on the puzzle piece icon in your browser toolbar. Then, click on the pin icon next to Privacy Badger.",
+        "message": "Por alpingli bildsimbolon de Privata Melo, alklaku la bildsimbolon de puzlero sur la retumila ilaro. Sekve alklaku la bildsimbolon de prempinglo sekve de Privata Melo.",
         "description": "Alt text for pinning instructions image. Shown on the Chrome-only overlay of the intro page."
     },
     "share_button_title_facebook": {
@@ -432,8 +432,8 @@
         "description": "(Chrome only) Checkbox label in general settings."
     },
     "options_disable_floc": {
-        "message": "Malaktivigi Topics API de Google",
-        "description": "Checkbox label in general settings. For what this disables, see https://brave.com/web-standards-at-brave/7-googles-topics-api/"
+        "message": "Malaktivigi reklam-spurilon de Google «Privacy Sandbox»",
+        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2023/09/how-turn-googles-privacy-sandbox-ad-tracking-and-why-you-should"
     },
     "options_advanced_settings": {
         "message": "Spertulaj",
@@ -464,24 +464,24 @@
         "description": "Options page tab heading"
     },
     "disabled_for_these_domains": {
-        "message": "<p>Privata Melo estas malaktivigita por la subaj nomregnoj. Tio ĉi signifas, ke Privata Melo blokos nenion, kiam vi vizitos la jenajn retejojn kaj ne sendos al ili la signalojn “Global Privacy Control” kaj “Ne Spuri Min” (DNT).</p><p>Se viaopinie Privata Melo difektas iun retpaĝon aŭ volas permesi al ĝi kunhavigi aŭ vendi viajn datumojn, vi povas enigu ĝian nomregnon en la kampon sube kaj alklaku “aldoni nomregnon”.</p>",
-        "description": "Shown on the options page under the Disabled Sites tab. 'Add domain' should match the 'add_domain_button' message."
+        "message": "Privata Melo estas malaktivigita por la subaj nomregnoj. Tio ĉi signifas, ke Privata Melo blokos nenion, kiam vi vizitos la jenajn retejojn kaj ne sendos al ili la signalojn “Global Privacy Control” kaj “Ne Spuri Min” (DNT).",
+        "description": "Intro text on the Disabled Sites options page tab"
     },
     "allowlist_domain_input_placeholder": {
         "message": "ekz. www.example.com, *.example.net, example.org",
         "description": "Placeholder for a text input under the Disabled Sites tab on the options page"
     },
     "add_domain_button": {
-        "message": "Aldoni nomregnon",
-        "description": "Button found under the Disabled Sites tab on the options page"
+        "message": "Aldoni retejon",
+        "description": "Button on the Disabled Sites options page tab"
     },
     "remove_button": {
         "message": "Forigi elektitajn",
-        "description": "Button found under the Disabled Sites tab on the options page"
+        "description": "Button on the Disabled Sites options page tab"
     },
     "invalid_domain": {
         "message": "Bonvolu aldoni ĝustan nomregnon aŭ URL-n",
-        "description": "Error shown when attempting to add an invalid domain to the list of disabled sites"
+        "description": "Error text for the form on the Disabled Sites options page tab"
     },
     "options_widget_replacement_tab": {
         "message": "Anstataŭigi ret‑aplikaĵetojn",

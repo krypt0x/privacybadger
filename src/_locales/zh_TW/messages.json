@@ -31,6 +31,10 @@
         "message": "Privacy Badger 在這類特殊頁面上無法運作。試著瀏覽其他的頁面看看。",
         "description": "Shown in the popup for special browser pages such as the New Tab page and 'about:' pages."
     },
+    "popup_first_run_header": {
+        "message": "做得好！",
+        "description": "Heading in the popup when opened from the intro page."
+    },
     "popup_disabled_site_header": {
         "message": "Privacy Badger 已在此網站上停用",
         "description": "Shown in the popup on disabled sites."
@@ -45,7 +49,7 @@
     },
     "report_broken_site": {
         "message": "回報網站問題",
-        "description": "Button in the popup."
+        "description": "Button in the popup and title of the error reporting form overlay."
     },
     "version": {
         "message": "版本 $VERSION_STRING$",
@@ -185,6 +189,10 @@
         "message": "您的 Badger 尚未決定是否應該要封鎖這些網域",
         "description": "Popup domain slider list header text. Separates blocked domains from domains that haven't yet been seen perform tracking on enough sites."
     },
+    "intro_not_an_adblocker_paragraph": {
+        "message": "一旦 Privacy Badger 在三個不同網站上發現同一個追蹤器，便會開始阻擋。三振出局！",
+        "description": "Tooltip for the 'not_yet_blocked_header' message"
+    },
     "non_tracker": {
         "message": "以下網域看起來都沒有在追蹤您",
         "description": "Popup domain slider list header text. Separates domains with detected tracking from domains where no tracking has yet been detected."
@@ -193,16 +201,8 @@
         "message": "目前，Privacy Badger 只會檢查第三方是否以 cookies、HTML5 Local Storage 或 Canvas 指紋辨識技術來追蹤您的瀏覽。部分網域可能使用了 Privacy Badger 無法偵測的追蹤手法。",
         "description": "Tooltip for the 'non_tracker' message."
     },
-    "report_title": {
-        "message": "回報錯誤",
-        "description": "Title of the 'Report broken site' popup overlay."
-    },
-    "report_text": {
-        "message": "在下方簡要描述發生的問題。",
-        "description": "The 'below' refers to a text input located below this text. This asks the user to describe what problem the user experienced."
-    },
     "report_input_label": {
-        "message": "描述",
+        "message": "簡單描述一下問題：",
         "description": "Label for the text input in the 'Report broken site' overlay."
     },
     "error_input": {
@@ -214,7 +214,7 @@
         "description": ""
     },
     "report_button": {
-        "message": "提交錯誤",
+        "message": "傳送回報",
         "description": "Button text."
     },
     "report_cancel": {
@@ -280,7 +280,7 @@
         }
     },
     "popup_info_youtube": {
-        "message": "YouTube 無法正常運作？這可能不是因為 Privacy Badger。",
+        "message": "無法阻擋廣告？YouTube 無法正常運作？這可能不是因為 Privacy Badger。",
         "description": "Message in the popup when users visit YouTube.com"
     },
     "extension_error_text": {
@@ -303,45 +303,45 @@
         "message": "查看教學",
         "description": "Intro page welcome button."
     },
-    "intro_learns": {
-        "message": "自動學習",
-        "description": "Intro page paragraph heading."
-    },
-    "intro_learns_paragraph": {
-        "message": "Privacy Badger 不會使用清單决定封鎖什麼，而是根據行為自動找出追蹤器。",
-        "description": "Intro page paragraph."
-    },
     "intro_beyond_ads": {
         "message": "捕捉鬼鬼祟祟的追蹤器",
         "description": "Intro page paragraph heading."
     },
     "intro_beyond_ads_paragraph": {
-        "message": "隱形的追蹤會以各種方式發生；廣告只是冰山一角。Privacy Badger 傳送<a href='https://globalprivacycontrol.org/' target='_blank'>「全域隱私控制」信號</a>，來讓您退出資料分享與販賣，以及 <a href='https://www.eff.org/issues/do-not-track' target='_blank'>「不要追蹤」信號</a>來告訴公司不要追蹤您。如果他們忽略了您的請求，Privacy Badger 將會學習封鎖它們－－無論是廣告還是其他類型的追蹤器。",
-        "description": "Intro page paragraph."
+        "message": "Privacy Badger 傳送<a href='https://globalprivacycontrol.org/' target='_blank'>「全域隱私控制」信號</a>，來讓您退出資料分享與販賣，以及 <a href='https://www.eff.org/issues/do-not-track' target='_blank'>「不要追蹤」信號</a>來告訴公司不要追蹤您。",
+        "description": "Intro page paragraph"
+    },
+    "intro_beyond_ads_paragraph2": {
+        "message": "如果它們忽略這些訊號，Privacy Badger 會學習封鎖它們，不論是廣告商還是其他類型的追蹤器。",
+        "description": "Intro page paragraph"
     },
     "intro_not_an_adblocker": {
-        "message": "不是廣告攔截器，我可不一樣",
+        "message": "不是廣告攔截器",
         "description": "Intro page paragraph heading."
     },
-    "intro_not_an_adblocker_paragraph": {
-        "message": "一旦 Privacy Badger 在三個不同網站上發現同一個追蹤器，便會開始阻擋。三振出局！",
-        "description": "Intro page paragraph. Also a tooltip for the 'not_yet_blocked_header' message."
+    "intro_learns_paragraph": {
+        "message": "Privacy Badger 會根據行為自動探索追蹤器。",
+        "description": "Intro page paragraph."
+    },
+    "intro_not_an_adblocker_paragraph2": {
+        "message": "隱形的追蹤會以各種方式發生；廣告只是冰山一角。Privacy Badger 不會封鎖廣告，除非它們正好在追蹤您。",
+        "description": "Intro page paragraph"
     },
     "next_section": {
         "message": "下一段",
         "description": "Image alt. text on a couple of \"scroll down\" arrow buttons on the intro page."
     },
+    "intro_open_popup": {
+        "message": "嘗試開啟 Privacy Badger 的彈出式視窗",
+        "description": "Shown above an image of the Privacy Badger icon circled on the browser toolbar."
+    },
+    "intro_open_popup_alt": {
+        "message": "瀏覽器工具列上圈出的 Privacy Badger 圖示",
+        "description": "Alt text for toolbar icon image, which is shown below the intro_open_popup header."
+    },
     "intro_disable_button": {
         "message": "如果您認為 Privacy Badger 導致頁面出現問題（例如影片無法播放），您可以點擊「停用」按鈕，在該網站上關閉 Privacy Badger。",
         "description": "Intro page paragraph. The quoted string ('Disable') should match the verb used for the 'popup_disable_for_site' message."
-    },
-    "intro_report_button": {
-        "message": "請不要忘記點擊「回報網站問題」。我們尊重您的隱私，因此不會自動發送報告。",
-        "description": "Intro page paragraph. The quoted message ('Report broken site') should match the translation for the 'report_broken_site' message."
-    },
-    "intro_privacy_note": {
-        "message": "Privacy Badger 絕對不會在未經您許可下分享您的瀏覽資料。",
-        "description": "Intro page paragraph."
     },
     "intro_donate_heading": {
         "message": "隱私是一場團隊運動！",
@@ -432,8 +432,8 @@
         "description": "(Chrome only) Checkbox label in general settings."
     },
     "options_disable_floc": {
-        "message": "停用 Google 的 Topics API",
-        "description": "Checkbox label in general settings. For what this disables, see https://brave.com/web-standards-at-brave/7-googles-topics-api/"
+        "message": "停用 Google 的「隱私沙盒」廣告追蹤",
+        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2023/09/how-turn-googles-privacy-sandbox-ad-tracking-and-why-you-should"
     },
     "options_advanced_settings": {
         "message": "進階",
@@ -464,24 +464,24 @@
         "description": "Options page tab heading"
     },
     "disabled_for_these_domains": {
-        "message": "<p>Privacy Badger 已在下列網站中停用。這代表 Privacy Badger 將不會在您瀏覽它們時封鎖任何東西，也不會傳送「不要追蹤」或「全域隱私控制」信號。</p><p>如果您覺得 Privacy Badger 導致了某個頁面出現問題，或希望允許特定網站分享或銷售您的資料，則可以在下方的框格中輸入網域名稱並點選「新增網域」按鈕。</p>",
-        "description": "Shown on the options page under the Disabled Sites tab. 'Add domain' should match the 'add_domain_button' message."
+        "message": "Privacy Badger 已在下列網站中停用。這代表 Privacy Badger 將不會在您瀏覽它們時封鎖任何東西，也不會傳送「不要追蹤」或「全域隱私控制」信號。",
+        "description": "Intro text on the Disabled Sites options page tab"
     },
     "allowlist_domain_input_placeholder": {
         "message": "範例：www.example.com, *.example.net, example.org",
         "description": "Placeholder for a text input under the Disabled Sites tab on the options page"
     },
     "add_domain_button": {
-        "message": "新增網域",
-        "description": "Button found under the Disabled Sites tab on the options page"
+        "message": "新增網站",
+        "description": "Button on the Disabled Sites options page tab"
     },
     "remove_button": {
         "message": "刪除所選網域",
-        "description": "Button found under the Disabled Sites tab on the options page"
+        "description": "Button on the Disabled Sites options page tab"
     },
     "invalid_domain": {
         "message": "請新增有效的網域或網址",
-        "description": "Error shown when attempting to add an invalid domain to the list of disabled sites"
+        "description": "Error text for the form on the Disabled Sites options page tab"
     },
     "options_widget_replacement_tab": {
         "message": "小工具取代",

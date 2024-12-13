@@ -70,6 +70,13 @@ const WIDGET_ELS = {};
 
 let doNotReplace = new WeakSet();
 
+// if the widget element lacks a src property,
+// try to use the following dataset properties instead
+const lazyLoadDatasetSrcProps = [
+  "src",
+  "ezsrc"
+];
+
 /**
  * @param {Object} response response to checkWidgetReplacementEnabled
  */
@@ -274,7 +281,15 @@ function restoreWidget(widget) {
   unblockTracker(name, function () {
     // restore all widgets of this type
     WIDGET_ELS[name].forEach(data => {
-      data.parent.replaceChild(data.widget, data.replacement);
+      if (!data.origWidgetElem.src) {
+        for (let prop of lazyLoadDatasetSrcProps) {
+          if (data.origWidgetElem.dataset[prop]) {
+            data.origWidgetElem.src = data.origWidgetElem.dataset[prop];
+            break;
+          }
+        }
+      }
+      data.parentNode.replaceChild(data.origWidgetElem, data.replacement);
       if (data.scriptSelectors) {
         // This is part of "click-to-play" for third-party page widgets:
         // https://privacybadger.org/#How-does-Privacy-Badger-handle-social-media-widgets
@@ -469,22 +484,65 @@ function createReplacementWidget(widget, elToReplace) {
     link_end = "ZZZ";
 
   // get a direct link to widget content when available
-  let widget_url;
+  let widget_url,
+    node_name = elToReplace.nodeName.toLowerCase();
   if (widget.directLinkUrl) {
     widget_url = widget.directLinkUrl;
-  } else if (elToReplace.nodeName.toLowerCase() == 'iframe' && elToReplace.src && !widget.noDirectLink) {
+  } else if (node_name == 'iframe' && !widget.noDirectLink) {
     // use the frame URL for framed widgets
-    widget_url = elToReplace.src;
-  } else if (elToReplace.nodeName.toLowerCase() == 'blockquote') {
-    if (elToReplace.cite && elToReplace.cite.startsWith('https://')) {
-      // special case for TikTok
+    if (elToReplace.src) {
+      widget_url = elToReplace.src;
+      if (widget_url.startsWith("https://embed.bsky.app/embed/")) {
+        // Bluesky
+        let buri = (new URL(widget_url)).pathname.split("/");
+        if (buri[2] && buri[2].startsWith("did:") && buri[4]) {
+          widget_url = "https://bsky.app/profile/" + buri[2] + "/post/" + buri[4];
+        }
+      }
+    } else {
+      for (let prop of lazyLoadDatasetSrcProps) {
+        if (elToReplace.dataset[prop]) {
+          widget_url = elToReplace.dataset[prop];
+          break;
+        }
+      }
+    }
+  } else if (node_name == 'blockquote') {
+    if (elToReplace.cite && elToReplace.cite.startsWith('https://www.tiktok.com/@')) {
+      // TikTok
       widget_url = elToReplace.cite;
     } else if (elToReplace.className.includes("twitter-tweet") || elToReplace.className.includes("twitter-video")) {
-      // special case for Twitter
+      // Twitter
       let lastLink = Array.from(elToReplace.querySelectorAll("a[href^='https://twitter.com/']")).slice(-1)[0];
       if (lastLink) {
         widget_url = lastLink.href;
       }
+    } else if (elToReplace.dataset && elToReplace.dataset.textPostPermalink && elToReplace.dataset.textPostPermalink.startsWith('https://www.threads.net/')) {
+      // Threads
+      widget_url = elToReplace.dataset.textPostPermalink;
+    } else if (elToReplace.dataset && elToReplace.dataset.blueskyUri) {
+      // Bluesky
+      let buri = elToReplace.dataset.blueskyUri.split('/');
+      if (buri[0] && buri[0] == "at:" && buri[2] && buri[2].startsWith("did:") && buri[4]) {
+        widget_url = "https://bsky.app/profile/" + buri[2] + "/post/" + buri[4];
+      }
+    } else if (elToReplace.dataset && elToReplace.dataset.instgrmPermalink && elToReplace.dataset.instgrmPermalink.startsWith('https://www.instagram.com/')) {
+      // Instagram
+      widget_url = elToReplace.dataset.instgrmPermalink;
+    }
+  } else if (node_name == 'amp-twitter') {
+    // AMP Twitter
+    let tweet_id = elToReplace.dataset && elToReplace.dataset.tweetid &&
+      elToReplace.dataset.tweetid.replace(/[^0-9]/g, '');
+    if (tweet_id) {
+      widget_url = "https://twitter.com/x/status/" + tweet_id;
+    }
+  } else if (node_name == 'amp-instagram') {
+    // AMP Instagram
+    let shortcode = elToReplace.dataset && elToReplace.dataset.shortcode &&
+      elToReplace.dataset.shortcode.replace(/^0-9A-Za-z/g, '');
+    if (shortcode) {
+      widget_url = "https://www.instagram.com/p/" + shortcode;
     }
   }
 
@@ -582,9 +640,9 @@ function createReplacementWidget(widget, elToReplace) {
     WIDGET_ELS[name] = [];
   }
   let data = {
-    parent: elToReplace.parentNode,
-    widget: elToReplace,
-    replacement: widgetFrame
+    parentNode: elToReplace.parentNode,
+    replacement: widgetFrame,
+    origWidgetElem: elToReplace
   };
   if (widget.scriptSelectors) {
     data.scriptSelectors = widget.scriptSelectors;
@@ -666,6 +724,7 @@ html, body {
 #${close_icon_id} {
   ${TRANSLATIONS.rtl ? "right" : "left"}: 4px;
   width: 20px;
+  ${TRANSLATIONS.rtl ? "left" : "right"}: unset;
 }
 #${info_icon_id}:before, #${close_icon_id}:before {
   border: 2px solid;
@@ -737,8 +796,22 @@ a:hover {
  * Replaces buttons/widgets in the DOM.
  */
 function replaceIndividualButton(widget) {
-  let selector = widget.buttonSelectors.join(','),
-    elsToReplace = document.querySelectorAll(selector);
+  let elsToReplace = [];
+
+  if (widget.buttonSelectors) {
+    elsToReplace = document.querySelectorAll(widget.buttonSelectors.join(','));
+  } else if (widget.selectors) {
+    let selectors = [];
+    for (let item of widget.selectors) {
+      for (let url of item.urls) {
+        selectors.push(`${item.elm}[src^='${url}']`);
+        for (let prop of lazyLoadDatasetSrcProps) {
+          selectors.push(`${item.elm}[data-${prop}^='${url}']`);
+        }
+      }
+    }
+    elsToReplace = document.querySelectorAll(selectors.join(','));
+  }
 
   for (let el of elsToReplace) {
     if (doNotReplace.has(el)) {
@@ -747,10 +820,16 @@ function replaceIndividualButton(widget) {
     // also don't replace if we think we currently have a placeholder
     // for this widget type attached to the same parent element
     if (hasOwn(WIDGET_ELS, widget.name)) {
-      if (WIDGET_ELS[widget.name].some(d => d.parent == el.parentNode)) {
+      if (WIDGET_ELS[widget.name].some(d => d.parentNode == el.parentNode)) {
         // something went wrong, give up
         continue;
       }
+    }
+    // also don't replace if we're in an AMP frame,
+    // as our placeholder sizing doesn't work inside AMP frames,
+    // and we can instead replace higher-level <amp-*> elements
+    if (document.location.hostname.endsWith(".ampproject.net")) {
+      continue;
     }
     createReplacementElement(widget, el, function (replacementEl) {
       if (replacementEl) {

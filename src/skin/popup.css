@@ -194,13 +194,13 @@ a.removeOrigin:hover {
 }
 
 /* body#main to avoid applying this to options page */
-body#main #blockedResourcesContainer, #special-browser-page, #disabled-site-message {
+body#main #blockedResourcesContainer, #special-browser-page, #disabled-site-message, #first-run-page {
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
-#special-browser-page, #disabled-site-message {
+#special-browser-page, #disabled-site-message, #first-run-page {
     text-align: center;
 }
 
@@ -300,7 +300,7 @@ button.cta-button:hover, a.cta-button:hover {
 #fittslaw {
     float: right;
 }
-#pbInstructions, #special-browser-page, #disabled-site-message, .toggle-header-title {
+#pbInstructions, #special-browser-page, #disabled-site-message, .toggle-header-title, #first-run-page {
     color: #505050;
     font-size: 16px;
     margin: 0;
@@ -323,6 +323,19 @@ body#main #pbInstructions a:hover, #firstparty-protections-container a:hover, #d
 
 #youtube-message {
     font-size: 14px;
+}
+
+#report-youtube-message-container {
+    font-size: 14px;
+    padding-bottom: 10px;
+}
+
+#report-youtube-message a, #report-youtube-message {
+    color: #F06A0A;
+}
+
+#report-youtube-message a:hover {
+    color: #ec9329
 }
 
 #no-third-parties {
@@ -397,16 +410,15 @@ div.overlay.active {
   z-index: 31;
   opacity: 1;
 }
-#error_input {
+#error-input {
     display: block;
     width: 98%;
 }
-.overlay_title {
-  display: inline-block;
+.overlay-title {
   padding: 0;
   margin: 0 0 10px;
 }
-#report_label {
+#report-label {
   display: block;
   margin: 1% 0;
   font-weight: bold;
@@ -425,23 +437,23 @@ div.overlay.active {
 #report-terms {
     margin: 10px 0 !important;
 }
-a.overlay_close {
-  display: inline-block;
+a.overlay-close {
   float: right;
   background: none;
   border: 0;
   font-size: 1.4em;
   color: #ccc;
   text-decoration: none;
+  margin-inline-start: 10px;
 }
-a.overlay_close:before {
+a.overlay-close:before {
   content: '\2716';
   margin: 4px;
 }
-a.overlay_close:hover {
+a.overlay-close:hover {
     color: #f06a0a;
 }
-#share_output {
+#share-output {
   display: block;
   width: 98%;
   height: 60%;
@@ -608,6 +620,7 @@ a.overlay_close:hover {
     #pbInstructions,
     .toggle-header-title,
     #special-browser-page,
+    #first-run-page,
     #disabled-site-message {
         color: #ddd;
     }
@@ -635,7 +648,7 @@ a.overlay_close:hover {
         color: #f9f9f9;
     }
 
-    textarea, #share_output {
+    textarea, #share-output {
         background-color: #333;
         border: solid 1px #555;
         color: #ddd;

@@ -31,6 +31,10 @@
         "message": "Privacy Badger ne radi na specijalnim stranicama poput ove. Pokušajte posetiti neku drugu stranicu.",
         "description": "Shown in the popup for special browser pages such as the New Tab page and 'about:' pages."
     },
+    "popup_first_run_header": {
+        "message": "Great job opening the popup!",
+        "description": "Heading in the popup when opened from the intro page."
+    },
     "popup_disabled_site_header": {
         "message": "Privacy Badger je onemogućen na ovom web sajtu",
         "description": "Shown in the popup on disabled sites."
@@ -45,7 +49,7 @@
     },
     "report_broken_site": {
         "message": "Prijavi pokvaren sajt",
-        "description": "Button in the popup."
+        "description": "Button in the popup and title of the error reporting form overlay."
     },
     "version": {
         "message": "verzija $VERSION_STRING$",
@@ -185,6 +189,10 @@
         "message": "Vaš Badger nije još odlučio da li ovi domeni trebaju da budu blokirani",
         "description": "Popup domain slider list header text. Separates blocked domains from domains that haven't yet been seen perform tracking on enough sites."
     },
+    "intro_not_an_adblocker_paragraph": {
+        "message": "Privacy Badger kreće sa blokiranjem kada vidi iste trekere na tri ražličita sajta.",
+        "description": "Tooltip for the 'not_yet_blocked_header' message"
+    },
     "non_tracker": {
         "message": "Domeni ispod vas izgleda ne prate",
         "description": "Popup domain slider list header text. Separates domains with detected tracking from domains where no tracking has yet been detected."
@@ -193,16 +201,8 @@
         "message": "Trenutno Privacy Badger proverava samo da li treće strane koriste kolačiće, HTML5 lokalno skladište ili metod canvas fingerprinting za praćenje vašeg pregledanja. Neki od ovih domena mogu koristiti metode praćenja koje Privacy Badger ne može otkriti.",
         "description": "Tooltip for the 'non_tracker' message."
     },
-    "report_title": {
-        "message": "Prijavite grešku",
-        "description": "Title of the 'Report broken site' popup overlay."
-    },
-    "report_text": {
-        "message": "Ukratko opišite grešku ispod.",
-        "description": "The 'below' refers to a text input located below this text. This asks the user to describe what problem the user experienced."
-    },
     "report_input_label": {
-        "message": "Opis",
+        "message": "Briefly describe the problem:",
         "description": "Label for the text input in the 'Report broken site' overlay."
     },
     "error_input": {
@@ -214,7 +214,7 @@
         "description": ""
     },
     "report_button": {
-        "message": "Prijavi grešku",
+        "message": "Send report",
         "description": "Button text."
     },
     "report_cancel": {
@@ -280,7 +280,7 @@
         }
     },
     "popup_info_youtube": {
-        "message": "YouTube not working? It's probably not because of Privacy Badger.",
+        "message": "Ads not blocked? YouTube not working? It's probably not because of Privacy Badger.",
         "description": "Message in the popup when users visit YouTube.com"
     },
     "extension_error_text": {
@@ -303,45 +303,45 @@
         "message": "Krenite u obilazak",
         "description": "Intro page welcome button."
     },
-    "intro_learns": {
-        "message": "Uči automatski",
-        "description": "Intro page paragraph heading."
-    },
-    "intro_learns_paragraph": {
-        "message": "Umesto da ima spisak stavki za blokiranje Privacy Badger automatski otkriva trekere prema njihovom ponašanju.",
-        "description": "Intro page paragraph."
-    },
     "intro_beyond_ads": {
         "message": "Hvata podmukle trekere",
         "description": "Intro page paragraph heading."
     },
     "intro_beyond_ads_paragraph": {
-        "message": "Nevidljivo praćenje se dešava na najrazličitije načine: reklame su samo vidljivi vrh ledenog brega. Privacy Badger šalje <a href='https://globalprivacycontrol.org/' target='_blank'>Global Privacy Control signal</a> kako bi odustao od deljenja i prodaje podataka, kao i <a href='https://www.eff.org/issues/do-not-track' target='_blank'>Do Not Track signal</a> kako bi rekao kompanijama da vas ne prate. Ako budu ignorisali vaše želje Privacy Badger će naučiti da ih blokira - bilo da su oglašivači ili drugi vidovi trekera.",
-        "description": "Intro page paragraph."
+        "message": "Privacy Badger šalje <a href='https://globalprivacycontrol.org/' target='_blank'>Global Privacy Control signal</a> kako bi odustao od deljenja i prodaje podataka, kao i <a href='https://www.eff.org/issues/do-not-track' target='_blank'>Do Not Track signal</a> kako bi rekao kompanijama da vas ne prate.",
+        "description": "Intro page paragraph"
+    },
+    "intro_beyond_ads_paragraph2": {
+        "message": "If they ignore these signals, Privacy Badger will learn to block them—whether they are advertisers or trackers of other kinds.",
+        "description": "Intro page paragraph"
     },
     "intro_not_an_adblocker": {
-        "message": "Nisam adbloker, ja sam drugačiji",
+        "message": "Nisam adbloker",
         "description": "Intro page paragraph heading."
     },
-    "intro_not_an_adblocker_paragraph": {
-        "message": "Privacy Badger kreće sa blokiranjem kada vidi iste trekere na tri ražličita sajta.",
-        "description": "Intro page paragraph. Also a tooltip for the 'not_yet_blocked_header' message."
+    "intro_learns_paragraph": {
+        "message": "Privacy Badger automatski otkriva trekere prema njihovom ponašanju.",
+        "description": "Intro page paragraph."
+    },
+    "intro_not_an_adblocker_paragraph2": {
+        "message": "Invisible tracking happens in all sorts of ways; ads are just the visible tip of the iceberg. Privacy Badger doesn't block ads unless they happen to be tracking you.",
+        "description": "Intro page paragraph"
     },
     "next_section": {
         "message": "sledeća sekcija",
         "description": "Image alt. text on a couple of \"scroll down\" arrow buttons on the intro page."
     },
+    "intro_open_popup": {
+        "message": "Try opening Privacy Badger's popup",
+        "description": "Shown above an image of the Privacy Badger icon circled on the browser toolbar."
+    },
+    "intro_open_popup_alt": {
+        "message": "Browser toolbar with the Privacy Badger icon circled",
+        "description": "Alt text for toolbar icon image, which is shown below the intro_open_popup header."
+    },
     "intro_disable_button": {
         "message": "Ako mnislite da Privacy Badger utiče na funkcionalnost stranice (video ne može da se pusti, npr), možete kliknuti na dugme \"Onemogući\" kako biste isključili Privacy Badger na toj stranici.",
         "description": "Intro page paragraph. The quoted string ('Disable') should match the verb used for the 'popup_disable_for_site' message."
-    },
-    "intro_report_button": {
-        "message": "Molimo vas da ne zaboravite da kliknete na \"Prijavi pokvaren sajt\". Poštujemo vašu privatnost i ne šaljemo automatske izveštaje.",
-        "description": "Intro page paragraph. The quoted message ('Report broken site') should match the translation for the 'report_broken_site' message."
-    },
-    "intro_privacy_note": {
-        "message": "Privacy Badger NIKADA neće podeliti podatke o vašem pregledanju osim ukoliko ne pristanete da ih podelite.",
-        "description": "Intro page paragraph."
     },
     "intro_donate_heading": {
         "message": "Privatnost je timski sport!",
@@ -432,8 +432,8 @@
         "description": "(Chrome only) Checkbox label in general settings."
     },
     "options_disable_floc": {
-        "message": "Onemogući Guglov Topics API",
-        "description": "Checkbox label in general settings. For what this disables, see https://brave.com/web-standards-at-brave/7-googles-topics-api/"
+        "message": "Disable Google's \"Privacy Sandbox\" ad tracking",
+        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2023/09/how-turn-googles-privacy-sandbox-ad-tracking-and-why-you-should"
     },
     "options_advanced_settings": {
         "message": "Napredna podešavanja",
@@ -464,24 +464,24 @@
         "description": "Options page tab heading"
     },
     "disabled_for_these_domains": {
-        "message": "<p>Privacy Badger je isključen na sledećim sajtovima. To znači da Privacy badger neće blokirati ništa kada posetite sajtove navedene ovde, a takođe neće slati ni \"Do Not Track\" ili \"Global Policy Control\" signale.</p><p>Ako mislite da Privacy Badger kvari stranicu, ili biste želeli da određeni sajt prikuplja, deli ili prodaje vaše podatke, možete uneti domen te stranice u polje ispod i kliknuti na dugme \"Dodaj domen\".</p>",
-        "description": "Shown on the options page under the Disabled Sites tab. 'Add domain' should match the 'add_domain_button' message."
+        "message": "Privacy Badger je isključen na sledećim sajtovima. To znači da Privacy badger neće blokirati ništa kada posetite sajtove navedene ovde, a takođe neće slati ni \"Do Not Track\" ili \"Global Policy Control\" signale.",
+        "description": "Intro text on the Disabled Sites options page tab"
     },
     "allowlist_domain_input_placeholder": {
         "message": "npr. www.example.com, *.example.net, example.org",
         "description": "Placeholder for a text input under the Disabled Sites tab on the options page"
     },
     "add_domain_button": {
-        "message": "Dodaj domen",
-        "description": "Button found under the Disabled Sites tab on the options page"
+        "message": "Add site",
+        "description": "Button on the Disabled Sites options page tab"
     },
     "remove_button": {
         "message": "Ukloni odabrano",
-        "description": "Button found under the Disabled Sites tab on the options page"
+        "description": "Button on the Disabled Sites options page tab"
     },
     "invalid_domain": {
         "message": "Molimo vas da dodate validan domen ili URL",
-        "description": "Error shown when attempting to add an invalid domain to the list of disabled sites"
+        "description": "Error text for the form on the Disabled Sites options page tab"
     },
     "options_widget_replacement_tab": {
         "message": "Zamena vidžeta",

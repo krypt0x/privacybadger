@@ -31,6 +31,10 @@
         "message": "隐私獾不在特殊页面工作——比如这一个。试着浏览一下别的网页。",
         "description": "Shown in the popup for special browser pages such as the New Tab page and 'about:' pages."
     },
+    "popup_first_run_header": {
+        "message": "打开得好啊！",
+        "description": "Heading in the popup when opened from the intro page."
+    },
     "popup_disabled_site_header": {
         "message": "隐私獾在此站点被禁用",
         "description": "Shown in the popup on disabled sites."
@@ -45,7 +49,7 @@
     },
     "report_broken_site": {
         "message": "报告显示异常的网站",
-        "description": "Button in the popup."
+        "description": "Button in the popup and title of the error reporting form overlay."
     },
     "version": {
         "message": "版本 $VERSION_STRING$",
@@ -185,6 +189,10 @@
         "message": "隐私獾尚未决定是否屏蔽这些域名",
         "description": "Popup domain slider list header text. Separates blocked domains from domains that haven't yet been seen perform tracking on enough sites."
     },
+    "intro_not_an_adblocker_paragraph": {
+        "message": "隐私獾会在三个网站发现同一个追踪器后开始屏蔽。三振出局！",
+        "description": "Tooltip for the 'not_yet_blocked_header' message"
+    },
     "non_tracker": {
         "message": "以下域名看起来不在追踪你",
         "description": "Popup domain slider list header text. Separates domains with detected tracking from domains where no tracking has yet been detected."
@@ -193,16 +201,8 @@
         "message": "隐私獾只检查第三方域名是否在使用 Cookie、HTML5 本地存储或 canvas 指纹来追踪您的浏览记录。 有些域名可能使用了隐私獾无法检测的追踪方式。",
         "description": "Tooltip for the 'non_tracker' message."
     },
-    "report_title": {
-        "message": "报告错误",
-        "description": "Title of the 'Report broken site' popup overlay."
-    },
-    "report_text": {
-        "message": "在下面简要描述发生的错误。",
-        "description": "The 'below' refers to a text input located below this text. This asks the user to describe what problem the user experienced."
-    },
     "report_input_label": {
-        "message": "描述",
+        "message": "简短描述问题：",
         "description": "Label for the text input in the 'Report broken site' overlay."
     },
     "error_input": {
@@ -214,7 +214,7 @@
         "description": ""
     },
     "report_button": {
-        "message": "报告错误",
+        "message": "发送报告",
         "description": "Button text."
     },
     "report_cancel": {
@@ -280,7 +280,7 @@
         }
     },
     "popup_info_youtube": {
-        "message": "YouTube 无法正常工作？这可能不是因为隐私獾。",
+        "message": "广告未拦截？YouTube 没有正常工作？这或许并非因为隐私獾。",
         "description": "Message in the popup when users visit YouTube.com"
     },
     "extension_error_text": {
@@ -303,45 +303,45 @@
         "message": "了解一下",
         "description": "Intro page welcome button."
     },
-    "intro_learns": {
-        "message": "自动学习",
-        "description": "Intro page paragraph heading."
-    },
-    "intro_learns_paragraph": {
-        "message": "隐私獾不会保存一个屏蔽列表，而是根据追踪器的行为自动发现它们。",
-        "description": "Intro page paragraph."
-    },
     "intro_beyond_ads": {
         "message": "发现鬼鬼祟祟的追踪器",
         "description": "Intro page paragraph heading."
     },
     "intro_beyond_ads_paragraph": {
-        "message": "不可见的追踪以各种形式发生；广告只是可见的冰山一角。隐私獾向追踪器发送<a href='https://globalprivacycontrol.org/' target='_blank'>“全局隐私控制”信号</a>以让您拒绝数据分享和贩卖，同时发送<a href='https://www.eff.org/issues/do-not-track' target='_blank'>“请勿追踪”信号</a>，告诉公司以停止追踪您。如果它们拒绝您的意愿，您的隐私獾将会学着阻止它们——无论它们是广告、追踪器或是其他的东西。",
-        "description": "Intro page paragraph."
+        "message": "隐私獾向追踪器发送<a href='https://globalprivacycontrol.org/' target='_blank'>“全局隐私控制”信号</a>以让您拒绝数据分享和贩卖，同时发送<a href='https://www.eff.org/issues/do-not-track' target='_blank'>“请勿追踪”信号</a>，告诉公司以停止追踪您。",
+        "description": "Intro page paragraph"
+    },
+    "intro_beyond_ads_paragraph2": {
+        "message": "如它们无视这些信号，隐私獾会学着拦截它们，无论它们是广告商还是其他类型的跟踪器。",
+        "description": "Intro page paragraph"
     },
     "intro_not_an_adblocker": {
-        "message": "不是广告拦截器，我不一样",
+        "message": "不是广告拦截器",
         "description": "Intro page paragraph heading."
     },
-    "intro_not_an_adblocker_paragraph": {
-        "message": "隐私獾会在三个网站发现同一个追踪器后开始屏蔽。三振出局！",
-        "description": "Intro page paragraph. Also a tooltip for the 'not_yet_blocked_header' message."
+    "intro_learns_paragraph": {
+        "message": "隐私獾根据追行为自动发现追踪器。",
+        "description": "Intro page paragraph."
+    },
+    "intro_not_an_adblocker_paragraph2": {
+        "message": "不可见的追踪以各种形式发生；广告只是可见的冰山一角。隐私獾不会阻止广告，除非它们碰巧在追踪您。",
+        "description": "Intro page paragraph"
     },
     "next_section": {
         "message": "下一节",
         "description": "Image alt. text on a couple of \"scroll down\" arrow buttons on the intro page."
     },
+    "intro_open_popup": {
+        "message": "试着打开隐私獾的弹窗",
+        "description": "Shown above an image of the Privacy Badger icon circled on the browser toolbar."
+    },
+    "intro_open_popup_alt": {
+        "message": "隐私獾图标被环绕的浏览器工具栏",
+        "description": "Alt text for toolbar icon image, which is shown below the intro_open_popup header."
+    },
     "intro_disable_button": {
         "message": "如果您认为隐私獾使得网站显示异常（例如无法播放视频），您可以点击“禁用”按钮来在此网站关闭隐私獾。",
         "description": "Intro page paragraph. The quoted string ('Disable') should match the verb used for the 'popup_disable_for_site' message."
-    },
-    "intro_report_button": {
-        "message": "请不要忘记点击“报告隐私獾导致的显示异常的网站”。我们尊重您的隐私，因此我们不自动发送报告。",
-        "description": "Intro page paragraph. The quoted message ('Report broken site') should match the translation for the 'report_broken_site' message."
-    },
-    "intro_privacy_note": {
-        "message": "除非你主动分享，否则隐私獾永远都不会上传你的浏览记录。",
-        "description": "Intro page paragraph."
     },
     "intro_donate_heading": {
         "message": "保护隐私人人有责！",
@@ -432,8 +432,8 @@
         "description": "(Chrome only) Checkbox label in general settings."
     },
     "options_disable_floc": {
-        "message": "禁用 Google 的 Topics API",
-        "description": "Checkbox label in general settings. For what this disables, see https://brave.com/web-standards-at-brave/7-googles-topics-api/"
+        "message": "停用 Google 的“隐私沙盒”广告跟踪",
+        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2023/09/how-turn-googles-privacy-sandbox-ad-tracking-and-why-you-should"
     },
     "options_advanced_settings": {
         "message": "高级",
@@ -464,24 +464,24 @@
         "description": "Options page tab heading"
     },
     "disabled_for_these_domains": {
-        "message": "<p>隐私獾已在以下网站上禁用。您浏览这些网站时，隐私獾不会屏蔽任何东西，也不会发送请勿追踪或全局隐私控制信号。</p><p>如果您认为隐私獾破坏了某个页面，或者您希望允许一个特定的网站分享和贩卖您的数据，请在下面的文本框中输入那个页面的域名，然后点击“添加域名”按钮。</p>",
-        "description": "Shown on the options page under the Disabled Sites tab. 'Add domain' should match the 'add_domain_button' message."
+        "message": "隐私獾已在以下网站上禁用。您浏览这些网站时，隐私獾不会屏蔽任何东西，也不会发送请勿追踪或全局隐私控制信号。",
+        "description": "Intro text on the Disabled Sites options page tab"
     },
     "allowlist_domain_input_placeholder": {
         "message": "例如 www.example.com, *.example.net, example.org",
         "description": "Placeholder for a text input under the Disabled Sites tab on the options page"
     },
     "add_domain_button": {
-        "message": "添加域名",
-        "description": "Button found under the Disabled Sites tab on the options page"
+        "message": "添加站点",
+        "description": "Button on the Disabled Sites options page tab"
     },
     "remove_button": {
         "message": "删除所选",
-        "description": "Button found under the Disabled Sites tab on the options page"
+        "description": "Button on the Disabled Sites options page tab"
     },
     "invalid_domain": {
         "message": "请添加一个有效的域名或者 URL",
-        "description": "Error shown when attempting to add an invalid domain to the list of disabled sites"
+        "description": "Error text for the form on the Disabled Sites options page tab"
     },
     "options_widget_replacement_tab": {
         "message": "小部件替换",

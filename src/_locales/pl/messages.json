@@ -31,6 +31,10 @@
         "message": "Privacy Badger nie działa na specjalnych stronach jak ta. Spróbuj otworzyć inną stronę.",
         "description": "Shown in the popup for special browser pages such as the New Tab page and 'about:' pages."
     },
+    "popup_first_run_header": {
+        "message": "Dobra robota z otwarciem wyskakującego menu!",
+        "description": "Heading in the popup when opened from the intro page."
+    },
     "popup_disabled_site_header": {
         "message": "Privacy Badger jest wyłączony na tej witrynie",
         "description": "Shown in the popup on disabled sites."
@@ -45,7 +49,7 @@
     },
     "report_broken_site": {
         "message": "Zgłoś problem ze stroną",
-        "description": "Button in the popup."
+        "description": "Button in the popup and title of the error reporting form overlay."
     },
     "version": {
         "message": "wersja $VERSION_STRING$",
@@ -185,6 +189,10 @@
         "message": "Twój Badger jeszcze nie zdecydował, czy te domeny należy blokować",
         "description": "Popup domain slider list header text. Separates blocked domains from domains that haven't yet been seen perform tracking on enough sites."
     },
+    "intro_not_an_adblocker_paragraph": {
+        "message": "Privacy Badger blokuje element śledzący po zauważeniu go na trzech różnych witrynach. Trzy uderzenia i koniec!",
+        "description": "Tooltip for the 'not_yet_blocked_header' message"
+    },
     "non_tracker": {
         "message": "Poniższe domeny chyba Cię nie szpiegują",
         "description": "Popup domain slider list header text. Separates domains with detected tracking from domains where no tracking has yet been detected."
@@ -193,16 +201,8 @@
         "message": "Obecnie Privacy Badger sprawdza tylko czy strony trzecie używają ciasteczek, pamięci podręcznej HTML5 lub śledzenia cyfrowym odciskiem elementu «canvas», aby śledzić Twoją historię przeglądania. Niektóre z tych domen mogą śledzić metodami, których Privacy Badger nie potrafi wykryć.",
         "description": "Tooltip for the 'non_tracker' message."
     },
-    "report_title": {
-        "message": "Zgłoś problem",
-        "description": "Title of the 'Report broken site' popup overlay."
-    },
-    "report_text": {
-        "message": "Zwięźle opisz problem poniżej.",
-        "description": "The 'below' refers to a text input located below this text. This asks the user to describe what problem the user experienced."
-    },
     "report_input_label": {
-        "message": "Opis",
+        "message": "Zwięźle opisz problem:",
         "description": "Label for the text input in the 'Report broken site' overlay."
     },
     "error_input": {
@@ -214,7 +214,7 @@
         "description": ""
     },
     "report_button": {
-        "message": "Zgłoś problem",
+        "message": "Wyślij raport",
         "description": "Button text."
     },
     "report_cancel": {
@@ -280,7 +280,7 @@
         }
     },
     "popup_info_youtube": {
-        "message": "Czy YouTube nie działa? Przyczyną tego prawdopodobnie nie jest Privacy Badger.",
+        "message": "Czy reklamy nie są blokowane? Czy YouTube nie działa? Przyczyną tego prawdopodobnie nie jest Privacy Badger.",
         "description": "Message in the popup when users visit YouTube.com"
     },
     "extension_error_text": {
@@ -303,45 +303,45 @@
         "message": "Wprowadzenie",
         "description": "Intro page welcome button."
     },
-    "intro_learns": {
-        "message": "Automatycznie się uczy",
-        "description": "Intro page paragraph heading."
-    },
-    "intro_learns_paragraph": {
-        "message": "Zamiast korzystać z list blokowanych elementów, rozszerzenie Privacy Badger automatycznie odkrywa elementy śledzące na podstawie ich zachowania.",
-        "description": "Intro page paragraph."
-    },
     "intro_beyond_ads": {
         "message": "Wyłapuje sprytne elementy śledzące",
         "description": "Intro page paragraph heading."
     },
     "intro_beyond_ads_paragraph": {
-        "message": "Niewidoczne elementy śledzące działają na różne sposoby, reklamy to tylko czubek góry lodowej. Privacy Badger wysyła <a href='https://globalprivacycontrol.org/' target='_blank'>żądanie Global Privacy Control</a>, aby wyrazić rezygnację z udostępniania i sprzedawania danych oraz <a href='https://www.eff.org/issues/do-not-track' target='_blank'>żądanie DNT (nie śledź mnie)</a>, aby poprosić firmy o nieśledzenie. Jeżeli zignorują one Twoje prośby, rozszerzenie Privacy Badger zablokuje je wszystkie – zarówno reklamy, elementy śledzące i inne.",
-        "description": "Intro page paragraph."
+        "message": "Privacy Badger wysyła <a href='https://globalprivacycontrol.org/' target='_blank'>żądanie Global Privacy Control</a>, aby wyrazić rezygnację z udostępniania i sprzedawania danych oraz <a href='https://www.eff.org/issues/do-not-track' target='_blank'>żądanie DNT (nie śledź mnie)</a>, aby poprosić firmy o nieśledzenie.",
+        "description": "Intro page paragraph"
+    },
+    "intro_beyond_ads_paragraph2": {
+        "message": "Jeżeli zingorują one te żądania, rozszerzenie Privacy Badger nauczy się je blokować – bez znaczenia czy są one reklamami, elementami śledzącymi, czy czymś innym.",
+        "description": "Intro page paragraph"
     },
     "intro_not_an_adblocker": {
-        "message": "Nie bloker reklam, jestem inny",
+        "message": "Nie bloker reklam",
         "description": "Intro page paragraph heading."
     },
-    "intro_not_an_adblocker_paragraph": {
-        "message": "Privacy Badger blokuje element śledzący po zauważeniu go na trzech różnych witrynach. Trzy uderzenia i koniec!",
-        "description": "Intro page paragraph. Also a tooltip for the 'not_yet_blocked_header' message."
+    "intro_learns_paragraph": {
+        "message": "Privacy Badger automatycznie odkrywa elementy śledzące na podstawie ich zachowania.",
+        "description": "Intro page paragraph."
+    },
+    "intro_not_an_adblocker_paragraph2": {
+        "message": "Niewidzialne śledzenie ma miejsce na wiele sposobów, reklamy są tylko widocznym czubkiem góry lodowej. Rozszerzenie Privacy Badger nie blokuje reklam, chyba że one Cię szpiegują.",
+        "description": "Intro page paragraph"
     },
     "next_section": {
         "message": "dalej",
         "description": "Image alt. text on a couple of \"scroll down\" arrow buttons on the intro page."
     },
+    "intro_open_popup": {
+        "message": "Spróbuj otworzyć wyskakujące menu Privacy Badgera",
+        "description": "Shown above an image of the Privacy Badger icon circled on the browser toolbar."
+    },
+    "intro_open_popup_alt": {
+        "message": "Pasek narzędzi przeglądarki z zakreśloną ikoną Privacy Badgera",
+        "description": "Alt text for toolbar icon image, which is shown below the intro_open_popup header."
+    },
     "intro_disable_button": {
         "message": "Jeżeli Twoim zdaniem Privacy Badger zepsuł jakąś stronę (np. filmik się nie odtwarza), możesz kliknąć przycisk „wyłącz”, aby wyłączyć dodatek na tej witrynie.",
         "description": "Intro page paragraph. The quoted string ('Disable') should match the verb used for the 'popup_disable_for_site' message."
-    },
-    "intro_report_button": {
-        "message": "Nie zapomnij kliknąć „Zgłoś problem ze stroną”. Szanujemy Twoją prywatność, więc nie wysyłamy raportów automatycznie.",
-        "description": "Intro page paragraph. The quoted message ('Report broken site') should match the translation for the 'report_broken_site' message."
-    },
-    "intro_privacy_note": {
-        "message": "Privacy Badger NIGDY prześle dane dotyczące Twojej aktywności w Sieci, o ile sam o tym nie zdecydujesz.",
-        "description": "Intro page paragraph."
     },
     "intro_donate_heading": {
         "message": "Prywatność to sport zespołowy!",
@@ -364,7 +364,7 @@
         "description": "Shown at the bottom of the intro page."
     },
     "intro_pin_nudge": {
-        "message": "First, $START_SPAN_TAG$pin Privacy Badger to your toolbar$END_SPAN_TAG$ for easy access to the \"$DISABLE_FOR_SITE$\" button.",
+        "message": "Najpierw $START_SPAN_TAG$przypnij Privacy Badgera do paska narzędzi$END_SPAN_TAG$, aby uzyskać dostęp do przycisku „$DISABLE_FOR_SITE$”.",
         "description": "Part of a Chrome-only overlay on the intro page",
         "placeholders": {
             "start_span_tag": {
@@ -380,7 +380,7 @@
         }
     },
     "intro_pin_instructions": {
-        "message": "To pin Privacy Badger's icon, click on the puzzle piece icon in your browser toolbar. Then, click on the pin icon next to Privacy Badger.",
+        "message": "Aby przypiąć ikonę Privacy Badgera, kliknij w ikonę puzzla na pasku przeglądarki. Następnie kliknij w ikonę pinezki obok Privacy Badgera.",
         "description": "Alt text for pinning instructions image. Shown on the Chrome-only overlay of the intro page."
     },
     "share_button_title_facebook": {
@@ -432,8 +432,8 @@
         "description": "(Chrome only) Checkbox label in general settings."
     },
     "options_disable_floc": {
-        "message": "Wyłącz Topics API firmy Google",
-        "description": "Checkbox label in general settings. For what this disables, see https://brave.com/web-standards-at-brave/7-googles-topics-api/"
+        "message": "Wyłącz mechanizm śledzenia reklam Google «Privacy Sandbox»",
+        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2023/09/how-turn-googles-privacy-sandbox-ad-tracking-and-why-you-should"
     },
     "options_advanced_settings": {
         "message": "Zaawansowane",
@@ -464,24 +464,24 @@
         "description": "Options page tab heading"
     },
     "disabled_for_these_domains": {
-        "message": "<p>Privacy Badger jest wyłączony dla następujących domen. Oznacza to, że nic będzie blokowane podczas wizyty na stronach wpisanych poniżej i nie zostaną wysłane żądania „Nie Śledź Mnie” (DNT) i „Global Privacy Control”.</p><p>Jeżeli uważasz, że Privacy Badger psuje jakąś stronę lub chciał(a)byś tej stronie umożliwić udostępnianie lub sprzedaż Twoich danych, wpisz domenę tej strony w pole poniżej i kliknij w przycisk „dodaj domenę”.</p>",
-        "description": "Shown on the options page under the Disabled Sites tab. 'Add domain' should match the 'add_domain_button' message."
+        "message": "Privacy Badger jest wyłączony dla następujących domen. Oznacza to, że nic będzie blokowane podczas wizyty na stronach wpisanych poniżej i nie zostaną wysłane żądania „Nie Śledź Mnie” (DNT) i „Global Privacy Control”.",
+        "description": "Intro text on the Disabled Sites options page tab"
     },
     "allowlist_domain_input_placeholder": {
         "message": "np. www.example.com, *.example.net, example.org",
         "description": "Placeholder for a text input under the Disabled Sites tab on the options page"
     },
     "add_domain_button": {
-        "message": "Dodaj domenę",
-        "description": "Button found under the Disabled Sites tab on the options page"
+        "message": "Dodaj witrynę",
+        "description": "Button on the Disabled Sites options page tab"
     },
     "remove_button": {
         "message": "Usuń zaznaczone",
-        "description": "Button found under the Disabled Sites tab on the options page"
+        "description": "Button on the Disabled Sites options page tab"
     },
     "invalid_domain": {
         "message": "Wprowadź poprawną domenę lub URL",
-        "description": "Error shown when attempting to add an invalid domain to the list of disabled sites"
+        "description": "Error text for the form on the Disabled Sites options page tab"
     },
     "options_widget_replacement_tab": {
         "message": "Zastępowanie widżetów",

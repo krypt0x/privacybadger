@@ -31,6 +31,10 @@
         "message": "Privacy Badger fungerar inte på särskilda sidor som denna. Prova att surfa någon annanstans.",
         "description": "Shown in the popup for special browser pages such as the New Tab page and 'about:' pages."
     },
+    "popup_first_run_header": {
+        "message": "Bra jobbat med att öppna popupen!",
+        "description": "Heading in the popup when opened from the intro page."
+    },
     "popup_disabled_site_header": {
         "message": "Privacy Badger är inaktiverad på denna webbplats",
         "description": "Shown in the popup on disabled sites."
@@ -45,7 +49,7 @@
     },
     "report_broken_site": {
         "message": "Rapportera bruten webbplats",
-        "description": "Button in the popup."
+        "description": "Button in the popup and title of the error reporting form overlay."
     },
     "version": {
         "message": "version $VERSION_STRING$",
@@ -185,6 +189,10 @@
         "message": "Din Badger har ännu inte beslutat om dessa domäner ska blockeras",
         "description": "Popup domain slider list header text. Separates blocked domains from domains that haven't yet been seen perform tracking on enough sites."
     },
+    "intro_not_an_adblocker_paragraph": {
+        "message": "Privacy Badger börjar blockera när den ser samma spårare på tre olika webbplatser. Tre träffar och den är ute!",
+        "description": "Tooltip for the 'not_yet_blocked_header' message"
+    },
     "non_tracker": {
         "message": "Domänerna nedan verkar inte spåra dig",
         "description": "Popup domain slider list header text. Separates domains with detected tracking from domains where no tracking has yet been detected."
@@ -193,16 +201,8 @@
         "message": "För närvarande kontrollerar Privacy Badger endast om tredjeparter använder kakor, HTML5-lagring eller canvas fingeravtryck för att spåra din surfning. Vissa av domänerna kan använda spårningsmetoder som Privacy Badger inte kan upptäcka.",
         "description": "Tooltip for the 'non_tracker' message."
     },
-    "report_title": {
-        "message": "Rapportera ett fel",
-        "description": "Title of the 'Report broken site' popup overlay."
-    },
-    "report_text": {
-        "message": "Beskriv kortfattat felet nedan.",
-        "description": "The 'below' refers to a text input located below this text. This asks the user to describe what problem the user experienced."
-    },
     "report_input_label": {
-        "message": "Beskrivning",
+        "message": "Beskriv kortfattat problemet:",
         "description": "Label for the text input in the 'Report broken site' overlay."
     },
     "error_input": {
@@ -214,7 +214,7 @@
         "description": ""
     },
     "report_button": {
-        "message": "Skicka in felet",
+        "message": "Skicka rapport",
         "description": "Button text."
     },
     "report_cancel": {
@@ -280,7 +280,7 @@
         }
     },
     "popup_info_youtube": {
-        "message": "YouTube fungerar inte? Det är förmodligen inte på grund av Privacy Badger.",
+        "message": "Annonserna är inte blockerade? Fungerar inte YouTube? Det är förmodligen inte på grund av Privacy Badger. ",
         "description": "Message in the popup when users visit YouTube.com"
     },
     "extension_error_text": {
@@ -303,45 +303,45 @@
         "message": "Ta rundturen",
         "description": "Intro page welcome button."
     },
-    "intro_learns": {
-        "message": "Lär sig automatiskt",
-        "description": "Intro page paragraph heading."
-    },
-    "intro_learns_paragraph": {
-        "message": "Istället för att hålla listor över vad som ska blockeras upptäcker Privacy Badger automatiskt spårare baserat på deras beteende.",
-        "description": "Intro page paragraph."
-    },
     "intro_beyond_ads": {
         "message": "Fångar lömska spårare",
         "description": "Intro page paragraph heading."
     },
     "intro_beyond_ads_paragraph": {
-        "message": "Osynlig spårning sker på alla möjliga sätt; annonser är bara den synliga toppen av isberget. Privacy Badger skickar <a href='https://globalprivacycontrol.org/' target='_blank'>Global sekretesstyrningssignal</a>, för att välja bort datadelning och försäljning, och <a href='https://www.eff.org/issues/do-not-track' target='_blank'>Spåra inte-signal</a> att berätta för företagen att inte spåra dig. Om de ignorerar dina önskemål kommer Privacy Badger att lära sig att blockera dem—oavsett om de är annonsörer eller spårare av andra slag.",
-        "description": "Intro page paragraph."
+        "message": "Privacy Badger skickar <a href='https://globalprivacycontrol.org/' target='_blank'>Global sekretesstyrningssignal</a>, för att välja bort datadelning och försäljning, och <a href='https://www.eff.org/issues/do-not-track' target='_blank'>Spåra inte-signal</a> för att tala om för företag att inte spåra dig.",
+        "description": "Intro page paragraph"
+    },
+    "intro_beyond_ads_paragraph2": {
+        "message": "Om de ignorerar dessa signaler kommer Privacy Badger att lära sig att blockera dem—oavsett om de är annonsörer eller spårare av andra slag.",
+        "description": "Intro page paragraph"
     },
     "intro_not_an_adblocker": {
-        "message": "Inte en annonsblockerare, jag är annorlunda",
+        "message": "Inte en annonsblockerare",
         "description": "Intro page paragraph heading."
     },
-    "intro_not_an_adblocker_paragraph": {
-        "message": "Privacy Badger börjar blockera när den ser samma spårare på tre olika webbplatser. Tre träffar och den är ute!",
-        "description": "Intro page paragraph. Also a tooltip for the 'not_yet_blocked_header' message."
+    "intro_learns_paragraph": {
+        "message": "Privacy Badger upptäcker automatiskt spårare baserat på deras beteende.",
+        "description": "Intro page paragraph."
+    },
+    "intro_not_an_adblocker_paragraph2": {
+        "message": "Osynlig spårning sker på alla möjliga sätt; annonser är bara den synliga toppen av isberget. Privacy Badger blockerar inte annonser om de inte råkar spåra dig.",
+        "description": "Intro page paragraph"
     },
     "next_section": {
         "message": "nästa avsnitt",
         "description": "Image alt. text on a couple of \"scroll down\" arrow buttons on the intro page."
     },
+    "intro_open_popup": {
+        "message": "Testa att öppna Privacy Badgers popup",
+        "description": "Shown above an image of the Privacy Badger icon circled on the browser toolbar."
+    },
+    "intro_open_popup_alt": {
+        "message": "Webbläsarens verktygsfält med Privacy Badger-ikonen inringad",
+        "description": "Alt text for toolbar icon image, which is shown below the intro_open_popup header."
+    },
     "intro_disable_button": {
         "message": "Om du tror att Privacy Badger bryter en sida (till exempel om en video inte spelar) kan du klicka på knappen \"Inaktivera\" för att stänga av Privacy Badger för den webbplatsen.",
         "description": "Intro page paragraph. The quoted string ('Disable') should match the verb used for the 'popup_disable_for_site' message."
-    },
-    "intro_report_button": {
-        "message": "Glöm inte att klicka på \"Rapportera bruten webbplats\". Vi respekterar din integritet så vi skickar inte automatiska rapporter.",
-        "description": "Intro page paragraph. The quoted message ('Report broken site') should match the translation for the 'report_broken_site' message."
-    },
-    "intro_privacy_note": {
-        "message": "Privacy Badger kommer ALDRIG att dela data om din surfning om du inte väljer att dela den.",
-        "description": "Intro page paragraph."
     },
     "intro_donate_heading": {
         "message": "Integritet är en lagsport!",
@@ -432,8 +432,8 @@
         "description": "(Chrome only) Checkbox label in general settings."
     },
     "options_disable_floc": {
-        "message": "Inaktivera Googles Topics API",
-        "description": "Checkbox label in general settings. For what this disables, see https://brave.com/web-standards-at-brave/7-googles-topics-api/"
+        "message": "Inaktivera Googles \"Privacy Sandbox\"-annonsspårning",
+        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2023/09/how-turn-googles-privacy-sandbox-ad-tracking-and-why-you-should"
     },
     "options_advanced_settings": {
         "message": "Avancerat",
@@ -464,24 +464,24 @@
         "description": "Options page tab heading"
     },
     "disabled_for_these_domains": {
-        "message": "<p>Privacy Badger är inaktiverat på följande webbplatser. Detta innebär att Privacy Badger inte blockerar någonting när du besöker webbplatserna som listas här, och det kommer inte att skicka signalerna Spåra inte eller Global sekretesstyrning.</p><p>Om du tror att Privacy Badger bryter en sida, eller om du vill tillåta att en viss webbplats delar eller säljer dina data, kan du skriva sidans domän i rutan nedan och klicka på knappen \"Lägg till domän\".</p>",
-        "description": "Shown on the options page under the Disabled Sites tab. 'Add domain' should match the 'add_domain_button' message."
+        "message": "Privacy Badger är inaktiverat på följande webbplatser. Detta innebär att Privacy Badger inte blockerar någonting när du besöker webbplatserna som listas här, och det kommer inte att skicka signalerna Spåra inte eller Global sekretesstyrning.",
+        "description": "Intro text on the Disabled Sites options page tab"
     },
     "allowlist_domain_input_placeholder": {
         "message": "t.ex. www.example.com, *.example.net, example.org",
         "description": "Placeholder for a text input under the Disabled Sites tab on the options page"
     },
     "add_domain_button": {
-        "message": "Lägg till domän",
-        "description": "Button found under the Disabled Sites tab on the options page"
+        "message": "Lägg till webbplats",
+        "description": "Button on the Disabled Sites options page tab"
     },
     "remove_button": {
         "message": "Ta bort valda",
-        "description": "Button found under the Disabled Sites tab on the options page"
+        "description": "Button on the Disabled Sites options page tab"
     },
     "invalid_domain": {
         "message": "Lägg till en giltig domän eller webbadress",
-        "description": "Error shown when attempting to add an invalid domain to the list of disabled sites"
+        "description": "Error text for the form on the Disabled Sites options page tab"
     },
     "options_widget_replacement_tab": {
         "message": "Gränssnittskomponentsersättning",

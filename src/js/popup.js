@@ -158,7 +158,7 @@ function showNagMaybe() {
 }
 
 /**
- * Init function. Showing/hiding popup.html elements and setting up event handler
+ * Sets up event handlers. Should be called once only!
  */
 function init() {
   showNagMaybe();
@@ -166,17 +166,22 @@ function init() {
   $("#activate_site_btn").on("click", activateOnSite);
   $("#deactivate_site_btn").on("click", deactivateOnSite);
 
-  $('#error_input').on('input propertychange', function() {
+  $('#error-input').on('input propertychange', function() {
     // No easy way of sending message on popup close, send message for every change
     chrome.runtime.sendMessage({
       type: 'saveErrorText',
       tabId: POPUP_DATA.tabId,
-      errorText: $("#error_input").val()
+      errorText: $("#error-input").val()
     });
   });
 
   $("#error").on("click", function() {
     $('#overlay').toggleClass('active');
+    // Show YouTube message on error reporting form
+    if (POPUP_DATA.tabHost === "www.youtube.com") {
+      $('#report-youtube-message').html(chrome.i18n.getMessage("popup_info_youtube") + " " + chrome.i18n.getMessage('learn_more_link', ['<a target=_blank href="https://privacybadger.org/#Is-Privacy-Badger-breaking-YouTube">privacybadger.org</a>']));
+      $("#report-youtube-message-container").show();
+    }
   });
   $("#report-cancel").on("click", function() {
     clearSavedErrorText();
@@ -185,9 +190,9 @@ function init() {
   $("#report-button").on("click", function() {
     $(this).prop("disabled", true);
     $("#report-cancel").prop("disabled", true);
-    send_error($("#error_input").val());
+    send_error($("#error-input").val());
   });
-  $("#report_close").on("click", function (e) {
+  $("#report-close").on("click", function (e) {
     e.preventDefault();
     clearSavedErrorText();
     closeOverlay();
@@ -238,12 +243,12 @@ function init() {
     e.preventDefault();
     share();
   });
-  $("#share_close").on("click", function (e) {
+  $("#share-close").on("click", function (e) {
     e.preventDefault();
-    $("#share_overlay").toggleClass('active', false);
+    $("#share-overlay").toggleClass('active', false);
   });
   $("#copy-button").on("click", function() {
-    $("#share_output").select();
+    $("#share-output").select();
     document.execCommand('copy');
     $(this).text(chrome.i18n.getMessage("copy_button_copied"));
   });
@@ -295,7 +300,7 @@ function closeOverlay() {
   $('#overlay').toggleClass('active', false);
   $("#report-success").hide();
   $("#report-fail").hide();
-  $("#error_input").val("");
+  $("#error-input").val("");
 }
 
 /**
@@ -357,7 +362,7 @@ function send_error(message) {
     });
 
     sendReport.done(function() {
-      $("#error_input").val("");
+      $("#error-input").val("");
       $("#report-success").slideDown();
 
       clearSavedErrorText();
@@ -421,13 +426,13 @@ function deactivateOnSite() {
  * Open the share overlay
  */
 function share() {
-  $("#share_overlay").toggleClass('active');
+  $("#share-overlay").toggleClass('active');
   let share_msg = chrome.i18n.getMessage("share_base_message");
 
   // only add language about found trackers if we actually found trackers
   // (but regardless of whether we are actually blocking them)
   if (POPUP_DATA.noTabData) {
-    $("#share_output").val(share_msg);
+    $("#share-output").val(share_msg);
     return;
   }
 
@@ -438,7 +443,7 @@ function share() {
   }
 
   if (!originsArr.length) {
-    $("#share_output").val(share_msg);
+    $("#share-output").val(share_msg);
     return;
   }
 
@@ -460,7 +465,7 @@ function share() {
     share_msg += "\n\n";
     share_msg += tracking.join("\n");
   }
-  $("#share_output").val(share_msg);
+  $("#share-output").val(share_msg);
 }
 
 /**
@@ -534,12 +539,6 @@ function createBreakageNote(domain, i18n_message_key) {
     autoClose: false,
     content: chrome.i18n.getMessage(i18n_message_key),
     functionReady: function (tooltip) {
-      // record that this breakage note was shown
-      chrome.runtime.sendMessage({
-        type: "seenBreakageNote",
-        domain
-      });
-
       // close on tooltip click/tap
       $(tooltip.elementTooltip()).on('click', function (e) {
         e.preventDefault();
@@ -568,22 +567,33 @@ function createBreakageNote(domain, i18n_message_key) {
 }
 
 /**
- * Refresh the content of the popup window
+ * Populates the contents of popup.
  *
- * @param {Integer} tabId The id of the tab
+ * Could get called more than once (by tests).
+ *
+ * To attach event listeners, see init()
  */
 function refreshPopup() {
   window.SLIDERS_DONE = false;
 
   // must be a special browser page,
   if (POPUP_DATA.noTabData) {
-    // show the "nothing to do here" message
     $('#blockedResourcesContainer').hide();
-    $('#special-browser-page').show();
 
-    // hide inapplicable buttons
-    $('#deactivate_site_btn').hide();
-    $('#error').hide();
+    if (POPUP_DATA.fromWelcomePage) {
+      $('#first-run-page').show();
+
+      // disable Disable/Report buttons
+      $('#deactivate_site_btn').prop('disabled', true);
+      $('#error').prop('disabled', true);
+    } else {
+      // show the "nothing to do here" message
+      $('#special-browser-page').show();
+
+      // hide inapplicable Disable/Report buttons
+      $('#deactivate_site_btn').hide();
+      $('#error').hide();
+    }
 
     // activate tooltips
     $('.tooltip').tooltipster();
@@ -611,7 +621,7 @@ function refreshPopup() {
 
   // if there is any saved error text, fill the error input with it
   if (utils.hasOwn(POPUP_DATA, 'errorText')) {
-    $("#error_input").val(POPUP_DATA.errorText);
+    $("#error-input").val(POPUP_DATA.errorText);
   }
   // show error layout if the user was writing an error report
   if (utils.hasOwn(POPUP_DATA, 'errorText') && POPUP_DATA.errorText) {
@@ -623,10 +633,9 @@ function refreshPopup() {
   // or when there is at least one breakage warning
   if (POPUP_DATA.settings.showExpandedTrackingSection || (
     (POPUP_DATA.settings.seenComic && !POPUP_DATA.showLearningPrompt && !POPUP_DATA.criticalError) &&
-    Object.keys(BREAKAGE_NOTE_DOMAINS).some(d => (
-      (POPUP_DATA.origins[d] == constants.BLOCK ||
-        POPUP_DATA.origins[d] == constants.COOKIEBLOCK) &&
-      !POPUP_DATA.shownBreakageNotes.includes(d)))
+    Object.keys(BREAKAGE_NOTE_DOMAINS).some(d =>
+      POPUP_DATA.origins[d] == constants.BLOCK ||
+        POPUP_DATA.origins[d] == constants.COOKIEBLOCK)
   ) || (
     POPUP_DATA.cookieblocked && Object.keys(POPUP_DATA.cookieblocked).some(
       d => POPUP_DATA.origins[d] == constants.USER_BLOCK)
@@ -686,7 +695,6 @@ function refreshPopup() {
       let show_breakage_note = false;
       if (!show_breakage_warning) {
         show_breakage_note = (utils.hasOwn(BREAKAGE_NOTE_DOMAINS, fqdn) &&
-          !POPUP_DATA.shownBreakageNotes.includes(fqdn) &&
           (action == constants.BLOCK || action == constants.COOKIEBLOCK));
       }
       let slider_html = htmlUtils.getOriginHtml(fqdn, action,
@@ -777,9 +785,7 @@ function refreshPopup() {
     $printable.find('.tooltip:not(.tooltipstered)').tooltipster(DOMAIN_TOOLTIP_CONF);
     if ($printable.hasClass('breakage-note')) {
       let domain = $printable[0].dataset.origin;
-      if (!POPUP_DATA.shownBreakageNotes.includes(domain)) {
-        createBreakageNote(domain, BREAKAGE_NOTE_DOMAINS[domain]);
-      }
+      createBreakageNote(domain, BREAKAGE_NOTE_DOMAINS[domain]);
     }
 
     if (printable.length) {
@@ -875,6 +881,9 @@ $(function () {
       tabUrl: tab.url
     }, (response) => {
       setPopupData(response);
+      if (tab.url == chrome.runtime.getURL('/skin/firstRun.html')) {
+        POPUP_DATA.fromWelcomePage = true;
+      }
       refreshPopup();
       init();
     });

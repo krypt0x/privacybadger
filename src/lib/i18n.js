@@ -56,7 +56,7 @@ function setTextDirection() {
   // popup page
   if (ON_POPUP) {
     // fix floats
-    ['#fittslaw', '.overlay_close'].forEach((selector) => {
+    ['#fittslaw', '.overlay-close'].forEach((selector) => {
       toggle_css_value(selector, "float", "right", "left");
     });
 
@@ -83,12 +83,13 @@ function setTextDirection() {
       right: 'unset',
       left: '15px'
     });
-    $('#pin-image').css("transform", "scaleX(-1)");
+    $('#pin-image').attr("src", "images/pinning-instructions-rtl.png");
     $('#dismiss-nudge').css({
       float: 'left',
       right: 'unset',
       left: '-5px'
     });
+    $('#toolbar-icon').css("transform", "scaleX(-1)");
   }
 }
 

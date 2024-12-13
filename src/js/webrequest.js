@@ -139,15 +139,7 @@ function onBeforeRequest(details) {
   // hosted by (user)cookieblocked CDNs
   if (type == 'script' || sw_request) {
     if (action == constants.COOKIEBLOCK || action == constants.USER_COOKIEBLOCK) {
-      if (request_host == 'cdn.jsdelivr.net' ||
-        request_host == 'cdnjs.cloudflare.com' ||
-        request_host == 'd1af033869koo7.cloudfront.net' ||
-        request_host == 'd38xvr37kwwhcm.cloudfront.net' ||
-        request_host == 'd.alicdn.com' ||
-        request_host == 'fp-cdn.azureedge.net' ||
-        request_host == 'sdtagging.azureedge.net' ||
-        request_host == 'gadasource.storage.googleapis.com') {
-
+      if (constants.FP_CDN_DOMAINS.has(request_host)) {
         let fpScripts = badger.storage.getStore('fp_scripts').getItem(request_host);
 
         if (fpScripts) {
@@ -1390,7 +1382,6 @@ function dispatcher(request, sender, sendResponse) {
       origins: trackers,
       settings: badger.getSettings().getItemClones(),
       showLearningPrompt: badger.getPrivateSettings().getItem("showLearningPrompt"),
-      shownBreakageNotes: badger.getPrivateSettings().getItem("shownBreakageNotes"),
       tabHost: tab_host,
       tabId: tab_id,
       tabUrl: request.tabUrl,
@@ -1550,19 +1541,6 @@ function dispatcher(request, sender, sendResponse) {
 
   case "seenLearningPrompt": {
     badger.getPrivateSettings().setItem("showLearningPrompt", false);
-    sendResponse();
-    break;
-  }
-
-  case "seenBreakageNote": {
-    if (request.domain) {
-      let privateStore = badger.getPrivateSettings(),
-        shownBreakageNotes = privateStore.getItem("shownBreakageNotes");
-      if (!shownBreakageNotes.includes(request.domain)) {
-        shownBreakageNotes.push(request.domain);
-      }
-      badger.getPrivateSettings().setItem("shownBreakageNotes", shownBreakageNotes);
-    }
     sendResponse();
     break;
   }
@@ -1763,9 +1741,28 @@ function dispatcher(request, sender, sendResponse) {
   // proxies surrogate script-initiated widget replacement messages
   // from one content script to another
   case "widgetFromSurrogate": {
-    let tab_host = extractHostFromURL(sender.tab.url);
+    let tab_url = sender.tab.url,
+      tab_host = extractHostFromURL(tab_url);
     if (!badger.isPrivacyBadgerEnabled(tab_host)) {
       break;
+    }
+
+    // accept widget surrogate messages only from top-level,
+    // first-party, and Embedly frames
+    //
+    // NOTE: before removing this restriction, investigate
+    // implications of accepting pbSurrogateMessage events
+    // from third-party scripts in nested frames
+    if (sender.frameId > 0) {
+      if (!request.frameUrl.startsWith('https://cdn.embedly.com/')) {
+        let tab_scheme = tab_url.slice(0, tab_url.indexOf(tab_host));
+        if (!request.frameUrl.startsWith(tab_scheme + tab_host)) {
+          let frame_host = extractHostFromURL(request.frameUrl);
+          if (!frame_host || utils.isThirdPartyDomain(frame_host, tab_host)) {
+            break;
+          }
+        }
+      }
     }
 
     if (request.name == "X (Twitter)") {
@@ -1776,7 +1773,7 @@ function dispatcher(request, sender, sendResponse) {
         trackerDomain: "platform.twitter.com",
         frameId: sender.frameId
       });
-      return;
+      break;
     }
 
     // NOTE: request.name and request.data are not to be trusted
