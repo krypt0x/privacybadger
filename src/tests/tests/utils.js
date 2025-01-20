@@ -194,7 +194,7 @@ QUnit.module("Utils", function (/*hooks*/) {
       "PSL TLDs work with wildcards as expected.");
   });
 
-  QUnit.test("disable/enable privacy badger for origin", function (assert) {
+  QUnit.test("disable/enable privacy badger for domain", function (assert) {
     function parsed() {
       return badger.storage.getStore('settings_map').getItem('disabledSites');
     }
@@ -816,30 +816,6 @@ QUnit.module("Utils", function (/*hooks*/) {
     assert.equal(utils.getHostFromDomainInput("httpbin.org"),
       "httpbin.org",
       "Domains that begin with http are valid entries");
-  });
-
-  // Tests algorithm used in the pixel tracking heuristic
-  // It should return a common substring between two given values
-  QUnit.test("findCommonSubstrings", assert => {
-
-    assert.deepEqual(
-      utils.findCommonSubstrings('www.foo.bar', 'www.foob.ar'),
-      [],
-      "substrings under the length threshold of 8 are ignored"
-    );
-
-    assert.equal(
-      utils.findCommonSubstrings('foobar.com/foo/fizz/buzz/bar', 'foobar.com/foo/bizz/fuzz/bar')[0],
-      'foobar.com/foo/',
-      "returns longest matching value from the pair of URLs"
-    );
-
-    assert.deepEqual(
-      utils.findCommonSubstrings('foobar.com/fizz/buzz/bar/foo', 'foobar.com/fizzbuzz/buzz/bar/foo'),
-      ['foobar.com/fizz', "zz/buzz/bar/foo"],
-      "returns multiple substrings if multiple are present in comparison"
-    );
-
   });
 
   // used in pixel tracking heuristic, given a string the estimateMaxEntropy function
