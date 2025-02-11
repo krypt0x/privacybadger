@@ -48,6 +48,8 @@ function Badger(from_qunit) {
       manifestJson.background.persistent === false);
   }());
 
+  self.firstPartyDomainPotentiallyRequired = testCookiesFirstPartyDomain();
+
   self.widgetList = [];
   let widgetListPromise = widgetLoader.loadWidgetsFromFile(
     "data/socialwidgets.json").catch(console.error);
@@ -135,6 +137,30 @@ function Badger(from_qunit) {
     }
   }
 
+  /**
+   * Checks for availability of firstPartyDomain chrome.cookies API parameter.
+   * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/cookies/getAll#Parameters
+   *
+   * firstPartyDomain is required when privacy.websites.firstPartyIsolate is enabled,
+   * and is in Firefox since Firefox 59. (firstPartyIsolate is in Firefox since 58).
+   *
+   * We don't care whether firstPartyIsolate is enabled, but rather whether
+   * firstPartyDomain is supported. Assuming firstPartyDomain is supported,
+   * setting it to null in chrome.cookies.getAll() produces the same result
+   * regardless of the state of firstPartyIsolate.
+   *
+   * firstPartyDomain is not currently supported in Chrome.
+   */
+  function testCookiesFirstPartyDomain() {
+    try {
+      chrome.cookies.getAll({
+        firstPartyDomain: null
+      }, function () {});
+    } catch (ex) {
+      return false;
+    }
+    return true;
+  }
 } /* end of Badger constructor */
 
 Badger.prototype = {
@@ -626,7 +652,7 @@ Badger.prototype = {
     let response, data;
 
     try {
-      response = await fetch(constants.PBCONFIG_REMOTE_URL);
+      response = await fetch(constants.PBCONFIG_REMOTE_URL, { cache: "no-store" });
     } catch (err) {
       console.error("Problem fetching pbconfig:", err);
       throw new Error("Failed to fetch remote pbconfig");
@@ -768,7 +794,6 @@ Badger.prototype = {
     showExpandedTrackingSection: false,
     showIntroPage: true,
     showNonTrackingDomains: false,
-    socialWidgetReplacementEnabled: true,
     widgetReplacementExceptions: [],
     widgetSiteAllowlist: {},
   },
@@ -845,6 +870,7 @@ Badger.prototype = {
         "migrationLevel",
         "preventWebRTCIPLeak",
         "showTrackingDomains",
+        "socialWidgetReplacementEnabled",
         "webRTCIPProtection",
       ].forEach(item => {
         if (settings.hasItem(item)) { settings.deleteItem(item); }

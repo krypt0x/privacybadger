@@ -320,7 +320,7 @@
         "description": "Intro page paragraph heading."
     },
     "intro_learns_paragraph": {
-        "message": "Privacy Badger automatisch entdeckt Tracker aufgrund ihres Verhaltens.",
+        "message": "Privacy Badger entdeckt Tracker automatisch anhand ihres Verhaltens.",
         "description": "Intro page paragraph."
     },
     "intro_not_an_adblocker_paragraph2": {
@@ -490,10 +490,6 @@
     "options_widget_replacement_desc": {
         "message": "Beim Blocken von sozialen Schaltflächen und anderen potentiell nützlichen (Video-, Audio-, Kommentar-)Widgets kann Privacy Badger diese mit Platzhaltern ersetzen, die durch Anklicken aktiviert werden können.",
         "description": "Introduction to the Widget Replacement tab on the options page"
-    },
-    "options_social_widgets_checkbox": {
-        "message": "Ersetzen von Widgets aktivieren",
-        "description": "Checkbox label on the Widget Replacement tab"
     },
     "options_widget_exceptions_header": {
         "message": "Ausnahmen für Widgets",

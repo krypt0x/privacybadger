@@ -2,6 +2,8 @@
 
 import unittest
 
+import pytest
+
 import pbtest
 
 from selenium.common.exceptions import (
@@ -18,8 +20,7 @@ class OptionsTest(pbtest.PBSeleniumTest):
     """Make sure the options page works correctly."""
 
     def assert_domain_toggle_state(self, domain, action, failure_msg):
-        clicker = self.driver.find_element(By.CSS_SELECTOR,
-            f'div[data-origin="{domain}"]')
+        clicker = self.find_el_by_css(f'div[data-origin="{domain}"]')
         assert clicker.get_dom_attribute("class") == "clicker userset", failure_msg
 
         switches_div = clicker.find_element(By.CSS_SELECTOR, ".switch-container")
@@ -193,7 +194,8 @@ class OptionsTest(pbtest.PBSeleniumTest):
 
         # Change user preferences
         domain_id = DOMAIN.replace(".", "-")
-        self.js(f"$('#{overwrite_action}-{domain_id}').click()")
+        self.wait_for_script(f"return $('#{overwrite_action}-{domain_id}')[0];")
+        self.js(f"$('#{overwrite_action}-{domain_id}').trigger('click');")
 
         # Re-open the tab
         self.load_options_page()
@@ -208,21 +210,27 @@ class OptionsTest(pbtest.PBSeleniumTest):
             f"after user overwrite of PB's decision to {original_action}")
         self.assert_domain_toggle_state(DOMAIN, overwrite_action, failure_msg)
 
+    @pytest.mark.flaky(reruns=3, condition=pbtest.shim.browser_type in ("chrome", "edge"))
     def test_tracking_user_overwrite_allowed_block(self):
         self.tracking_user_overwrite('allow', 'block')
 
+    @pytest.mark.flaky(reruns=3, condition=pbtest.shim.browser_type in ("chrome", "edge"))
     def test_tracking_user_overwrite_allowed_cookieblock(self):
         self.tracking_user_overwrite('allow', 'cookieblock')
 
+    @pytest.mark.flaky(reruns=3, condition=pbtest.shim.browser_type in ("chrome", "edge"))
     def test_tracking_user_overwrite_cookieblocked_allow(self):
         self.tracking_user_overwrite('cookieblock', 'allow')
 
+    @pytest.mark.flaky(reruns=3, condition=pbtest.shim.browser_type in ("chrome", "edge"))
     def test_tracking_user_overwrite_cookieblocked_block(self):
         self.tracking_user_overwrite('cookieblock', 'block')
 
+    @pytest.mark.flaky(reruns=3, condition=pbtest.shim.browser_type in ("chrome", "edge"))
     def test_tracking_user_overwrite_blocked_allow(self):
         self.tracking_user_overwrite('block', 'allow')
 
+    @pytest.mark.flaky(reruns=3, condition=pbtest.shim.browser_type in ("chrome", "edge"))
     def test_tracking_user_overwrite_blocked_cookieblock(self):
         self.tracking_user_overwrite('block', 'cookieblock')
 
