@@ -301,7 +301,6 @@ button.cta-button:hover, a.cta-button:hover {
     float: right;
 }
 #pbInstructions, #special-browser-page, #disabled-site-message, .toggle-header-title, #first-run-page {
-    color: #505050;
     font-size: 16px;
     margin: 0;
 }
@@ -552,6 +551,11 @@ a.overlay-close:hover {
 }
 .ui-icon.ui-icon-caret-d, .ui-icon.ui-icon-caret-u {
     font-size: 18px;
+}
+#cta-icon.ui-icon-star {
+   margin-bottom: 2px;
+   font-size: 18px;
+   color: #F6C324 !important;
 }
 
 @media screen and (max-width: 400px){

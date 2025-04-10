@@ -51,6 +51,10 @@
         "message": "Rapportér ødelagt websted",
         "description": "Button in the popup and title of the error reporting form overlay."
     },
+    "popup_review_pb": {
+        "message": "Enjoying Privacy Badger? Leave a review!",
+        "description": "A link in the popup footer shown 30% of the time instead of 'Donate to EFF'."
+    },
     "version": {
         "message": "version $VERSION_STRING$",
         "description": "Version text in the popup footer. For example, \"version 2018.8.1\".",
@@ -397,7 +401,41 @@
     },
     "options_title": {
         "message": "Privacy Badger Indstillinger",
-        "description": ""
+        "description": "Page title and heading text of options page"
+    },
+    "disabled_sites": {
+        "message": "Deaktiverede Steder",
+        "description": "Options page tab heading"
+    },
+    "options_disable_tip_title": {
+        "message": "How to disable Privacy Badger without leaving the site",
+        "description": "Title of tip container on Disabled Sites tab"
+    },
+    "options_disable_tip_alt": {
+        "message": "First, click on Privacy Badger's icon in your browser toolbar. Then, click the \"$DISABLE_FOR_SITE$\" button.",
+        "description": "Alt text for image inside tip container on Disabled Sites tab",
+        "placeholders": {
+            "disable_for_site": {
+                "content": "$1",
+                "example": "Disable for this site"
+            }
+        }
+    },
+    "disabled_for_these_domains": {
+        "message": "Privacy Badger is disabled on the following sites. This means that Privacy Badger will not block anything when you visit the sites listed here, and it will not send the Do Not Track or Global Privacy Control signals.",
+        "description": "Intro text on the Disabled Sites options page tab"
+    },
+    "add_domain_button": {
+        "message": "Add site",
+        "description": "Button on the Disabled Sites options page tab"
+    },
+    "remove_button": {
+        "message": "Fjern valgte",
+        "description": "Button on the Disabled Sites options page tab"
+    },
+    "invalid_domain": {
+        "message": "Tilføj venligst et gyldigt domæne eller URL",
+        "description": "Error text for the form on the Disabled Sites options page tab"
     },
     "options_general_settings": {
         "message": "Generelle Indstillinger",
@@ -433,7 +471,7 @@
     },
     "options_disable_floc": {
         "message": "Disable Google's \"Privacy Sandbox\" ad tracking",
-        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2023/09/how-turn-googles-privacy-sandbox-ad-tracking-and-why-you-should"
+        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2024/07/why-privacy-badger-opts-you-out-googles-privacy-sandbox"
     },
     "options_advanced_settings": {
         "message": "Advanced",
@@ -459,30 +497,6 @@
         "message": "At aktivere læring i Private/Inkognito-vinduer kan efterlade spor af din private browsinghistorik på din computer. Som standard vil Privacy Badger blokere sporinger den allerede kender til i Private/Inkognito-vinduer, men den vil ikke lære om nye sporinger. Du vil muligvis slå denne indsilling til hvis du browser meget med Private/Inkognito-vinduer.",
         "description": "Tooltip in general settings."
     },
-    "disabled_sites": {
-        "message": "Deaktiverede Steder",
-        "description": "Options page tab heading"
-    },
-    "disabled_for_these_domains": {
-        "message": "Privacy Badger is disabled on the following sites. This means that Privacy Badger will not block anything when you visit the sites listed here, and it will not send the Do Not Track or Global Privacy Control signals.",
-        "description": "Intro text on the Disabled Sites options page tab"
-    },
-    "allowlist_domain_input_placeholder": {
-        "message": "fx www.example.com, *.example.net, example.org",
-        "description": "Placeholder for a text input under the Disabled Sites tab on the options page"
-    },
-    "add_domain_button": {
-        "message": "Add site",
-        "description": "Button on the Disabled Sites options page tab"
-    },
-    "remove_button": {
-        "message": "Fjern valgte",
-        "description": "Button on the Disabled Sites options page tab"
-    },
-    "invalid_domain": {
-        "message": "Tilføj venligst et gyldigt domæne eller URL",
-        "description": "Error text for the form on the Disabled Sites options page tab"
-    },
     "options_widget_replacement_tab": {
         "message": "Kontroludskiftning",
         "description": "Options page tab heading"
@@ -496,7 +510,7 @@
         "description": "Header text on the Widget Replacement tab"
     },
     "options_hide_social_widgets": {
-        "message": "Udskift ikke følgende ting:",
+        "message": "Block but don't replace the following widgets:",
         "description": "Label for a form on the Widget Replacement tab"
     },
     "options_widget_site_exceptions_header": {

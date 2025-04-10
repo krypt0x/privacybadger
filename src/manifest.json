@@ -1,5 +1,5 @@
 {
-  "version": "2025.1.29",
+  "version": "2025.3.27",
   "author": {
     "email": "eff.software.projects@gmail.com"
   },
@@ -16,13 +16,13 @@
   "permissions": [
     "<all_urls>",
     "alarms",
+    "cookies",
+    "privacy",
+    "storage",
     "tabs",
     "webNavigation",
     "webRequest",
-    "webRequestBlocking",
-    "storage",
-    "cookies",
-    "privacy"
+    "webRequestBlocking"
   ],
   "background": {
     "page": "background.html"

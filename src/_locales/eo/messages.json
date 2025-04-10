@@ -51,6 +51,10 @@
         "message": "Raporti probleman retejon",
         "description": "Button in the popup and title of the error reporting form overlay."
     },
+    "popup_review_pb": {
+        "message": "Ĉu vi ŝatas Privatan Melon? Recenzu ĝin!",
+        "description": "A link in the popup footer shown 30% of the time instead of 'Donate to EFF'."
+    },
     "version": {
         "message": "versio $VERSION_STRING$",
         "description": "Version text in the popup footer. For example, \"version 2018.8.1\".",
@@ -397,7 +401,41 @@
     },
     "options_title": {
         "message": "Agordoj pri Privata Melo",
-        "description": ""
+        "description": "Page title and heading text of options page"
+    },
+    "disabled_sites": {
+        "message": "Neblokataj retejoj",
+        "description": "Options page tab heading"
+    },
+    "options_disable_tip_title": {
+        "message": "Kiel malaktivigi Privatan Melon sen forlasi la retejon",
+        "description": "Title of tip container on Disabled Sites tab"
+    },
+    "options_disable_tip_alt": {
+        "message": "Unue alklaku la bildsimbolon de Privata Melo sur ilarstrio de via retumilo. Sekve alklaku la butonon “$DISABLE_FOR_SITE$”.",
+        "description": "Alt text for image inside tip container on Disabled Sites tab",
+        "placeholders": {
+            "disable_for_site": {
+                "content": "$1",
+                "example": "Disable for this site"
+            }
+        }
+    },
+    "disabled_for_these_domains": {
+        "message": "Privata Melo estas malaktivigita por la subaj nomregnoj. Tio ĉi signifas, ke Privata Melo blokos nenion, kiam vi vizitos la jenajn retejojn kaj ne sendos al ili la signalojn “Global Privacy Control” kaj “Ne Spuri Min” (DNT).",
+        "description": "Intro text on the Disabled Sites options page tab"
+    },
+    "add_domain_button": {
+        "message": "Aldoni retejon",
+        "description": "Button on the Disabled Sites options page tab"
+    },
+    "remove_button": {
+        "message": "Forigi elektitajn",
+        "description": "Button on the Disabled Sites options page tab"
+    },
+    "invalid_domain": {
+        "message": "Bonvolu aldoni ĝustan nomregnon aŭ URL-n",
+        "description": "Error text for the form on the Disabled Sites options page tab"
     },
     "options_general_settings": {
         "message": "Ĝeneralaj agordoj",
@@ -433,7 +471,7 @@
     },
     "options_disable_floc": {
         "message": "Malaktivigi reklam-spurilon de Google «Privacy Sandbox»",
-        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2023/09/how-turn-googles-privacy-sandbox-ad-tracking-and-why-you-should"
+        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2024/07/why-privacy-badger-opts-you-out-googles-privacy-sandbox"
     },
     "options_advanced_settings": {
         "message": "Spertulaj",
@@ -459,30 +497,6 @@
         "message": "Aktivigo de lernado en privataj fenestroj povas resti spurojn de historio de via privata retumado en via komputilo. Implicite Privata Melo blokos jam-konatajn spurilojn en privataj langetoj, tamen ne lernos pri novaj spuriloj. Vi povas aktivigi tiun ĉi agordon, se vi multe retumas en privataj fenestroj.",
         "description": "Tooltip in general settings."
     },
-    "disabled_sites": {
-        "message": "Neblokataj retejoj",
-        "description": "Options page tab heading"
-    },
-    "disabled_for_these_domains": {
-        "message": "Privata Melo estas malaktivigita por la subaj nomregnoj. Tio ĉi signifas, ke Privata Melo blokos nenion, kiam vi vizitos la jenajn retejojn kaj ne sendos al ili la signalojn “Global Privacy Control” kaj “Ne Spuri Min” (DNT).",
-        "description": "Intro text on the Disabled Sites options page tab"
-    },
-    "allowlist_domain_input_placeholder": {
-        "message": "ekz. www.example.com, *.example.net, example.org",
-        "description": "Placeholder for a text input under the Disabled Sites tab on the options page"
-    },
-    "add_domain_button": {
-        "message": "Aldoni retejon",
-        "description": "Button on the Disabled Sites options page tab"
-    },
-    "remove_button": {
-        "message": "Forigi elektitajn",
-        "description": "Button on the Disabled Sites options page tab"
-    },
-    "invalid_domain": {
-        "message": "Bonvolu aldoni ĝustan nomregnon aŭ URL-n",
-        "description": "Error text for the form on the Disabled Sites options page tab"
-    },
     "options_widget_replacement_tab": {
         "message": "Anstataŭigi ret‑aplikaĵetojn",
         "description": "Options page tab heading"
@@ -496,7 +510,7 @@
         "description": "Header text on the Widget Replacement tab"
     },
     "options_hide_social_widgets": {
-        "message": "Ne anstataŭigi la jenajn ret‑aplikaĵetojn:",
+        "message": "Bloki, sed ne anstataŭigi la jenajn ret-aplikaĵetojn:",
         "description": "Label for a form on the Widget Replacement tab"
     },
     "options_widget_site_exceptions_header": {

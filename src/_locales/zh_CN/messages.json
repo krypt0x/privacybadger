@@ -51,6 +51,10 @@
         "message": "报告显示异常的网站",
         "description": "Button in the popup and title of the error reporting form overlay."
     },
+    "popup_review_pb": {
+        "message": "喜欢隐私獾？留言评论吧！",
+        "description": "A link in the popup footer shown 30% of the time instead of 'Donate to EFF'."
+    },
     "version": {
         "message": "版本 $VERSION_STRING$",
         "description": "Version text in the popup footer. For example, \"version 2018.8.1\".",
@@ -397,7 +401,41 @@
     },
     "options_title": {
         "message": "隐私獾设置",
-        "description": ""
+        "description": "Page title and heading text of options page"
+    },
+    "disabled_sites": {
+        "message": "已禁用的域名",
+        "description": "Options page tab heading"
+    },
+    "options_disable_tip_title": {
+        "message": "怎样不离开站点就停用隐私獾",
+        "description": "Title of tip container on Disabled Sites tab"
+    },
+    "options_disable_tip_alt": {
+        "message": "先单击浏览器工具栏中的隐私獾图标，再单击“$DISABLE_FOR_SITE$”按钮。",
+        "description": "Alt text for image inside tip container on Disabled Sites tab",
+        "placeholders": {
+            "disable_for_site": {
+                "content": "$1",
+                "example": "Disable for this site"
+            }
+        }
+    },
+    "disabled_for_these_domains": {
+        "message": "隐私獾已在以下网站上禁用。您浏览这些网站时，隐私獾不会屏蔽任何东西，也不会发送请勿追踪或全局隐私控制信号。",
+        "description": "Intro text on the Disabled Sites options page tab"
+    },
+    "add_domain_button": {
+        "message": "添加站点",
+        "description": "Button on the Disabled Sites options page tab"
+    },
+    "remove_button": {
+        "message": "删除所选",
+        "description": "Button on the Disabled Sites options page tab"
+    },
+    "invalid_domain": {
+        "message": "请添加一个有效的域名或者 URL",
+        "description": "Error text for the form on the Disabled Sites options page tab"
     },
     "options_general_settings": {
         "message": "通用设置",
@@ -433,7 +471,7 @@
     },
     "options_disable_floc": {
         "message": "停用 Google 的“隐私沙盒”广告跟踪",
-        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2023/09/how-turn-googles-privacy-sandbox-ad-tracking-and-why-you-should"
+        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2024/07/why-privacy-badger-opts-you-out-googles-privacy-sandbox"
     },
     "options_advanced_settings": {
         "message": "高级",
@@ -459,30 +497,6 @@
         "message": "启用“在隐私/无痕模式学习”后，你的隐私浏览历史可能会在电脑中留下痕迹。默认设置下，隐私獾会在隐私/无痕模式时屏蔽已知的追踪器，但不会学习新的追踪器。如果你平时经常使用隐私/无痕模式的话，您可能想要启用这个选项。",
         "description": "Tooltip in general settings."
     },
-    "disabled_sites": {
-        "message": "已禁用的域名",
-        "description": "Options page tab heading"
-    },
-    "disabled_for_these_domains": {
-        "message": "隐私獾已在以下网站上禁用。您浏览这些网站时，隐私獾不会屏蔽任何东西，也不会发送请勿追踪或全局隐私控制信号。",
-        "description": "Intro text on the Disabled Sites options page tab"
-    },
-    "allowlist_domain_input_placeholder": {
-        "message": "例如 www.example.com, *.example.net, example.org",
-        "description": "Placeholder for a text input under the Disabled Sites tab on the options page"
-    },
-    "add_domain_button": {
-        "message": "添加站点",
-        "description": "Button on the Disabled Sites options page tab"
-    },
-    "remove_button": {
-        "message": "删除所选",
-        "description": "Button on the Disabled Sites options page tab"
-    },
-    "invalid_domain": {
-        "message": "请添加一个有效的域名或者 URL",
-        "description": "Error text for the form on the Disabled Sites options page tab"
-    },
     "options_widget_replacement_tab": {
         "message": "小部件替换",
         "description": "Options page tab heading"
@@ -496,7 +510,7 @@
         "description": "Header text on the Widget Replacement tab"
     },
     "options_hide_social_widgets": {
-        "message": "不要替换以下小部件：",
+        "message": "拦截但不替换下列小部件：",
         "description": "Label for a form on the Widget Replacement tab"
     },
     "options_widget_site_exceptions_header": {

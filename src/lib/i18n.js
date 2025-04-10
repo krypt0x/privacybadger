@@ -24,7 +24,7 @@ const LOCALE = chrome.i18n.getMessage('@@ui_locale').replace('-', '_'),
   ON_POPUP = (document.location.pathname == "/skin/popup.html");
 
 function localizeFaqLink() {
-  const LOCALIZED_HOMEPAGE_LOCALES = ['de', 'es', 'fr', 'zh_CN'];
+  const LOCALIZED_HOMEPAGE_LOCALES = ['de', 'es', 'fr', 'sv', 'zh_CN'];
   if (ON_POPUP && LOCALIZED_HOMEPAGE_LOCALES.includes(LOCALE)) {
     // update FAQ link to point to localized version
     $('#help').prop('href', `https://privacybadger.org/${LOCALE.replace('_', '-').toLowerCase()}/#faq`);
@@ -78,12 +78,36 @@ function setTextDirection() {
     ['.btn-silo', '.btn-silo div', '#allowlist-form > div > div > div', '#widget-site-exceptions-select-div', '#widget-site-exceptions-remove-button'].forEach((selector) => {
       toggle_css_value(selector, "float", "left", "right");
     });
+
+    // Adjust tip on Disabled Sites tab
+    if (!window.navigator.userAgent.match(/OPR\//)) {
+      $('#disable-instructions-image').attr('src', "images/disable-instructions-rtl.png");
+    }
+    $('#tip-container').css({
+      borderLeft: 'unset',
+      borderRight: '4px solid #f06a0a'
+    });
+    $('#tip-icon').css({
+      marginRight: 'unset',
+      marginLeft: '8px'
+    });
   } else if (document.location.pathname == "/skin/firstRun.html") {
     $('#pin-nudge').css({
       right: 'unset',
       left: '15px'
     });
-    $('#pin-image').attr("src", "images/pinning-instructions-rtl.png");
+    if (window.navigator.userAgent.match(/OPR\//)) {
+      $('#pin-nudge-tail').css({
+        right: 'unset',
+        left: '10px'
+      });
+    } else {
+      $('#pin-nudge-tail').css({
+        right: 'unset',
+        left: '85px'
+      });
+      $('#pin-image').attr("src", "images/pinning-instructions-rtl.png");
+    }
     $('#dismiss-nudge').css({
       float: 'left',
       right: 'unset',

@@ -38,6 +38,39 @@ const DOMAIN_TOOLTIP_CONF = {
   side: 'bottom',
 };
 
+/**
+ * Use weighted random selection to get the link to display at the bottom of the popup.
+ */
+function getLink() {
+  let linkRotation = [
+    {
+      url: constants.REVIEW_LINKS[constants.BROWSER] || constants.REVIEW_LINKS.chrome, // Default to Chrome if unknown
+      text: "popup_review_pb",
+      icon: "ui-icon-star",
+      odds: 0.3 // Odds of all links should add up to 1
+    },
+    {
+      url: "https://supporters.eff.org/donate/support-privacy-badger",
+      text: "donate_to_eff",
+      icon: "ui-icon-heart",
+      odds: 0.7
+    }
+  ];
+
+  let rand = Math.random();
+  let cumulative_odds = 0;
+
+  for (let link of linkRotation) {
+    cumulative_odds += (link.odds || 0);
+    if (rand < cumulative_odds) {
+      return link;
+    }
+  }
+
+  // Fallback in case of errors
+  return linkRotation[linkRotation.length - 1];
+}
+
 /* if they aint seen the comic*/
 function showNagMaybe() {
   var $nag = $("#instruction");
@@ -73,21 +106,9 @@ function showNagMaybe() {
       });
     });
     $("#intro-reminder-btn").on("click", function () {
-      // If there is a firstRun.html tab, switch to the tab.
-      // Otherwise, create a new tab
-      chrome.tabs.query({url: intro_page_url}, function (tabs) {
-        if (tabs.length == 0) {
-          chrome.tabs.create({
-            url: intro_page_url
-          });
-        } else {
-          chrome.tabs.update(tabs[0].id, {active: true}, function (tab) {
-            chrome.windows.update(tab.windowId, {focused: true});
-          });
-        }
-        _setSeenComic(() => {
-          window.close();
-        });
+      chrome.tabs.create({ url: intro_page_url });
+      _setSeenComic(() => {
+        window.close();
       });
     });
   }
@@ -147,9 +168,10 @@ function showNagMaybe() {
     _showLearningPrompt();
 
   } else if (!POPUP_DATA.settings.seenComic) {
-    chrome.tabs.query({active: true, currentWindow: true}, function (focusedTab) {
-      // Show the popup instruction if the active tab is not firstRun.html page
-      if (!focusedTab[0].url.startsWith(intro_page_url)) {
+    // if the user never engaged with the welcome page, show the reminder
+    // but only if the welcome page is no longer open
+    chrome.tabs.query({ url: intro_page_url }, function (tabs) {
+      if (!tabs.length) {
         _showNag();
       }
     });
@@ -257,6 +279,11 @@ function init() {
     overflow: 'visible',
     visibility: 'visible'
   });
+
+  let link = getLink();
+  $("#cta-link").attr("href", link.url);
+  $('#cta-text').text(chrome.i18n.getMessage(link.text));
+  $('#cta-icon').addClass(link.icon);
 
   window.POPUP_INITIALIZED = true;
 }
@@ -579,7 +606,7 @@ function refreshPopup() {
   if (POPUP_DATA.noTabData) {
     $('#blockedResourcesContainer').hide();
 
-    if (POPUP_DATA.fromWelcomePage) {
+    if (POPUP_DATA.showDisableButtonTip) {
       $('#first-run-page').show();
 
       // disable Disable/Report buttons
@@ -879,8 +906,10 @@ $(function () {
       tabUrl: tab.url
     }, (response) => {
       setPopupData(response);
-      if (tab.url == chrome.runtime.getURL('/skin/firstRun.html')) {
-        POPUP_DATA.fromWelcomePage = true;
+      if (POPUP_DATA.noTabData && tab.url && (
+        tab.url == chrome.runtime.getURL('/skin/firstRun.html') ||
+        tab.url.startsWith(chrome.runtime.getURL('/skin/options.html')))) {
+        POPUP_DATA.showDisableButtonTip = true;
       }
       refreshPopup();
       init();

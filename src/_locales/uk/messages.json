@@ -51,6 +51,10 @@
         "message": "Повідомити про пошкоджений сайт",
         "description": "Button in the popup and title of the error reporting form overlay."
     },
+    "popup_review_pb": {
+        "message": "Enjoying Privacy Badger? Leave a review!",
+        "description": "A link in the popup footer shown 30% of the time instead of 'Donate to EFF'."
+    },
     "version": {
         "message": "версія $VERSION_STRING$",
         "description": "Version text in the popup footer. For example, \"version 2018.8.1\".",
@@ -397,7 +401,41 @@
     },
     "options_title": {
         "message": "Налаштування Privacy Badger",
-        "description": ""
+        "description": "Page title and heading text of options page"
+    },
+    "disabled_sites": {
+        "message": "Вимкнені сайти",
+        "description": "Options page tab heading"
+    },
+    "options_disable_tip_title": {
+        "message": "How to disable Privacy Badger without leaving the site",
+        "description": "Title of tip container on Disabled Sites tab"
+    },
+    "options_disable_tip_alt": {
+        "message": "First, click on Privacy Badger's icon in your browser toolbar. Then, click the \"$DISABLE_FOR_SITE$\" button.",
+        "description": "Alt text for image inside tip container on Disabled Sites tab",
+        "placeholders": {
+            "disable_for_site": {
+                "content": "$1",
+                "example": "Disable for this site"
+            }
+        }
+    },
+    "disabled_for_these_domains": {
+        "message": "Privacy Badger вимкнений для зазначених нижче сайтів. Це означає, що при відвідуванні перелічених тут сайтів Privacy Badger нічого не блокуватиме, а також не відправлятиме сигнали \"Не стежити\" (Do Not Track) чи \"Глобальний контроль приватності\" (Global Privacy Control).",
+        "description": "Intro text on the Disabled Sites options page tab"
+    },
+    "add_domain_button": {
+        "message": "Add site",
+        "description": "Button on the Disabled Sites options page tab"
+    },
+    "remove_button": {
+        "message": "Вилучити обрані",
+        "description": "Button on the Disabled Sites options page tab"
+    },
+    "invalid_domain": {
+        "message": "Будь ласка, додайте дійсний домен чи URL-адресу",
+        "description": "Error text for the form on the Disabled Sites options page tab"
     },
     "options_general_settings": {
         "message": "Загальні налаштування",
@@ -433,7 +471,7 @@
     },
     "options_disable_floc": {
         "message": "Disable Google's \"Privacy Sandbox\" ad tracking",
-        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2023/09/how-turn-googles-privacy-sandbox-ad-tracking-and-why-you-should"
+        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2024/07/why-privacy-badger-opts-you-out-googles-privacy-sandbox"
     },
     "options_advanced_settings": {
         "message": "Розширені",
@@ -459,30 +497,6 @@
         "message": "Увімкнення навчання у приватних/анонімних вікнах може залишати сліди історії перегляду на комп'ютері. Типово, Privacy Badger буде блокувати відомі йому елементи стеження в приватних/анонімних вікнах, але не буде вивчати нові. Ймовірно, ви захочете увімкнути цю функцію, якщо багато часу проводите у приватному/анонімному перегляді.",
         "description": "Tooltip in general settings."
     },
-    "disabled_sites": {
-        "message": "Вимкнені сайти",
-        "description": "Options page tab heading"
-    },
-    "disabled_for_these_domains": {
-        "message": "Privacy Badger вимкнений для зазначених нижче сайтів. Це означає, що при відвідуванні перелічених тут сайтів Privacy Badger нічого не блокуватиме, а також не відправлятиме сигнали \"Не стежити\" (Do Not Track) чи \"Глобальний контроль приватності\" (Global Privacy Control).",
-        "description": "Intro text on the Disabled Sites options page tab"
-    },
-    "allowlist_domain_input_placeholder": {
-        "message": "наприклад, www.example.com, *.example.net, example.org",
-        "description": "Placeholder for a text input under the Disabled Sites tab on the options page"
-    },
-    "add_domain_button": {
-        "message": "Add site",
-        "description": "Button on the Disabled Sites options page tab"
-    },
-    "remove_button": {
-        "message": "Вилучити обрані",
-        "description": "Button on the Disabled Sites options page tab"
-    },
-    "invalid_domain": {
-        "message": "Будь ласка, додайте дійсний домен чи URL-адресу",
-        "description": "Error text for the form on the Disabled Sites options page tab"
-    },
     "options_widget_replacement_tab": {
         "message": "Заміна віджетів",
         "description": "Options page tab heading"
@@ -496,7 +510,7 @@
         "description": "Header text on the Widget Replacement tab"
     },
     "options_hide_social_widgets": {
-        "message": "Не замінювати такі віджети:",
+        "message": "Block but don't replace the following widgets:",
         "description": "Label for a form on the Widget Replacement tab"
     },
     "options_widget_site_exceptions_header": {

@@ -53,9 +53,6 @@ function Badger(from_qunit) {
   self.widgetList = [];
   let widgetListPromise = widgetLoader.loadWidgetsFromFile(
     "data/socialwidgets.json").catch(console.error);
-  widgetListPromise.then(widgets => {
-    self.widgetList = widgets;
-  });
 
   self.storage = new BadgerPen(onStorageReady);
 
@@ -80,8 +77,9 @@ function Badger(from_qunit) {
     self.setPrivacyOverrides();
 
     // kick off async initialization steps
-    let pbconfigPromise = self.initPbconfig().catch(console.error),
-      tabDataPromise = self.tabData.initialize().catch(console.error);
+    let pbconfigPromise = self.initPbconfig().catch(console.error);
+
+    self.tabData.initialize().catch(console.error);
 
     // async load known CNAME domain aliases (but don't wait on them)
     self.initializeCnames().catch(console.error);
@@ -97,18 +95,9 @@ function Badger(from_qunit) {
       chrome.browserAction.setBadgeTextColor({ color: "#fff" });
     }
 
-    // Show icon as page action for all tabs that already exist
-    chrome.tabs.query({}, function (tabs) {
-      for (let i = 0; i < tabs.length; i++) {
-        let tab = tabs[i];
-        self.updateIcon(tab.id, tab.url);
-      }
-    });
-
     // wait for async functions (seed data, yellowlist, ...) to resolve
     await widgetListPromise;
     await seedDataPromise;
-    await tabDataPromise;
 
     if (self.isFirstRun || self.isUpdate || !self.getPrivateSettings().getItem('doneLoadingSeed')) {
       // block all widget domains
@@ -120,8 +109,8 @@ function Badger(from_qunit) {
     }
 
     log("Initialization complete");
-    console.log("Privacy Badger is ready to rock!");
     self.INITIALIZED = true;
+    window.DEBUG = false;
 
     if (self.criticalError == "Privacy Badger failed to initialize") {
       delete self.criticalError;
@@ -791,6 +780,7 @@ Badger.prototype = {
     seenComic: false,
     sendDNTSignal: true,
     showCounter: true,
+    showDisabledSitesTip: true,
     showExpandedTrackingSection: false,
     showIntroPage: true,
     showNonTrackingDomains: false,
@@ -996,9 +986,15 @@ Badger.prototype = {
     let sitePatterns = this.getSettings().getItem("disabledSites") || [];
 
     for (let pattern of sitePatterns) {
-      if (pattern.startsWith("*") && host.endsWith(pattern.slice(1))) {
-        return false;
-      } else if (pattern === host) {
+      // domains now always match subdomains
+      // TODO clean up user data and remove wildcard handling
+      if (pattern.startsWith('*')) {
+        pattern = pattern.slice(1);
+        if (pattern.startsWith('.')) {
+          pattern = pattern.slice(1);
+        }
+      }
+      if (pattern === host || host.endsWith('.' + pattern)) {
         return false;
       }
     }

@@ -51,6 +51,10 @@
         "message": "Relatar site com problemas",
         "description": "Button in the popup and title of the error reporting form overlay."
     },
+    "popup_review_pb": {
+        "message": "Gostando do Privacy Badger? Deixe sua avaliação!",
+        "description": "A link in the popup footer shown 30% of the time instead of 'Donate to EFF'."
+    },
     "version": {
         "message": "versão $VERSION_STRING$",
         "description": "Version text in the popup footer. For example, \"version 2018.8.1\".",
@@ -364,7 +368,7 @@
         "description": "Shown at the bottom of the intro page."
     },
     "intro_pin_nudge": {
-        "message": "First, $START_SPAN_TAG$pin Privacy Badger to your toolbar$END_SPAN_TAG$ for easy access to the \"$DISABLE_FOR_SITE$\" button.",
+        "message": "Primeiro $START_SPAN_TAG$fixar Privacy Badger na sua barra de ferramentas$END_SPAN_TAG$ para facilitar o acesso ao \"$DISABLE_FOR_SITE$\".",
         "description": "Part of a Chrome-only overlay on the intro page",
         "placeholders": {
             "start_span_tag": {
@@ -397,7 +401,41 @@
     },
     "options_title": {
         "message": "Opções do Privacy Badger",
-        "description": ""
+        "description": "Page title and heading text of options page"
+    },
+    "disabled_sites": {
+        "message": "Sites desativados",
+        "description": "Options page tab heading"
+    },
+    "options_disable_tip_title": {
+        "message": "Como desativar o Privacy Badger sem sair do site",
+        "description": "Title of tip container on Disabled Sites tab"
+    },
+    "options_disable_tip_alt": {
+        "message": "Primeiro, clique no ícone do Privacy Badger na barra de ferramentas do navegador. Em seguida, clique no botão \"$DISABLE_FOR_SITE$\".",
+        "description": "Alt text for image inside tip container on Disabled Sites tab",
+        "placeholders": {
+            "disable_for_site": {
+                "content": "$1",
+                "example": "Disable for this site"
+            }
+        }
+    },
+    "disabled_for_these_domains": {
+        "message": "O Privacy Badger está desativado nos sites a seguir. Isso significa que o Privacy Badger não bloqueará nada quando você acessar os sites listados aqui e não enviará os sinais \"Não rastrear\" nem \"Global Privacy Control\".",
+        "description": "Intro text on the Disabled Sites options page tab"
+    },
+    "add_domain_button": {
+        "message": "Adicionar site",
+        "description": "Button on the Disabled Sites options page tab"
+    },
+    "remove_button": {
+        "message": "Remover selecionado",
+        "description": "Button on the Disabled Sites options page tab"
+    },
+    "invalid_domain": {
+        "message": "Adicione um URL ou domínio válido",
+        "description": "Error text for the form on the Disabled Sites options page tab"
     },
     "options_general_settings": {
         "message": "Configurações gerais",
@@ -433,7 +471,7 @@
     },
     "options_disable_floc": {
         "message": "Desative o rastreamento de anúncios \"Privacy Sandbox\" do Google",
-        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2023/09/how-turn-googles-privacy-sandbox-ad-tracking-and-why-you-should"
+        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2024/07/why-privacy-badger-opts-you-out-googles-privacy-sandbox"
     },
     "options_advanced_settings": {
         "message": "Avançado",
@@ -459,30 +497,6 @@
         "message": "Ativar o aprendizado em janelas privadas/anônimas pode deixar rastros do seu histórico privado de navegação em seu computador. Por padrão, o Privacy Badger bloqueará rastreadores já conhecidos em janelas privadas/anônimas, mas não aprenderá sobre novos rastreadores. Você talvez queira ativar esta opção se grande parte da sua navegação ocorrer em janelas privadas/anônimas.",
         "description": "Tooltip in general settings."
     },
-    "disabled_sites": {
-        "message": "Sites desativados",
-        "description": "Options page tab heading"
-    },
-    "disabled_for_these_domains": {
-        "message": "O Privacy Badger está desativado nos sites a seguir. Isso significa que o Privacy Badger não bloqueará nada quando você acessar os sites listados aqui e não enviará os sinais \"Não rastrear\" nem \"Global Privacy Control\".",
-        "description": "Intro text on the Disabled Sites options page tab"
-    },
-    "allowlist_domain_input_placeholder": {
-        "message": "ex.: www.example.com, *.example.net, example.org",
-        "description": "Placeholder for a text input under the Disabled Sites tab on the options page"
-    },
-    "add_domain_button": {
-        "message": "Adicionar site",
-        "description": "Button on the Disabled Sites options page tab"
-    },
-    "remove_button": {
-        "message": "Remover selecionado",
-        "description": "Button on the Disabled Sites options page tab"
-    },
-    "invalid_domain": {
-        "message": "Adicione um URL ou domínio válido",
-        "description": "Error text for the form on the Disabled Sites options page tab"
-    },
     "options_widget_replacement_tab": {
         "message": "Substituição de widgets",
         "description": "Options page tab heading"
@@ -496,7 +510,7 @@
         "description": "Header text on the Widget Replacement tab"
     },
     "options_hide_social_widgets": {
-        "message": "Não substituir os seguintes widgets:",
+        "message": "Bloqueie, mas não substitua os seguintes widgets:",
         "description": "Label for a form on the Widget Replacement tab"
     },
     "options_widget_site_exceptions_header": {

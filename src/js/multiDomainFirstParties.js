@@ -749,6 +749,7 @@ let multiDomainFirstPartiesArray = [
     "baidu.com",
 
     "hao123.com",
+    "paddlepaddle.org.cn",
     "tieba.com",
 
     "iq.com",
@@ -924,7 +925,7 @@ let multiDomainFirstPartiesArray = [
     "gcsurplus.ca",
     "letstalktransportation.ca",
   ],
-  ["canadiantire.ca", "marks.com", "sportchek.com", "triangle.com"],
+  ["canadiantire.ca", "marks.com", "sportchek.com", "sportchek.ca", "triangle.com"],
   [
     "canalplus.com",
 
@@ -2570,7 +2571,6 @@ let multiDomainFirstPartiesArray = [
   ["infor.pl", "gazetaprawna.pl", "forsal.pl", "dziennik.pl"],
   ["innogames.com", "elvenar.com", "forgeofempires.com", "grepolis.com", "innogamescdn.com"],
   ["intercom.com", "intercom.io", "intercomassets.com", "intercomcdn.com"],
-  ["interia.pl", "pomponik.pl", "smaker.pl", "iplsc.com"],
   ["itmedia.co.jp", "itmedia.jp"],
   [
     "iu.edu",
@@ -4060,6 +4060,18 @@ let multiDomainFirstPartiesArray = [
   ],
   ["plex.tv", "plex.direct"],
   ["pokemon-gl.com", "pokemon.com"],
+  [
+    "polsatnews.pl",
+
+    "rmf24.pl",
+
+    "interia.pl",
+    "pomponik.pl",
+    "smaker.pl",
+    "terazgotuje.pl",
+
+    "iplsc.com"
+  ],
   ["pornhub.com", "phncdn.com"],
   ["postepay.it", "poste.it"],
   ["postimees.ee", "city24.ee", "city24.lv", "pmo.ee"],
@@ -4208,6 +4220,7 @@ let multiDomainFirstPartiesArray = [
 
     "aitangyou.com",
     "cdntips.com",
+    "cnb.cool",
     "dnspod.cn",
     "dnspod.com",
     "extqq.com",
@@ -4227,9 +4240,12 @@ let multiDomainFirstPartiesArray = [
     "tenpay.com",
     "ugdtimg.com",
     "url.cn",
+    "webnovel.com",
     "wechat.com",
     "wegame.com",
     "weiyun.com",
+
+    "cdn-go.cn"
   ],
   [
     "rai.it",

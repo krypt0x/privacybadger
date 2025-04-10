@@ -145,7 +145,7 @@ class Shim:
 
     @property
     def wants_xvfb(self):
-        if self.on_travis or bool(int(os.environ.get('ENABLE_XVFB', 0))):
+        if self.on_github_actions or bool(int(os.environ.get('ENABLE_XVFB', 0))):
             try:
                 Xvfb
             except NameError:
@@ -155,8 +155,8 @@ class Shim:
         return False
 
     @property
-    def on_travis(self):
-        if "TRAVIS" in os.environ:
+    def on_github_actions(self):
+        if "GITHUB_ACTIONS" in os.environ:
             return True
         return False
 
@@ -227,6 +227,9 @@ class Shim:
                 # and disable cookie site isolation, as it breaks the cookie
                 # tracking detection test
                 opts.set_preference("network.cookie.cookieBehavior", 0)
+
+                # disable JSON viewer as it breaks parsing JSON pages
+                opts.set_preference("devtools.jsonview.enabled", False)
 
                 # to produce a trace-level geckodriver.log,
                 # remove the log_output argument to FirefoxService()
@@ -523,7 +526,6 @@ class PBSeleniumTest(unittest.TestCase):
     def disable_badger_on_site(self, url):
         self.load_url(self.options_url)
         self.wait_for_script("return window.OPTIONS_INITIALIZED")
-        self.find_el_by_css('a[href="#tab-allowlist"]').click()
         self.driver.find_element(By.ID, 'new-disabled-site-input').send_keys(url)
         self.driver.find_element(By.CSS_SELECTOR, '#add-disabled-site').click()
 

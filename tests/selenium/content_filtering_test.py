@@ -2,6 +2,8 @@
 
 import unittest
 
+import pytest
+
 import pbtest
 
 
@@ -108,6 +110,7 @@ class ContentFilteringTest(pbtest.PBSeleniumTest):
         self.load_url(self.FIXTURE_URL + '?alt3p')
         self.assert_load()
 
+    @pytest.mark.flaky(reruns=3, condition=pbtest.shim.browser_type == "edge")
     def test_blocking_fp_script_served_from_cookieblocked_cdn(self):
         self.cookieblock_domain("cdn.jsdelivr.net")
 
@@ -120,6 +123,7 @@ class ContentFilteringTest(pbtest.PBSeleniumTest):
 
         # enable local learning
         self.wait_for_script("return window.OPTIONS_INITIALIZED")
+        self.find_el_by_css('a[href="#tab-general-settings"]').click()
         self.find_el_by_css('#local-learning-checkbox').click()
 
         self.load_url(self.FIXTURE_URL + '?fingerprintjs')
@@ -213,7 +217,7 @@ class ContentFilteringTest(pbtest.PBSeleniumTest):
         self.disable_badger_on_site(self.FIXTURE_PARENT_DOMAIN)
 
         self.load_url(self.FIXTURE_URL)
-        self.assert_block()
+        self.assert_load()
 
     def test_disabling_on_site_wildcard(self):
         self.block_domain(self.THIRD_PARTY_DOMAIN)
@@ -245,6 +249,7 @@ class ContentFilteringTest(pbtest.PBSeleniumTest):
 
         self.load_url(self.options_url)
         self.wait_for_script("return window.OPTIONS_INITIALIZED")
+        self.find_el_by_css('a[href="#tab-general-settings"]').click()
         self.find_el_by_css('#check_dnt_policy_checkbox').click()
 
         self.load_url(self.FIXTURE_URL)
@@ -259,9 +264,11 @@ class ContentFilteringTest(pbtest.PBSeleniumTest):
 
         # toggle EFF's DNT policy checking
         self.wait_for_script("return window.OPTIONS_INITIALIZED")
+        self.find_el_by_css('a[href="#tab-general-settings"]').click()
         self.find_el_by_css('#check_dnt_policy_checkbox').click()
         self.driver.refresh()
         self.wait_for_script("return window.OPTIONS_INITIALIZED")
+        self.find_el_by_css('a[href="#tab-general-settings"]').click()
         self.find_el_by_css('#check_dnt_policy_checkbox').click()
 
         self.load_url(self.FIXTURE_URL)

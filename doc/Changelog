@@ -1,6 +1,26 @@
 Privacy Badger changelog
 ========================
 
+2025.3.27
+* Added an "Enjoying Privacy Badger? Leave a review!" link
+to the popup, shown sometimes instead of the "Donate to EFF" link
+* Switched the default options page tab to Disabled Sites
+* Added a "how to disable Privacy Badger without
+leaving the site you are on" tip to Disabled Sites
+* Improved the "pin Privacy Badger to the browser toolbar"
+instructions on the new user welcome page in Chrome
+* Fixed canvas fingerprinting detection in Firefox
+* Fixed various site breakages
+* Improved Russian and Swedish translations
+
+2025.3.3
+* Added tracking domain settings to admin policies. To learn more, visit
+https://github.com/EFForg/privacybadger/blob/master/doc/admin-deployment.md
+* Fixed failing to allow all requests on disabled sites in Chrome
+* Fixed another set of "Privacy Badger failed to initialize" errors in Firefox
+* Fixed various site breakages
+* Improved German and Hebrew translations
+
 2025.1.29
 Bug fix update to fix fetching the latest fixes from EFF's CDN
 

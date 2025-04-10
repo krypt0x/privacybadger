@@ -15,8 +15,12 @@
  * along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* globals badger:false */
+
 import { extractHostFromURL, getChromeInitiator } from "../lib/basedomain.js";
 
+import { log } from "./bootstrap.js";
+import incognito from "./incognito.js";
 import utils from "./utils.js";
 
 function TabData() {
@@ -120,38 +124,49 @@ TabData.prototype.initialize = function () {
 
       chrome.tabs.query({}, tabs => {
         for (let tab of tabs) {
+          let { id, url } = tab;
+
+          // mark incognito status
+          incognito.updateTabStatus(id, tab.incognito);
+
           // don't record on special browser pages
-          if (utils.isRestrictedUrl(tab.url)) {
+          if (utils.isRestrictedUrl(url)) {
             continue;
           }
 
+          // set HeuristicBlocker's [sic] tab URL and eTLD+1 domain data
+          badger.heuristicBlocking.initTabData(id, url);
+
+          // update icon to active when not disabled for site
+          badger.updateIcon(id, url);
+
           // if there is data in session storage, restore
-          if (oldTabData && utils.hasOwn(oldTabData, tab.id) &&
-            oldTabData[tab.id].frames[0] && (tab.url == oldTabData[tab.id].frames[0].url)) {
+          if (oldTabData && utils.hasOwn(oldTabData, id) &&
+            oldTabData[id].frames[0] && (url == oldTabData[id].frames[0].url)) {
 
-            self.set(tab.id, oldTabData[tab.id]);
+            self.set(id, oldTabData[id]);
 
-            self.tabIdsByInitiator[getChromeInitiator(tab.url)] = tab.id;
+            self.tabIdsByInitiator[getChromeInitiator(url)] = id;
 
             if (savedData.tempAllowlist) {
-              if (utils.hasOwn(savedData.tempAllowlist, tab.id)) {
-                self.tempAllowlist[tab.id] = [...savedData.tempAllowlist[tab.id]];
+              if (utils.hasOwn(savedData.tempAllowlist, id)) {
+                self.tempAllowlist[id] = [...savedData.tempAllowlist[id]];
               }
             }
             if (savedData.tempAllowedWidgets) {
-              if (utils.hasOwn(savedData.tempAllowedWidgets, tab.id)) {
-                self.tempAllowedWidgets[tab.id] = [...savedData.tempAllowedWidgets[tab.id]];
+              if (utils.hasOwn(savedData.tempAllowedWidgets, id)) {
+                self.tempAllowedWidgets[id] = [...savedData.tempAllowedWidgets[id]];
               }
             }
 
-            continue;
+          } else {
+            // no data to restore, make a new tab data entry
+            // TODO indicate that we don't have complete info for this tab?
+            self.recordFrame(id, 0, url);
           }
-
-          // no data to restore, make a new tab data entry
-          // TODO indicate that we don't have complete info for this tab?
-          self.recordFrame(tab.id, 0, tab.url);
         }
 
+        log("Initialized tab data");
         resolve();
       });
     });
@@ -165,6 +180,14 @@ TabData.prototype.initialize = function () {
  */
 TabData.prototype.restoreSession = function (callback) {
   if (!chrome.storage.session) {
+    log("No storage.session API");
+    return callback({});
+  }
+
+  // also noop if we just got installed
+  // also noop if not MV3 and persistent is not set to false
+  if (badger.isFirstRun || (badger.manifestVersion == 2 && !badger.isEventPage)) {
+    log("No need to read from storage.session");
     return callback({});
   }
 
@@ -174,7 +197,12 @@ TabData.prototype.restoreSession = function (callback) {
     'tempAllowedWidgets',
   ];
 
+  log("Reading from storage.session ...");
+  // TODO reading from session storage can hang for a long time in Firefox
+  // https://github.com/EFForg/privacybadger/issues/3036#issuecomment-2645926189
+  // TODO will need a workaround if we switch Firefox to MV3 or an event page
   chrome.storage.session.get(SESSION_STORAGE_KEYS, function (res) {
+    log("Done reading from storage.session");
     if (utils.isObject(res) && Object.keys(res).length) {
       // clean up
       chrome.storage.session.remove(SESSION_STORAGE_KEYS, function () {
@@ -205,6 +233,8 @@ TabData.prototype.saveSession = (function () {
   }
   // also noop if not MV3 and persistent is not set to false
   let manifestJson = chrome.runtime.getManifest();
+  // we duplicate manifest parsing here because this is an IIFE,
+  // and the badger object doesn't yet exist
   if (manifestJson.manifest_version == 2) {
     if (!utils.hasOwn(manifestJson.background, "persistent") || manifestJson.background.persistent !== false) {
       return function () {};

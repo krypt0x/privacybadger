@@ -32,7 +32,7 @@
         "description": "Shown in the popup for special browser pages such as the New Tab page and 'about:' pages."
     },
     "popup_first_run_header": {
-        "message": "Great job opening the popup!",
+        "message": "עבודה טובה בפתיחת החלון הקופץ!",
         "description": "Heading in the popup when opened from the intro page."
     },
     "popup_disabled_site_header": {
@@ -50,6 +50,10 @@
     "report_broken_site": {
         "message": "דווח על אתר שבור",
         "description": "Button in the popup and title of the error reporting form overlay."
+    },
+    "popup_review_pb": {
+        "message": "Enjoying Privacy Badger? Leave a review!",
+        "description": "A link in the popup footer shown 30% of the time instead of 'Donate to EFF'."
     },
     "version": {
         "message": "גרסה $VERSION_STRING$",
@@ -202,7 +206,7 @@
         "description": "Tooltip for the 'non_tracker' message."
     },
     "report_input_label": {
-        "message": "Briefly describe the problem:",
+        "message": "תאר בקצרה את הבעיה:",
         "description": "Label for the text input in the 'Report broken site' overlay."
     },
     "error_input": {
@@ -214,7 +218,7 @@
         "description": ""
     },
     "report_button": {
-        "message": "Send report",
+        "message": "שלח דוח",
         "description": "Button text."
     },
     "report_cancel": {
@@ -280,7 +284,7 @@
         }
     },
     "popup_info_youtube": {
-        "message": "Ads not blocked? YouTube not working? It's probably not because of Privacy Badger.",
+        "message": "פרסומות לא נחסמות? YouTube לא עובד? זה כנראה לא בגלל Privacy Badger.",
         "description": "Message in the popup when users visit YouTube.com"
     },
     "extension_error_text": {
@@ -332,7 +336,7 @@
         "description": "Image alt. text on a couple of \"scroll down\" arrow buttons on the intro page."
     },
     "intro_open_popup": {
-        "message": "Try opening Privacy Badger's popup",
+        "message": "נסה לפתוח את החלון הקופץ של Privacy Badger",
         "description": "Shown above an image of the Privacy Badger icon circled on the browser toolbar."
     },
     "intro_open_popup_alt": {
@@ -397,7 +401,41 @@
     },
     "options_title": {
         "message": "אפשרויות Privacy Badger",
-        "description": ""
+        "description": "Page title and heading text of options page"
+    },
+    "disabled_sites": {
+        "message": "אתרים מושבתים",
+        "description": "Options page tab heading"
+    },
+    "options_disable_tip_title": {
+        "message": "How to disable Privacy Badger without leaving the site",
+        "description": "Title of tip container on Disabled Sites tab"
+    },
+    "options_disable_tip_alt": {
+        "message": "First, click on Privacy Badger's icon in your browser toolbar. Then, click the \"$DISABLE_FOR_SITE$\" button.",
+        "description": "Alt text for image inside tip container on Disabled Sites tab",
+        "placeholders": {
+            "disable_for_site": {
+                "content": "$1",
+                "example": "Disable for this site"
+            }
+        }
+    },
+    "disabled_for_these_domains": {
+        "message": "Privacy Badger מושבת באתרים הבאים. זה אומר כי Privacy Badger לא יחסום שום דבר כאשר תבקר באתרים הכתובים למטה, והוא לא ישלח את האות אל תעקוב או את האות בקרה גלובלית של פרטיות.",
+        "description": "Intro text on the Disabled Sites options page tab"
+    },
+    "add_domain_button": {
+        "message": "הוסף אתר",
+        "description": "Button on the Disabled Sites options page tab"
+    },
+    "remove_button": {
+        "message": "הסר נבחרים",
+        "description": "Button on the Disabled Sites options page tab"
+    },
+    "invalid_domain": {
+        "message": "אנא הוסף תחום או כתובת תקפים",
+        "description": "Error text for the form on the Disabled Sites options page tab"
     },
     "options_general_settings": {
         "message": "הגדרות כלליות",
@@ -432,8 +470,8 @@
         "description": "(Chrome only) Checkbox label in general settings."
     },
     "options_disable_floc": {
-        "message": "Disable Google's \"Privacy Sandbox\" ad tracking",
-        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2023/09/how-turn-googles-privacy-sandbox-ad-tracking-and-why-you-should"
+        "message": "השבת את מעקב הפרסומות של ארגז חול הפרטיות של Google",
+        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2024/07/why-privacy-badger-opts-you-out-googles-privacy-sandbox"
     },
     "options_advanced_settings": {
         "message": "מתקדם",
@@ -459,30 +497,6 @@
         "message": "איפשור למידה בחלונות פרטיים או בחלונות עילום שם עלול להותיר עקבות של היסטוריה של גלישה פרטית. כברירת מחדל, Privacy Badger יחסום עוקבנים שהוא כבר יודע עליהם בחלונות פרטיים או בחלונות עילום שם, אבל הוא לא ילמד על עוקבנים חדשים. ייתכן שתרצה לאפשר אפשרות זו אם חלק גדול של הגלישה שלך מתרחש בחלונות פרטיים או בחלונות עילום שם.",
         "description": "Tooltip in general settings."
     },
-    "disabled_sites": {
-        "message": "אתרים מושבתים",
-        "description": "Options page tab heading"
-    },
-    "disabled_for_these_domains": {
-        "message": "Privacy Badger מושבת באתרים הבאים. זה אומר כי Privacy Badger לא יחסום שום דבר כאשר תבקר באתרים הכתובים למטה, והוא לא ישלח את האות אל תעקוב או את האות בקרה גלובלית של פרטיות.",
-        "description": "Intro text on the Disabled Sites options page tab"
-    },
-    "allowlist_domain_input_placeholder": {
-        "message": "לדוגמה www.example.com, *.example.net, example.org",
-        "description": "Placeholder for a text input under the Disabled Sites tab on the options page"
-    },
-    "add_domain_button": {
-        "message": "Add site",
-        "description": "Button on the Disabled Sites options page tab"
-    },
-    "remove_button": {
-        "message": "הסר נבחרים",
-        "description": "Button on the Disabled Sites options page tab"
-    },
-    "invalid_domain": {
-        "message": "אנא הוסף תחום או כתובת תקפים",
-        "description": "Error text for the form on the Disabled Sites options page tab"
-    },
     "options_widget_replacement_tab": {
         "message": "החלפת יישומונים",
         "description": "Options page tab heading"
@@ -496,7 +510,7 @@
         "description": "Header text on the Widget Replacement tab"
     },
     "options_hide_social_widgets": {
-        "message": "אל תחליף את היישומונים הבאים:",
+        "message": "Block but don't replace the following widgets:",
         "description": "Label for a form on the Widget Replacement tab"
     },
     "options_widget_site_exceptions_header": {

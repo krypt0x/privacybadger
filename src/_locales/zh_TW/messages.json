@@ -51,6 +51,10 @@
         "message": "回報網站問題",
         "description": "Button in the popup and title of the error reporting form overlay."
     },
+    "popup_review_pb": {
+        "message": "喜歡 Privacy Badger 嗎？留下評論吧！",
+        "description": "A link in the popup footer shown 30% of the time instead of 'Donate to EFF'."
+    },
     "version": {
         "message": "版本 $VERSION_STRING$",
         "description": "Version text in the popup footer. For example, \"version 2018.8.1\".",
@@ -397,7 +401,41 @@
     },
     "options_title": {
         "message": "Privacy Badger 設定",
-        "description": ""
+        "description": "Page title and heading text of options page"
+    },
+    "disabled_sites": {
+        "message": "已停用網站",
+        "description": "Options page tab heading"
+    },
+    "options_disable_tip_title": {
+        "message": "如何在不離開網站的情況下停用 Privacy Badger",
+        "description": "Title of tip container on Disabled Sites tab"
+    },
+    "options_disable_tip_alt": {
+        "message": "首先，點擊您瀏覽器工具列中的 Privacy Badger 圖示。然後點擊「$DISABLE_FOR_SITE$」按鈕。",
+        "description": "Alt text for image inside tip container on Disabled Sites tab",
+        "placeholders": {
+            "disable_for_site": {
+                "content": "$1",
+                "example": "Disable for this site"
+            }
+        }
+    },
+    "disabled_for_these_domains": {
+        "message": "Privacy Badger 已在下列網站中停用。這代表 Privacy Badger 將不會在您瀏覽它們時封鎖任何東西，也不會傳送「不要追蹤」或「全域隱私控制」信號。",
+        "description": "Intro text on the Disabled Sites options page tab"
+    },
+    "add_domain_button": {
+        "message": "新增網站",
+        "description": "Button on the Disabled Sites options page tab"
+    },
+    "remove_button": {
+        "message": "刪除所選網域",
+        "description": "Button on the Disabled Sites options page tab"
+    },
+    "invalid_domain": {
+        "message": "請新增有效的網域或網址",
+        "description": "Error text for the form on the Disabled Sites options page tab"
     },
     "options_general_settings": {
         "message": "一般設定",
@@ -433,7 +471,7 @@
     },
     "options_disable_floc": {
         "message": "停用 Google 的「隱私沙盒」廣告追蹤",
-        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2023/09/how-turn-googles-privacy-sandbox-ad-tracking-and-why-you-should"
+        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2024/07/why-privacy-badger-opts-you-out-googles-privacy-sandbox"
     },
     "options_advanced_settings": {
         "message": "進階",
@@ -459,30 +497,6 @@
         "message": "啟用在隱私／無痕式視窗中的學習可能會導致隱私瀏覽紀錄留在您的電腦上。預設情況下，Privacy Badger 會在隱私／無痕式視窗中封鎖已知的追蹤器，但是不會學習新的追蹤器。假如您的瀏覽大部份是在隱私／無痕式視窗中度過，您可能會想要啟用此選項。",
         "description": "Tooltip in general settings."
     },
-    "disabled_sites": {
-        "message": "已停用網站",
-        "description": "Options page tab heading"
-    },
-    "disabled_for_these_domains": {
-        "message": "Privacy Badger 已在下列網站中停用。這代表 Privacy Badger 將不會在您瀏覽它們時封鎖任何東西，也不會傳送「不要追蹤」或「全域隱私控制」信號。",
-        "description": "Intro text on the Disabled Sites options page tab"
-    },
-    "allowlist_domain_input_placeholder": {
-        "message": "範例：www.example.com, *.example.net, example.org",
-        "description": "Placeholder for a text input under the Disabled Sites tab on the options page"
-    },
-    "add_domain_button": {
-        "message": "新增網站",
-        "description": "Button on the Disabled Sites options page tab"
-    },
-    "remove_button": {
-        "message": "刪除所選網域",
-        "description": "Button on the Disabled Sites options page tab"
-    },
-    "invalid_domain": {
-        "message": "請新增有效的網域或網址",
-        "description": "Error text for the form on the Disabled Sites options page tab"
-    },
     "options_widget_replacement_tab": {
         "message": "小工具取代",
         "description": "Options page tab heading"
@@ -496,7 +510,7 @@
         "description": "Header text on the Widget Replacement tab"
     },
     "options_hide_social_widgets": {
-        "message": "不要取代下列小工具：",
+        "message": "封鎖但不取代以下小工具：",
         "description": "Label for a form on the Widget Replacement tab"
     },
     "options_widget_site_exceptions_header": {

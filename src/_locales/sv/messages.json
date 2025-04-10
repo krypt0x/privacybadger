@@ -51,6 +51,10 @@
         "message": "Rapportera bruten webbplats",
         "description": "Button in the popup and title of the error reporting form overlay."
     },
+    "popup_review_pb": {
+        "message": "Gillar du Privacy Badger? Lämna en recension!",
+        "description": "A link in the popup footer shown 30% of the time instead of 'Donate to EFF'."
+    },
     "version": {
         "message": "version $VERSION_STRING$",
         "description": "Version text in the popup footer. For example, \"version 2018.8.1\".",
@@ -308,7 +312,7 @@
         "description": "Intro page paragraph heading."
     },
     "intro_beyond_ads_paragraph": {
-        "message": "Privacy Badger skickar <a href='https://globalprivacycontrol.org/' target='_blank'>Global sekretesstyrningssignal</a>, för att välja bort datadelning och försäljning, och <a href='https://www.eff.org/issues/do-not-track' target='_blank'>Spåra inte-signal</a> för att tala om för företag att inte spåra dig.",
+        "message": "Privacy Badger skickar <a href='https://globalprivacycontrol.org/' target='_blank'>globala sekretesstyrningssignalen</a> för att välja bort datadelning och försäljning, och <a href='https://www.eff.org/issues/do-not-track' target='_blank'>spåra inte-signalen</a> för att tala om för företag att inte spåra dig.",
         "description": "Intro page paragraph"
     },
     "intro_beyond_ads_paragraph2": {
@@ -397,7 +401,41 @@
     },
     "options_title": {
         "message": "Privacy Badger-alternativ",
-        "description": ""
+        "description": "Page title and heading text of options page"
+    },
+    "disabled_sites": {
+        "message": "Inaktiverade webbplatser",
+        "description": "Options page tab heading"
+    },
+    "options_disable_tip_title": {
+        "message": "Hur man inaktiverar Privacy Badger utan att lämna webbplatsen",
+        "description": "Title of tip container on Disabled Sites tab"
+    },
+    "options_disable_tip_alt": {
+        "message": "Klicka först på Privacy Badgers ikon i webbläsarens verktygsfält. Klicka sedan på knappen \"$DISABLE_FOR_SITE$\".",
+        "description": "Alt text for image inside tip container on Disabled Sites tab",
+        "placeholders": {
+            "disable_for_site": {
+                "content": "$1",
+                "example": "Disable for this site"
+            }
+        }
+    },
+    "disabled_for_these_domains": {
+        "message": "Privacy Badger är inaktiverat på följande webbplatser. Detta innebär att Privacy Badger inte blockerar någonting när du besöker webbplatserna som listas här, och det kommer inte att skicka signalerna Spåra inte eller Global sekretesstyrning.",
+        "description": "Intro text on the Disabled Sites options page tab"
+    },
+    "add_domain_button": {
+        "message": "Lägg till webbplats",
+        "description": "Button on the Disabled Sites options page tab"
+    },
+    "remove_button": {
+        "message": "Ta bort valda",
+        "description": "Button on the Disabled Sites options page tab"
+    },
+    "invalid_domain": {
+        "message": "Lägg till en giltig domän eller webbadress",
+        "description": "Error text for the form on the Disabled Sites options page tab"
     },
     "options_general_settings": {
         "message": "Allmänna inställningar",
@@ -408,7 +446,7 @@
         "description": "Checkbox label in general settings."
     },
     "options_enable_dnt_checkbox": {
-        "message": "Skicka signalerna \"<a href='https://globalprivacycontrol.org/' target='_blank'>Global sekretesstyrning</a>\" och \"<a href='https://www.eff.org/issues/do-not-track' target='_blank'>Spåra inte</a>\" till webbplatser",
+        "message": "Skicka signalerna \"<a href='https://globalprivacycontrol.org/' target='_blank'>global sekretesstyrning</a>\" och \"<a href='https://www.eff.org/issues/do-not-track' target='_blank'>spåra inte</a>\" till webbplatser",
         "description": "Checkbox label for toggling GPC and DNT signals, found in general settings."
     },
     "options_dnt_policy_setting": {
@@ -433,7 +471,7 @@
     },
     "options_disable_floc": {
         "message": "Inaktivera Googles \"Privacy Sandbox\"-annonsspårning",
-        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2023/09/how-turn-googles-privacy-sandbox-ad-tracking-and-why-you-should"
+        "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2024/07/why-privacy-badger-opts-you-out-googles-privacy-sandbox"
     },
     "options_advanced_settings": {
         "message": "Avancerat",
@@ -459,30 +497,6 @@
         "message": "Aktivering av inlärning i privata-/inkognitofönster kan lämna spår av din privata surfhistorik på din dator. Som standard kommer Privacy Badger att blockera spårare som den redan känner till i privata-/inkognitofönster, men den kommer inte att lära sig om nya spårare. Du kan vilja aktivera denna inställning om du ofta använder privata-/inkognitofönster när du surfar.",
         "description": "Tooltip in general settings."
     },
-    "disabled_sites": {
-        "message": "Inaktiverade webbplatser",
-        "description": "Options page tab heading"
-    },
-    "disabled_for_these_domains": {
-        "message": "Privacy Badger är inaktiverat på följande webbplatser. Detta innebär att Privacy Badger inte blockerar någonting när du besöker webbplatserna som listas här, och det kommer inte att skicka signalerna Spåra inte eller Global sekretesstyrning.",
-        "description": "Intro text on the Disabled Sites options page tab"
-    },
-    "allowlist_domain_input_placeholder": {
-        "message": "t.ex. www.example.com, *.example.net, example.org",
-        "description": "Placeholder for a text input under the Disabled Sites tab on the options page"
-    },
-    "add_domain_button": {
-        "message": "Lägg till webbplats",
-        "description": "Button on the Disabled Sites options page tab"
-    },
-    "remove_button": {
-        "message": "Ta bort valda",
-        "description": "Button on the Disabled Sites options page tab"
-    },
-    "invalid_domain": {
-        "message": "Lägg till en giltig domän eller webbadress",
-        "description": "Error text for the form on the Disabled Sites options page tab"
-    },
     "options_widget_replacement_tab": {
         "message": "Gränssnittskomponentsersättning",
         "description": "Options page tab heading"
@@ -496,7 +510,7 @@
         "description": "Header text on the Widget Replacement tab"
     },
     "options_hide_social_widgets": {
-        "message": "Ersätt inte följande gränssnittskomponenter:",
+        "message": "Blockera men ersätt inte följande gränssnittskomponenter:",
         "description": "Label for a form on the Widget Replacement tab"
     },
     "options_widget_site_exceptions_header": {
