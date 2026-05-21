@@ -1,6 +1,6 @@
 Privacy Badger
 ==============
-Privacy Badger is a browser extension that automatically learns to block invisible trackers.
+Privacy Badger is a browser extension that automatically learns to block hidden trackers. Privacy Badger is made by the leading digital rights nonprofit [EFF](https://www.eff.org) to stop companies from spying on you.
 
 Privacy Badger sends the [Global Privacy Control](https://globalprivacycontrol.org/) signal to opt you out of data sharing and selling, and the [Do Not Track](https://www.eff.org/issues/do-not-track) signal to tell companies not to track you. If trackers ignore these signals, Privacy Badger will learn to block them.
 
@@ -8,7 +8,7 @@ Besides automatic tracker blocking, Privacy Badger comes with privacy features l
 
 To learn more, see [the FAQ on Privacy Badger's homepage](https://privacybadger.org/#faq).
 
-Privacy Badger is a project of the [Electronic Frontier Foundation](https://www.eff.org), and is governed by [EFF's Public Projects Code of Conduct](https://www.eff.org/pages/eppcode).
+Privacy Badger is governed by [EFF's Public Projects Code of Conduct](https://www.eff.org/pages/eppcode).
 
 ## Installing
 
@@ -17,7 +17,7 @@ To install Privacy Badger, visit the [Privacy Badger homepage](https://privacyba
 
 ## Contributing
 
-We're glad you want to help! Please see [our contributor guide](/CONTRIBUTING.md).
+We're glad you want to help! Please see [our contributor guide](/.github/CONTRIBUTING.md).
 
 
 ## Getting in touch

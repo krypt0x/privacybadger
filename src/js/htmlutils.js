@@ -15,8 +15,6 @@
  * along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-env browser, jquery */
-
 import { isIPv4, isIPv6, getBaseDomain } from "../lib/basedomain.js";
 
 import constants from "./constants.js";
@@ -53,6 +51,8 @@ let htmlUtils = {
         }
       }
     },
+    // Meet accessibility requirement that the tooltip stays open when a user hovers over it
+    interactive: true
   },
 
   /**
@@ -122,11 +122,14 @@ let htmlUtils = {
       allow: i18n.getMessage('domain_slider_allow_tooltip')
     };
 
+    let aria_label = i18n.getMessage('domain_slider_label', 'XXX'),
+      undo_arrow_tooltip = i18n.getMessage('feed_the_badger_title');
+
     return function (fqdn, action) {
       let id = fqdn.replace(/\./g, '-');
       return `
 <div class="switch-container ${action}">
-  <div class="switch-toggle switch-3 switch-candy">
+  <div class="switch-toggle switch-3 switch-candy" role="radiogroup" aria-label="${aria_label.replace('XXX', fqdn)}">
     <input id="block-${id}" name="${fqdn}" value="${constants.BLOCK}" type="radio" aria-label="${tooltips.block}" ${is_checked(constants.BLOCK, action)}>
     <label title="${tooltips.block}" class="tooltip" for="block-${id}"></label>
     <input id="cookieblock-${id}" name="${fqdn}" value="${constants.COOKIEBLOCK}" type="radio" aria-label="${tooltips.cookieblock}" ${is_checked(constants.COOKIEBLOCK, action)}>
@@ -135,6 +138,7 @@ let htmlUtils = {
     <label title="${tooltips.allow}" class="tooltip" for="allow-${id}"></label>
     <a></a>
   </div>
+  <a href="" class="honeybadgerPowered tooltip" title="${undo_arrow_tooltip}" aria-label="${undo_arrow_tooltip}"></a>
 </div>
       `.trim();
     };
@@ -146,11 +150,13 @@ let htmlUtils = {
    * @returns {String}
    */
   getDntIconHtml: (function () {
-    let dnt_icon_url = chrome.runtime.getURL('/icons/dnt-16.png');
+    let dnt_icon_url = chrome.runtime.getURL('/icons/dnt-16.png'),
+      dnt_aria_label = i18n.getMessage('dnt_tooltip');
+
     return function () {
       return `
       <div class="dnt-compliant">
-        <a target=_blank href="https://privacybadger.org/#-I-am-an-online-advertising-tracking-company.--How-do-I-stop-Privacy-Badger-from-blocking-me"><img src="${dnt_icon_url}"></a>
+        <a target=_blank href="https://privacybadger.org/#-I-am-an-online-advertising-tracking-company.--How-do-I-stop-Privacy-Badger-from-blocking-me" aria-label="${dnt_aria_label}"><img src="${dnt_icon_url}"></a>
       </div>
       `.trim();
     };
@@ -171,7 +177,7 @@ let htmlUtils = {
   getOriginHtml: (function () {
 
     const breakage_warning_tooltip = i18n.getMessage('breakage_warning_tooltip'),
-      undo_arrow_tooltip = i18n.getMessage('feed_the_badger_title');
+      remove_button_label = i18n.getMessage('remove_button');
 
     return function (fqdn, action, show_breakage_warning, show_breakage_note, blockedFpScripts) {
       action = escape_html(action);
@@ -201,7 +207,7 @@ let htmlUtils = {
 
       let shield_icon = '';
       if (blockedFpScripts) {
-        shield_icon = '<span class="ui-icon ui-icon-shield"></span>';
+        shield_icon = '<span class="ui-icon ui-icon-shield" aria-hidden="true"></span>';
       }
 
       // construct HTML for domain
@@ -209,13 +215,12 @@ let htmlUtils = {
 
       return `
 <div class="${classes.join(' ')}" data-origin="${fqdn}">
-  <div class="origin" role="heading" aria-level="4">
-    <span class="ui-icon ui-icon-alert tooltip breakage-warning" title="${breakage_warning_tooltip}"></span>
-    <span class="origin-inner tooltip" title="${domain_tooltip}">${dnt_html}${shield_icon}${fqdn}</span>
+  <div class="origin">
+    <span class="ui-icon ui-icon-alert tooltip breakage-warning" title="${breakage_warning_tooltip}" aria-label="${breakage_warning_tooltip}" role="img" tabindex="0"></span>
+    <span class="origin-inner tooltip" title="${domain_tooltip}" role="heading" aria-level="4" aria-label="${domain_tooltip}">${dnt_html}${shield_icon}${fqdn}</span>
   </div>
-  <a href="" class="removeOrigin">&#10006</a>
   ${htmlUtils.getToggleHtml(fqdn, action, blockedFpScripts)}
-  <a href="" class="honeybadgerPowered tooltip" title="${undo_arrow_tooltip}"></a>
+  <a href="" class="removeDomain" role="button" aria-label="${remove_button_label}">&#10006</a>
 </div>
       `.trim();
     };
@@ -246,6 +251,27 @@ let htmlUtils = {
     if (show_breakage_warning) {
       $clicker.addClass("show-breakage-warning");
     }
+  },
+
+  /**
+   * Make tooltips keyboard accessible
+   *
+   * @param {String} triggerSelector Selector of the focusable elements that should have a tooltip
+   * @param {Function} getTooltipOrigin Returns the element (DOM element or selector string) with a 'tooltip' class corresponding with the trigger element. Defaults to the trigger element itself.
+   */
+  triggerTooltipsOnFocus: (triggerSelector = '.tooltip', getTooltipOrigin = (trigger) => trigger) => {
+    $(triggerSelector).off('focus.tooltip').on('focus.tooltip', function() {
+      let target = $(getTooltipOrigin(this));
+      if (target.length) {
+        target.tooltipster('show');
+      }
+    });
+    $(triggerSelector).off('blur.tooltip').on('blur.tooltip', function() {
+      let target = $(getTooltipOrigin(this));
+      if (target.length) {
+        target.tooltipster('hide');
+      }
+    });
   },
 
   /**
@@ -333,5 +359,32 @@ let htmlUtils = {
 };
 
 htmlUtils.escape = escape_html;
+
+/*
+ * Code from focusable-selectors micro-library <https://github.com/KittyGiraudel/focusable-selectors/tree/main>
+ * Copyright (c) 2021 Kitty Giraudel
+ * Available under MIT license <https://github.com/KittyGiraudel/focusable-selectors/blob/main/LICENSE>
+ */
+const notInert = ':not([inert]):not([inert] *)';
+const notNegTabIndex = ':not([tabindex^="-"])';
+const notDisabled = ':not(:disabled)';
+htmlUtils.focusableSelectors = [
+  `a[href]${notInert}${notNegTabIndex}`,
+  `area[href]${notInert}${notNegTabIndex}`,
+  `input:not([type="hidden"]):not([type="radio"])${notInert}${notNegTabIndex}${notDisabled}`,
+  `input[type="radio"]${notInert}${notNegTabIndex}${notDisabled}`,
+  `select${notInert}${notNegTabIndex}${notDisabled}`,
+  `textarea${notInert}${notNegTabIndex}${notDisabled}`,
+  `button${notInert}${notNegTabIndex}${notDisabled}`,
+  `details${notInert} > summary:first-of-type${notNegTabIndex}`,
+  // Discard until Firefox supports `:has()`
+  // See: https://github.com/KittyGiraudel/focusable-selectors/issues/12
+  // `details:not(:has(> summary))${notInert}${notNegTabIndex}`,
+  `iframe${notInert}${notNegTabIndex}`,
+  `audio[controls]${notInert}${notNegTabIndex}`,
+  `video[controls]${notInert}${notNegTabIndex}`,
+  `[contenteditable]${notInert}${notNegTabIndex}`,
+  `[tabindex]${notInert}${notNegTabIndex}`,
+].join(',');
 
 export default htmlUtils;

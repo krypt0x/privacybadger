@@ -23,7 +23,12 @@ import { log } from "./bootstrap.js";
 import constants from "./constants.js";
 import utils from "./utils.js";
 
+/**
+ * @param {Array<String>} keys
+ * @param {Function} callback
+ */
 function getLocalStorage(keys, callback) {
+  /** @param {chrome.storage.LocalStorageArea} store */
   function _cb(store) {
     if (chrome.runtime.lastError) {
       console.error("Error reading from storage.local:",
@@ -47,13 +52,13 @@ let readFromStorageWithRetrying = (function () {
   let num_tries = 0;
 
   /**
-   * @param {Array} the list of keys to get from extension storage
+   * @param {Array<String>} keys - the list of keys to get from extension storage
    * @param {Function} callback
    */
   function _tryReading(keys, callback) {
     log("Trying to read from storage.local");
 
-    getLocalStorage(keys, function (store) {
+    getLocalStorage(keys, /** @param {?chrome.storage.LocalStorageArea} store */ function (store) {
       if (store) {
         log("Successfully read from storage.local");
         return callback(store);
@@ -83,6 +88,9 @@ function getManagedStorage(callback) {
   });
 }
 
+/**
+ * @param {chrome.storage.StorageArea} managedStore
+ */
 function ingestManagedStorage(managedStore) {
   let settings = {};
   for (let key in badger.defaultSettings) {
@@ -148,13 +156,11 @@ let pollForManagedStorage = (function () {
  * Privacy Badger's data objects in extension storage:
  *
  * https://github.com/EFForg/privacybadger/blob/master/doc/DESIGN-AND-ROADMAP.md#data-structures
+ *
+ * @param {Function} [callback]
  */
-function BadgerPen(callback) {
+function BadgerPen(callback = function () {}) {
   let self = this;
-
-  if (!callback) {
-    callback = function () {};
-  }
 
   // initialize from extension local storage
   readFromStorageWithRetrying(self.KEYS, function (store) {
@@ -316,19 +322,20 @@ BadgerPen.prototype = {
    * ignoring any rules for subdomains below or above it
    *
    * @param {(Object|String)} domain domain object from action_map
-   * @param {Boolean} [ignoreDNT] whether to ignore DNT status
+   * @param {Boolean} [ignore_dnt] whether to ignore DNT status
    * @returns {String} the presumed action for this FQDN
    */
-  getAction: function (domain, ignoreDNT) {
+  getAction: function (domain, ignore_dnt) {
     if (!badger.isCheckingDNTPolicyEnabled()) {
-      ignoreDNT = true;
+      ignore_dnt = true;
     }
 
     if (utils.isString(domain)) {
       domain = this.getStore('action_map').getItem(domain) || {};
     }
+
     if (domain.userAction) { return domain.userAction; }
-    if (domain.dnt && !ignoreDNT) { return constants.DNT; }
+    if (domain.dnt && !ignore_dnt) { return constants.DNT; }
     if (domain.heuristicAction) { return domain.heuristicAction; }
     return constants.NO_TRACKING;
   },
@@ -352,7 +359,7 @@ BadgerPen.prototype = {
    * For each added domain, sets it to be cookieblocked
    * if its parent domain is set to be blocked.
    *
-   * @param {Array} newDomains domains to use for the new yellowlist
+   * @param {Array<String>} newDomains domains to use for the new yellowlist
    */
   updateYellowlist: function (newDomains) {
     let self = this,
@@ -512,20 +519,21 @@ BadgerPen.prototype = {
    * Set up an action for a domain of the given action type in action_map
    *
    * @param {String} domain the domain to set the action for
-   * @param {String} action the action to take e.g. BLOCK || COOKIEBLOCK || DNT
+   * @param {String|Boolean} action the action to take e.g. BLOCK || COOKIEBLOCK || DNT
    * @param {String} action_type the type of action we are setting, one of "userAction", "heuristicAction", "dnt"
    *
    * @private
    */
   _setupDomainAction: function (domain, action, action_type) {
     let actionStore = this.getStore("action_map"),
-      actionObj = {};
+      actionObj;
 
     if (actionStore.hasItem(domain)) {
       actionObj = actionStore.getItem(domain);
     } else {
       actionObj = _newActionMapObject();
     }
+
     actionObj[action_type] = action;
 
     // avoid thousands of messages from loading seed/user data
@@ -602,16 +610,12 @@ BadgerPen.prototype = {
    * Forces a write of a Badger storage object's contents to extension storage.
    *
    * @param {?String} store_name storage object's name or null (sync all)
-   * @param {Function} callback
+   * @param {Function} [callback]
    */
-  forceSync: function (store_name, callback) {
+  forceSync: function (store_name, callback = function () {}) {
     let self = this,
       stores = [],
       num_done = 0;
-
-    if (!callback) {
-      callback = function () {};
-    }
 
     if (store_name) {
       if (!self.KEYS.includes(store_name)) {
@@ -660,11 +664,16 @@ BadgerPen.prototype = {
 
   /**
    * Helps update fp_scripts.
+   *
+   * @param {String} script_fqdn
+   * @param {Array<String>} script_paths one or more script path strings
    */
-  recordFingerprintingScript: function (script_fqdn, script_path) {
+  recordFingerprintingScript: function (script_fqdn, script_paths) {
     let fpStore = this.getStore('fp_scripts'),
       entry = fpStore.getItem(script_fqdn) || {};
-    entry[script_path] = 1;
+    for (let path of script_paths) {
+      entry[path] = 1;
+    }
     fpStore.setItem(script_fqdn, entry);
   }
 };
@@ -763,7 +772,7 @@ BadgerStorage.prototype = {
   },
 
   /**
-   * @returns {Array} this storage object's store keys
+   * @returns {Array<String>} this storage object's store keys
    */
   keys: function () {
     return Object.keys(this._store);
@@ -903,9 +912,8 @@ BadgerStorage.prototype = {
         if (!snitchItem) {
           continue;
         }
-        for (let script_path in mapData[script_fqdn]) {
-          badger.storage.recordFingerprintingScript(script_fqdn, script_path);
-        }
+        badger.storage.recordFingerprintingScript(script_fqdn,
+          Object.keys(mapData[script_fqdn]));
       }
     }
   },
@@ -913,7 +921,7 @@ BadgerStorage.prototype = {
   /**
    * @param {String} name The event to notify subscribers for
    * @param {String} key The storage key being created/updated/deleted
-   * @param {*} val The new value being assigned to the key
+   * @param {*} [val] The new value being assigned to the key
    */
   notify: function (name, key, val) {
     let self = this;
@@ -954,7 +962,7 @@ BadgerStorage.prototype = {
 
   /**
    * @param {String} name The event to clear subscriptions for
-   * @returns {Array} The subscriptions removed for that event name
+   * @returns {Array<Function>} The subscriptions removed for that event name
    */
   unsubscribe: function (name) {
     let self = this,
@@ -967,10 +975,11 @@ BadgerStorage.prototype = {
 let _syncStorage = (function () {
   let debouncedFuncs = {};
 
-  function _sync(badgerStore, callback) {
-    if (!callback) {
-      callback = function () {};
-    }
+  /**
+   * @param {BadgerStorage} badgerStore
+   * @param {Function} [callback]
+   */
+  function _sync(badgerStore, callback = function () {}) {
     let obj = {};
     obj[badgerStore.name] = badgerStore._store;
     chrome.storage.local.set(obj, function () {

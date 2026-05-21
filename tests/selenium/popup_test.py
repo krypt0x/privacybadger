@@ -7,20 +7,38 @@ import pbtest
 
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
 class PopupTest(pbtest.PBSeleniumTest):
     """Make sure the popup works correctly."""
 
+    def wait_for_sliders(self, visible=True, timeout=5):
+        def invisibility_condition(dr):
+            """tests all are invisible"""
+            sliders = dr.find_elements(By.CSS_SELECTOR, "div.clicker")
+            for slider in sliders:
+                if slider.is_displayed():
+                    return False
+            return True
+
+        try:
+            if visible:
+                WebDriverWait(self.driver, timeout).until(
+                    EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "div.clicker")))
+            else:
+                WebDriverWait(self.driver, timeout).until(
+                    invisibility_condition)
+        except TimeoutException:
+            pass
+
     def wait_for_page_to_start_loading(self, url, timeout=20):
         """Wait until the title element is present. Use it to work around
         Firefox not updating self.driver.current_url fast enough."""
         try:
             WebDriverWait(self.driver, timeout).until(
-                expected_conditions.presence_of_element_located(
-                    (By.CSS_SELECTOR, "title")))
+                EC.presence_of_element_located((By.CSS_SELECTOR, "title")))
         except TimeoutException:
             # TODO debug info
             print("\n")
@@ -104,8 +122,7 @@ class PopupTest(pbtest.PBSeleniumTest):
         faq_selector = f"a[href='{EFF_URL[EFF_URL.index('#'):]}']"
         try:
             WebDriverWait(self.driver, pbtest.SEL_DEFAULT_WAIT_TIMEOUT).until(
-                expected_conditions.presence_of_element_located(
-                    (By.CSS_SELECTOR, faq_selector)))
+                EC.presence_of_element_located((By.CSS_SELECTOR, faq_selector)))
         except TimeoutException:
             self.fail(f"Unable to find expected element ({faq_selector}) on EFF website")
 
@@ -173,8 +190,7 @@ class PopupTest(pbtest.PBSeleniumTest):
 
         # reveal sliders
         self.driver.find_element(By.ID, 'expand-blocked-resources').click()
-        # TODO retry instead
-        time.sleep(1)
+        self.wait_for_sliders()
 
         # set the domain to user control
         # click input with JavaScript to avoid "Element ... is not clickable" /
@@ -300,8 +316,7 @@ class PopupTest(pbtest.PBSeleniumTest):
 
         # reveal sliders
         self.driver.find_element(By.ID, 'expand-blocked-resources').click()
-        # TODO retry instead
-        time.sleep(1)
+        self.wait_for_sliders()
 
         # verify there is no breakage warning
         breakage_icon = get_breakage_icon()
@@ -350,8 +365,7 @@ class PopupTest(pbtest.PBSeleniumTest):
 
         # reveal sliders
         self.driver.find_element(By.ID, 'expand-blocked-resources').click()
-        # TODO retry instead
-        time.sleep(1)
+        self.wait_for_sliders()
 
         # verify sliders are visible
         assert_visible(sliders)
@@ -371,8 +385,7 @@ class PopupTest(pbtest.PBSeleniumTest):
 
         # hide sliders
         self.driver.find_element(By.ID, 'collapse-blocked-resources').click()
-        # TODO retry instead
-        time.sleep(1)
+        self.wait_for_sliders(visible=False)
 
         # verify sliders are hidden
         assert_hidden(sliders)

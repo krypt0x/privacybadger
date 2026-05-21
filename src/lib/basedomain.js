@@ -89,7 +89,7 @@ function getBaseDomain(hostname) {
   }
 
   // search through PSL
-  let tld = 0,
+  let tld = 0, // eslint-disable-line no-useless-assignment
     prevDomains = [],
     cur_domain = hostname,
     next_dot = cur_domain.indexOf('.');
@@ -122,7 +122,7 @@ function getBaseDomain(hostname) {
  * Converts an IP address to a number. If given input is not a valid IP address
  * then 0 is returned.
  * @param {String} ip The IP address to convert
- * @returns {Integer}
+ * @returns {Number}
  */
 function ipAddressToNumber(ip) {
   // Separate IP address into octets, make sure there are four.

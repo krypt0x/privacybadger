@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - mv3-chrome
   pull_request:
   workflow_dispatch:
 
@@ -12,15 +13,14 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
       - name: Run ESLint
         run: |
-          # "--production" to skip installing devDependencies modules
-          npm ci --production || exit 1
+          npm ci --omit=dev || exit 1
           make lint
 
   selenium:
@@ -28,39 +28,38 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        job: [firefox, firefox-beta, firefox-nightly, firefox-esr, edge-beta]
+        job: [firefox, firefox-beta, firefox-nightly, firefox-esr, edge, edge-beta]
         include:
           - job: firefox
-            INFO: "Firefox"
             BROWSER: "firefox"
-            FIREFOX_VERSION: "latest"
+            BROWSER_VERSION: "latest"
           - job: firefox-beta
-            INFO: "Firefox Beta"
             BROWSER: "firefox"
-            FIREFOX_VERSION: "latest-beta"
+            BROWSER_VERSION: "latest-beta"
           - job: firefox-nightly
-            INFO: "Firefox Nightly"
             BROWSER: "firefox"
-            FIREFOX_VERSION: "latest-nightly"
+            BROWSER_VERSION: "latest-nightly"
           - job: firefox-esr
-            INFO: "Firefox ESR"
             BROWSER: "firefox"
-            FIREFOX_VERSION: "latest-esr"
+            BROWSER_VERSION: "latest-esr"
+          - job: edge
+            BROWSER: "microsoft-edge"
+            BROWSER_VERSION: "stable"
           - job: edge-beta
-            INFO: "Edge Beta"
             BROWSER: "microsoft-edge-beta"
-
+            BROWSER_VERSION: "beta"
     env:
-      INFO: ${{ matrix.INFO }}
       BROWSER: ${{ matrix.BROWSER }}
+    name:
+      ${{ matrix.job }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.13'
 
       - name: Install Python dependencies
         run: pip install -r tests/requirements.txt
@@ -69,26 +68,26 @@ jobs:
         if: ${{ matrix.BROWSER == 'firefox' }}
         uses: browser-actions/setup-firefox@v1
         with:
-          firefox-version: ${{ matrix.FIREFOX_VERSION }}
+          firefox-version: ${{ matrix.BROWSER_VERSION }}
 
       - name: Install Geckodriver
         if:  ${{ matrix.BROWSER == 'firefox' }}
-        uses: browser-actions/setup-geckodriver@latest
+        run: ./scripts/geckodriver.sh
 
       - name: Set up Edge
-        if: ${{ matrix.BROWSER == 'microsoft-edge-beta' }}
+        if:  ${{ contains(matrix.BROWSER, 'microsoft-edge') }}
         uses: browser-actions/setup-edge@v1
         with:
-          edge-version: beta
+          edge-version: ${{ matrix.BROWSER_VERSION }}
 
       - name: Install Edge WebDriver
-        if: ${{ matrix.BROWSER == 'microsoft-edge-beta' }}
-        run: ./scripts/edge_webdriver.sh
+        if:  ${{ contains(matrix.BROWSER, 'microsoft-edge') }}
+        run: ./scripts/edge_webdriver.sh "$BROWSER"
 
       - name: Install Xvfb
         run: sudo apt-get install -y xvfb
 
-      - name: Run Tests
+      - name: Run Selenium tests
         run: |
           type "$BROWSER" >/dev/null 2>&1 || {
             echo "$BROWSER seems to be missing!"

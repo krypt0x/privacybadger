@@ -10,6 +10,9 @@ crx:
 lint:
 	./node_modules/.bin/eslint .
 
+minimages:
+	npx @j9t/imagemin-guard@4.2.0
+
 updatepsl:
 	scripts/updatepsl.sh
 
@@ -27,20 +30,20 @@ updatecnames:
 
 upload:
 	# pbconfig
-	scp src/data/pbconfig.json $$PBCONFIG_UPLOAD_PATH
+	cp src/data/pbconfig.json ../privacybadger_assets/files/pbconfig.json
 	# DNT policy hashes (legacy)
 	$(eval HASHES_TMP := $(shell mktemp))
 	python -c 'import json,sys; print(json.dumps(json.load(sys.stdin)["dnt_policy_hashes"]))' < src/data/pbconfig.json > $(HASHES_TMP)
-	scp $(HASHES_TMP) $$DNT_POLICIES_UPLOAD_PATH
+	cp $(HASHES_TMP) ../privacybadger_assets/files/dnt-policies.json
 	rm $(HASHES_TMP)
 	# yellowlist (legacy)
 	$(eval YLIST_TMP := $(shell mktemp))
 	python -c 'import json,sys; print("\n".join(json.load(sys.stdin)["yellowlist"]))' < src/data/pbconfig.json > $(YLIST_TMP)
-	scp $(YLIST_TMP) $$YELLOWLIST_UPLOAD_PATH
+	cp $(YLIST_TMP) ../privacybadger_assets/files/cookieblocklist_new.txt
 	# yellowlist (very legacy)
 	$(eval OLD_YLIST_TMP := $(shell mktemp))
 	scripts/generate-legacy-yellowlist.sh $(YLIST_TMP) > $(OLD_YLIST_TMP)
-	scp $(OLD_YLIST_TMP) $$YELLOWLIST_LEGACY_UPLOAD_PATH
+	cp $(OLD_YLIST_TMP) ../privacybadger_assets/files/cookieblocklist.txt
 	rm $(OLD_YLIST_TMP)
 	rm $(YLIST_TMP)
 
@@ -50,18 +53,18 @@ tx:
 	scripts/fix_placeholders.py
 
 runch:
-	./node_modules/.bin/web-ext run --target chromium --arg="--disable-component-update" --start-url "chrome://extensions" -s src/
+	./node_modules/.bin/web-ext run --target chromium --arg="--disable-component-update" --arg="--disable-blink-features=AutomationControlled" --arg="--enable-features=AllowLegacyMV2Extensions" --start-url "chrome://extensions" -s src/
 
 runfa:
 	./node_modules/.bin/web-ext run -s src/ --target firefox-android --adb-bin $$ADB_BIN --android-device $$ANDROID_DEVICE_ID --firefox-apk org.mozilla.firefox --verbose
 
 runff:
-	./node_modules/.bin/web-ext run --devtools --start-url "about:debugging#/runtime/this-firefox" -s src/
+	./node_modules/.bin/web-ext run --start-url "about:debugging#/runtime/this-firefox" -s src/
 
 runfn:
-	./node_modules/.bin/web-ext run --devtools --start-url "about:debugging#/runtime/this-firefox" -s src/ -f nightly
+	./node_modules/.bin/web-ext run --start-url "about:debugging#/runtime/this-firefox" -s src/ -f nightly
 
 test:
 	BROWSER=chrome ENABLE_XVFB=1 pytest -s tests/
 
-.PHONY: crx lint updatepsl updateseed apply_effdntlist updategoogle updatecnames tx runch runfa runff runfn test
+.PHONY: crx lint minimages updatepsl updateseed apply_effdntlist updategoogle updatecnames tx runch runfa runff runfn test

@@ -3,18 +3,20 @@
   "version": "0.0.1",
   "description": "Developer tools for Privacy Badger.",
   "dependencies": {
-    "eslint": "~7.32.0"
+    "@eslint/eslintrc": "^3.3.5",
+    "@eslint/js": "^10.0.1",
+    "globals": "^17.4.0"
   },
   "devDependencies": {
-    "jquery": "3.7.0",
+    "jquery": "3.7.1",
     "jquery-smooth-scroll": "2.2.0",
     "jquery-ui": "1.13.2",
     "jquery-ui-iconfont": "2.3.2",
-    "qunit": "2.19.3",
+    "qunit": "2.24.3",
     "select2": "4.0.11",
     "sinon": "2.0.0",
     "tooltipster": "4.2.6",
-    "web-ext": "~8.5.0"
+    "web-ext": "^10.1.0"
   },
   "private": true
 }

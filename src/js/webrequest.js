@@ -34,9 +34,9 @@ import utils from "./utils.js";
 /**
  * This is where we block or replace requests with empty "surrogates".
  *
- * @param {Object} details webRequest request details object
+ * @param {chrome.webRequest.OnBeforeRequestDetails} details
  *
- * @returns {Object|undefined} Can cancel requests
+ * @returns {chrome.webRequest.BlockingResponse|undefined} Can cancel requests
  */
 function onBeforeRequest(details) {
   if (!badger.INITIALIZED) {
@@ -122,7 +122,7 @@ function onBeforeRequest(details) {
   }
 
   // TODO !from_current_tab requests shouldn't go through allowedOnTab()
-  let action = checkAction(tab_id, request_host, frame_id);
+  let action = checkAction(tab_id, tab_host, request_host, frame_id);
   if (!action) {
     return;
   }
@@ -174,7 +174,7 @@ function onBeforeRequest(details) {
     return;
   }
 
-  if ((type == 'script' || sw_request) && from_current_tab) {
+  if ((type == 'script' || type == 'stylesheet' || sw_request) && from_current_tab) {
     let surrogate;
 
     if (utils.hasOwn(surrogates.WIDGET_SURROGATES, request_host)) {
@@ -184,7 +184,7 @@ function onBeforeRequest(details) {
       }
 
     } else {
-      surrogate = surrogates.getSurrogateUri(url, request_host);
+      surrogate = surrogates.getSurrogateUri(url, request_host, (sw_request ? null : type));
     }
 
     if (surrogate) {
@@ -224,8 +224,8 @@ function onBeforeRequest(details) {
 /**
  * Generates a token for a given tab ID/frame ID/resource URL combination.
  *
- * @param {Integer} tab_id
- * @param {Integer} frame_id
+ * @param {Number} tab_id
+ * @param {Number} frame_id
  * @param {String} url
  *
  * @returns {String}
@@ -258,9 +258,9 @@ function getWarSecret(tab_id, frame_id, url) {
  * for a given tab ID/frame ID/resource URL combination,
  * and whether the full request URL contains this token.
  *
- * @param {Object} details webRequest request details object
+ * @param {chrome.webRequest.OnBeforeRequestDetails} details
  *
- * @returns {Object|undefined} Can cancel requests
+ * @returns {chrome.webRequest.BlockingResponse|undefined} Can cancel requests
  */
 function filterWarRequests(details) {
   if (!badger.INITIALIZED) {
@@ -290,9 +290,9 @@ function filterWarRequests(details) {
  * Blocks moz-extension CSP reports to mitigate
  * https://bugzilla.mozilla.org/show_bug.cgi?id=1267027
  *
- * @param {Object} details webRequest request details object
+ * @param {chrome.webRequest.OnBeforeRequestDetails} details
  *
- * @returns {Object|undefined} Can cancel requests
+ * @returns {chrome.webRequest.BlockingResponse|undefined} Can cancel requests
  */
 function blockMozCspReports(details) {
   let report;
@@ -316,9 +316,9 @@ function blockMozCspReports(details) {
  * link actions via some mix of capturing all events, window.open() with
  * document.write(), and meta refresh.
  *
- * @param {Object} details webRequest request details object
+ * @param {chrome.webRequest.OnBeforeRequestDetails} details
  *
- * @returns {Object|undefined} Can redirect requests
+ * @returns {chrome.webRequest.BlockingResponse|undefined} Can redirect requests
  */
 function bypassGoogleRedirects(details) {
   if (!badger.INITIALIZED) { return; }
@@ -345,9 +345,9 @@ function bypassGoogleRedirects(details) {
 /**
  * Blocks Google's /gen_204 requests.
  *
- * @param {Object} details webRequest request details object
+ * @param {chrome.webRequest.OnBeforeRequestDetails} details
  *
- * @returns {Object|undefined} Can cancel requests
+ * @returns {chrome.webRequest.BlockingResponse|undefined} Can cancel requests
  */
 function blockGoogleGen204s(details) {
   if (!badger.INITIALIZED) { return; }
@@ -372,8 +372,8 @@ function blockGoogleGen204s(details) {
  * Filters outgoing cookies and referer
  * Injects DNT
  *
- * @param {Object} details Event details
- * @returns {Object} Contains the modified headers
+ * @param {chrome.webRequest.WebRequestDetails} details
+ * @returns {Object|undefined} Contains the modified headers
  */
 function onBeforeSendHeaders(details) {
   if (!badger.INITIALIZED) {
@@ -424,7 +424,7 @@ function onBeforeSendHeaders(details) {
     return;
   }
 
-  let action = checkAction(tab_id, request_host, frame_id);
+  let action = checkAction(tab_id, tab_host, request_host, frame_id);
 
   if (action && from_current_tab) {
     badger.logThirdParty(tab_id, request_host, action);
@@ -478,9 +478,9 @@ function onBeforeSendHeaders(details) {
 /**
  * Filters incoming cookies out of the response header.
  *
- * @param {Object} details webRequest response details object
+ * @param {chrome.webRequest.WebRequestDetails} details
  *
- * @returns {Object} Contains the new response headers
+ * @returns {Object|undefined} Contains the new response headers
  */
 function onHeadersReceived(details) {
   if (!badger.INITIALIZED) {
@@ -518,7 +518,7 @@ function onHeadersReceived(details) {
     return;
   }
 
-  let action = checkAction(tab_id, response_host, details.frameId);
+  let action = checkAction(tab_id, tab_host, response_host, details.frameId);
   if (!action) {
     return;
   }
@@ -544,7 +544,7 @@ function onHeadersReceived(details) {
 /**
  * Event handler when a tab gets removed
  *
- * @param {Integer} tab_id ID of the tab
+ * @param {Number} tab_id ID of the tab
  */
 function onTabRemoved(tab_id) {
   setTimeout(function () {
@@ -556,8 +556,8 @@ function onTabRemoved(tab_id) {
  * Update internal db on tabs when a tab gets replaced
  * due to prerendering or instant search.
  *
- * @param {Integer} addedTabId The new tab id that replaces
- * @param {Integer} removedTabId The tab id that gets removed
+ * @param {Number} addedTabId The new tab id that replaces
+ * @param {Number} removedTabId The tab id that gets removed
  */
 function onTabReplaced(addedTabId, removedTabId) {
   if (!badger.INITIALIZED) {
@@ -571,6 +571,8 @@ function onTabReplaced(addedTabId, removedTabId) {
 /**
  * We don't always get a "main_frame" details object in onBeforeRequest,
  * so we need a fallback for (re)initializing tabData.
+ *
+ * @param {chrome.webNavigation.WebNavigationTransitionCallbackDetails} details
  */
 function onNavigate(details) {
   if (!badger.INITIALIZED) {
@@ -669,7 +671,7 @@ function hideBlockedFrame(tab_id, parent_frame_id, frame_url, frame_host) {
 /**
  * Record "supercookie" tracking
  *
- * @param {Integer} tab_id browser tab ID
+ * @param {Number} tab_id browser tab ID
  * @param {String} frame_host hostname of the frame with supercookie
  */
 function recordSupercookie(tab_id, frame_host) {
@@ -682,7 +684,7 @@ function recordSupercookie(tab_id, frame_host) {
   );
 
   // log for popup
-  let action = checkAction(tab_id, frame_host);
+  let action = checkAction(tab_id, page_host, frame_host);
   if (action) {
     badger.logThirdParty(tab_id, frame_host, action);
   }
@@ -691,7 +693,7 @@ function recordSupercookie(tab_id, frame_host) {
 /**
  * Record canvas fingerprinting
  *
- * @param {Integer} tab_id the tab ID
+ * @param {Number} tab_id the tab ID
  * @param {Object} msg specific fingerprinting data
  */
 function recordFingerprinting(tab_id, msg) {
@@ -705,6 +707,7 @@ function recordFingerprinting(tab_id, msg) {
   }
 
   let document_host = badger.tabData.getFrameData(tab_id).host,
+    // eslint-disable-next-line no-useless-assignment
     script_host = "", script_path = "";
 
   try {
@@ -762,7 +765,7 @@ function recordFingerprinting(tab_id, msg) {
             script_host, script_base, document_base);
 
           // log for popup
-          let action = checkAction(tab_id, script_host);
+          let action = checkAction(tab_id, document_host, script_host);
           if (action) {
             badger.logThirdParty(tab_id, script_host, action);
           }
@@ -771,7 +774,7 @@ function recordFingerprinting(tab_id, msg) {
           badger.storage.recordTrackingDetails(
             script_base, document_base, 'canvas');
           badger.storage.recordFingerprintingScript(
-            script_host, script_path);
+            script_host, [script_path]);
         }
       }
       // This is a canvas write
@@ -784,8 +787,8 @@ function recordFingerprinting(tab_id, msg) {
 /**
  * Cleans up tab-specific data.
  *
- * @param {Integer} tab_id the ID of the tab
- * @param {Boolean} is_reload whether the page is being reloaded
+ * @param {Number} tab_id the ID of the tab
+ * @param {Boolean} [is_reload] whether the page is being reloaded
  */
 function forgetTab(tab_id, is_reload) {
   badger.tabData.forget(tab_id, is_reload);
@@ -794,30 +797,58 @@ function forgetTab(tab_id, is_reload) {
 /**
  * Determines the action to take on a specific FQDN.
  *
- * @param {Integer} tabId The relevant tab
- * @param {String} requestHost The FQDN
- * @param {Integer} frameId The id of the frame
- * @returns {(String|Boolean)} false or the action to take
+ * @param {Number} tab_id
+ * @param {String} tab_host
+ * @param {String} request_host
+ * @param {Number} [frame_id]
+ *
+ * @returns {(String|Boolean)} the action constant or false (ignore)
  */
-function checkAction(tabId, requestHost, frameId) {
+function checkAction(tab_id, tab_host, request_host, frame_id) {
   // Ignore requests from temporarily unblocked widgets.
   // Someone clicked the widget, so let it load.
-  if (allowedOnTab(tabId, requestHost, frameId)) {
+  if (allowedOnTab(tab_id, request_host, frame_id)) {
     return false;
   }
 
   // Ignore requests from private domains.
-  if (isPrivateDomain(requestHost)) {
+  if (isPrivateDomain(request_host)) {
     return false;
   }
 
-  return badger.storage.getBestAction(requestHost);
+  // apply site-specific "ignore" overrides, if any
+  let sitefixes = badger.getPrivateSettings().getItem('sitefixes');
+  if (utils.hasOwn(sitefixes, tab_host)) {
+    if (utils.hasOwn(sitefixes[tab_host], 'ignore')) {
+      for (let pattern of sitefixes[tab_host].ignore) {
+        if (pattern === request_host || request_host.endsWith('.' + pattern)) {
+          return false;
+        }
+      }
+    }
+  }
+
+  let action = badger.storage.getBestAction(request_host);
+
+  // if this isn't a user-set action,
+  // apply site-specific "cookieblock" overrides, if any
+  if (utils.hasOwn(sitefixes, tab_host) && !constants.USER_ACTIONS.has(action)) {
+    if (utils.hasOwn(sitefixes[tab_host], 'yellowlist')) {
+      for (let pattern of sitefixes[tab_host].yellowlist) {
+        if (pattern === request_host || request_host.endsWith('.' + pattern)) {
+          return constants.COOKIEBLOCK;
+        }
+      }
+    }
+  }
+
+  return action;
 }
 
 /**
  * Provides the widget replacing content script with list of widgets to replace.
  *
- * @param {Integer} tab_id the ID of the tab we're replacing widgets in
+ * @param {Number} tab_id the ID of the tab we're replacing widgets in
  *
  * @returns {Object} dict containing the complete list of widgets
  * as well as a mapping to indicate which ones should be replaced
@@ -890,9 +921,7 @@ let getWidgetList = (function () {
         if (domain[0] == "*") {
           domain = domain.slice(1);
           // get all domains in tabData.trackers that end with this domain
-          let matches = trackerDomains.filter(fqdn => {
-            return fqdn.endsWith(domain);
-          });
+          let matches = trackerDomains.filter(fqdn => fqdn.endsWith(domain));
           // do we have any matches and are they all blocked?
           return matches.length && matches.every(fqdn => {
             const action = trackers[fqdn];
@@ -937,9 +966,9 @@ let getWidgetList = (function () {
  *   - 2a) Request is from a subframe whose FQDN matches an entry on the list
  *   - 2b) Same but subframe's FQDN ends with a wildcard entry
  *
- * @param {Integer} tab_id the ID of the tab to check
+ * @param {Number} tab_id the ID of the tab to check
  * @param {String} request_host the request FQDN to check
- * @param {Integer} frame_id the frame ID to check
+ * @param {Number} frame_id the frame ID to check
  *
  * @returns {Boolean} true if FQDN is on the temporary allow list
  */
@@ -985,7 +1014,8 @@ function allowedOnTab(tab_id, request_host, frame_id) {
 }
 
 /**
- * @returns {Array|Boolean} the list of associated domains or false
+ * @param {String} widget_name
+ * @returns {Array<String>|Boolean} the list of associated domains or false
  */
 function getWidgetDomains(widget_name) {
   let widgetData = badger.widgetList.find(
@@ -1109,7 +1139,7 @@ function getSurrogateWidget(name, data, frame_url) {
         "unblockDomains": ["www.youtube.com"],
         "type": 4
       },
-      directLinkUrl: `https://www.youtube.com/embed/${video_id}`
+      directLinkUrl: `https://www.youtube.com/watch?v=${video_id}`
     };
 
     return widget;
@@ -1129,28 +1159,23 @@ function dispatcher(request, sender, sendResponse) {
       // too much time elapsed for this to be a normal initialization,
       // give up to avoid an infinite loop
       badger.criticalError = "Privacy Badger failed to initialize";
-      // update badge
-      chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
-        if (tabs[0]) {
-          badger.updateBadge(tabs[0].id);
-        }
-      });
+      badger.updateBadge();
       // show error in popup
       if (request.type == "getPopupData") {
         return sendResponse({
           criticalError: badger.criticalError,
+          isAndroid: badger.isAndroid,
           noTabData: true,
           settings: { seenComic: true },
         });
       }
       return sendResponse();
-    } else {
-      setTimeout(function () {
-        dispatcher(request, sender, sendResponse);
-      }, 50);
-      // indicate this is an async response to chrome.runtime.onMessage
-      return true;
     }
+    setTimeout(function () {
+      dispatcher(request, sender, sendResponse);
+    }, 50);
+    // indicate this is an async response to chrome.runtime.onMessage
+    return true;
   }
 
   // messages from content scripts are to be treated with greater caution:
@@ -1187,7 +1212,7 @@ function dispatcher(request, sender, sendResponse) {
     ];
     if (KNOWN_CONTENT_SCRIPT_MESSAGES.includes(request.type)) {
       if (!sender.tab) {
-        console.error("Dropping malformed content script message %o from %o",
+        console.warn("Dropping malformed content script message %o from %o",
           request, sender);
         return sendResponse();
       }
@@ -1238,7 +1263,7 @@ function dispatcher(request, sender, sendResponse) {
       return sendResponse();
     }
 
-    let action = checkAction(sender.tab.id, frame_host);
+    let action = checkAction(sender.tab.id, tab_host, frame_host);
     sendResponse(action == constants.COOKIEBLOCK || action == constants.USER_COOKIEBLOCK);
 
     break;
@@ -1298,7 +1323,7 @@ function dispatcher(request, sender, sendResponse) {
     // fetch replacement button SVG image data
     utils.fetchResource(button_path, function (_, response) {
       return sendResponse('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(response));
-    }, "GET");
+    });
 
     // indicate this is an async response to chrome.runtime.onMessage
     return true;
@@ -1382,9 +1407,18 @@ function dispatcher(request, sender, sendResponse) {
   case "getPopupData": {
     let tab_id = request.tabId;
 
+    // if tab data isn't yet ready, retry up to a point
+    if (!badger.tabData.INITIALIZED && (Date.now() - badger.startTime) < 5000) {
+      setTimeout(function () {
+        dispatcher(request, sender, sendResponse);
+      }, 50);
+      return true; // async chrome.runtime.onMessage response
+    }
+
     if (!badger.tabData.has(tab_id)) {
       sendResponse({
         criticalError: badger.criticalError,
+        isAndroid: badger.isAndroid,
         noTabData: true,
         settings: { seenComic: true },
       });
@@ -1393,12 +1427,23 @@ function dispatcher(request, sender, sendResponse) {
 
     let tab_host = extractHostFromURL(request.tabUrl),
       trackers = badger.tabData.getTrackers(tab_id),
+      sitefixes = badger.getPrivateSettings().getItem("sitefixes")[tab_host],
+      siteYellowlist = sitefixes && sitefixes.yellowlist,
       cookieblocked = {};
 
     for (let fqdn in trackers) {
       // see if FQDN would be cookieblocked if not for user override
       if (badger.storage.wouldGetCookieblocked(fqdn)) {
         cookieblocked[fqdn] = true;
+        continue;
+      }
+      // also account for site-specific overrides
+      if (siteYellowlist) {
+        for (let pattern of siteYellowlist) {
+          if (pattern === fqdn || fqdn.endsWith('.' + pattern)) {
+            cookieblocked[fqdn] = true;
+          }
+        }
       }
     }
 
@@ -1408,6 +1453,7 @@ function dispatcher(request, sender, sendResponse) {
       criticalError: badger.criticalError,
       enabled: badger.isPrivacyBadgerEnabled(tab_host),
       errorText: badger.tabData._tabData[tab_id].errorText,
+      isAndroid: badger.isAndroid,
       isOnFirstParty: utils.firstPartyProtectionsEnabled(tab_host),
       noTabData: false,
       trackers,
@@ -1435,6 +1481,7 @@ function dispatcher(request, sender, sendResponse) {
 
     sendResponse({
       cookieblocked,
+      isAndroid: badger.isAndroid,
       trackers,
       settings: badger.getSettings().getItemClones(),
       widgets: badger.widgetList.map(widget => widget.name),
@@ -1547,6 +1594,17 @@ function dispatcher(request, sender, sendResponse) {
   // used by tests
   case "restoreSurrogates": {
     delete window.SURROGATES_DISABLED;
+    sendResponse();
+    break;
+  }
+
+  // used by tests
+  case "addSiteOverride": {
+    let sitefixes = badger.getPrivateSettings().getItem('sitefixes');
+    sitefixes[request.site_domain] = {
+      yellowlist: [ request.domain ]
+    };
+    badger.getPrivateSettings().setItem('sitefixes', sitefixes);
     sendResponse();
     break;
   }

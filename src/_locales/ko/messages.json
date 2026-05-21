@@ -4,8 +4,8 @@
         "description": "The name of this extension."
     },
     "description": {
-        "message": "Privacy Badger는 자동으로 보이지 않는 추적기를 차단하는 법을 학습합니다.",
-        "description": "Extension description sometimes used by extension stores. See also 'intro_welcome', 'share_base_message' and 'intro_learns' messages."
+        "message": "Automatically learns to block hidden trackers. Made by leading digital rights nonprofit EFF to stop companies from spying on you.",
+        "description": "Extension description used by browsers and extension store websites. LIMITED TO 132 CHARACTERS. See also 'intro_welcome', 'share_base_message' and 'intro_learns_paragraph' messages."
     },
     "canvas_fingerprinting": {
         "message": "canvas fingerprinting",
@@ -50,6 +50,10 @@
     "report_broken_site": {
         "message": "Report broken site",
         "description": "Button in the popup and title of the error reporting form overlay."
+    },
+    "popup_donate_to_eff": {
+        "message": "Donate to EFF—a nonprofit defending digital privacy",
+        "description": "A link in the popup footer."
     },
     "popup_review_pb": {
         "message": "Enjoying Privacy Badger? Leave a review!",
@@ -165,6 +169,16 @@
         "message": "이 도메인은 당신을 추적하지 않습니다.",
         "description": "Tooltip shown over an EFF's DNT policy-compliant domain name in the list of domains in the popup or under the Tracking Domains tab on the options page."
     },
+    "domain_slider_label": {
+        "message": "Settings for $DOMAIN$",
+        "description": "Screenreader-accessible label for domain sliders",
+        "placeholders": {
+            "domain": {
+                "content": "$1",
+                "example": "example.com"
+            }
+        }
+    },
     "domain_slider_block_tooltip": {
         "message": "Block entirely",
         "description": "Tooltip shown over the leftmost part of a domain slider. This is an action (\"click here to ...\"), not a status."
@@ -239,7 +253,7 @@
     },
     "share_title": {
         "message": "당신의 친구들에게 추천하세요.",
-        "description": "Title of the Share popup overlay."
+        "description": "Title of the Share overlay in the popup; also subheader above social sharing buttons on the intro page"
     },
     "share_tracker_header": {
         "message": "Privacy Badger가 $DOMAIN$에서 잠재적인 추적기를 $COUNT$개 차단했습니다:",
@@ -256,7 +270,7 @@
         }
     },
     "share_base_message": {
-        "message": "Privacy Badger (privacybadger.org)는 보이지 않는 추적기를 자동으로 차단하는 방법을 학습하는 브라우저 확장 기능입니다. Privacy Badger는 온라인에서 당신의 권리를 위해 싸우는 비영리 단체인 Electronic Frontier Foundation에서 만들어졌습니다.",
+        "message": "Privacy Badger (privacybadger.org) is a browser extension that automatically learns to block hidden trackers. Privacy Badger is made by the Electronic Frontier Foundation, a nonprofit that fights for your rights online.",
         "description": "The base message that is always included in the share message."
     },
     "copy_button_initial": {
@@ -288,19 +302,104 @@
         "description": "Message in the popup when users visit YouTube.com"
     },
     "extension_error_text": {
-        "message": "다음 오류에 대해 <a href='https://www.eff.org/privacybadger#faq-I-found-a-bug!-What-do-I-do-now?' target='_blank'>말씀해 주세요</a>:",
-        "description": "Shown in the popup when there is an extension error we want to encourage the user to tell us about."
+        "message": "다음 오류에 대해 $LINK_START$말씀해 주세요$LINK_END$:",
+        "description": "Shown in the popup when there is an extension error we want to encourage the user to tell us about.",
+        "placeholders": {
+            "link_start": {
+                "content": "$1",
+                "example": "<a href='http://example.com'>"
+            },
+            "link_end": {
+                "content": "</a>"
+            }
+        }
     },
     "firstRun_title": {
         "message": "Privacy Badger를 설치해 주셔서 감사합니다!",
-        "description": "Title and header of the intro page."
+        "description": "Title of intro page"
     },
-    "intro_by_eff": {
-        "message": "Electronic Frontier Foundation의 프로젝트입니다.",
-        "description": "Message in the header of the intro page."
+    "intro_eff_header": {
+        "message": "A privacy tool by $START_HTML$EFF$END_HTML$, a member-supported nonprofit",
+        "description": "Message in the header of intro page",
+        "placeholders": {
+            "start_html": {
+                "content": "$1",
+                "example": "<b>"
+            },
+            "end_html": {
+                "content": "$2",
+                "example": "</b>"
+            }
+        }
+    },
+    "intro_nag_header": {
+        "message": "Almost done!",
+        "description": "Intro page subheading in Chrome (also in macOS app for Safari)"
+    },
+    "intro_pin_nudge": {
+        "message": "$START_SPAN_TAG$Pin Privacy Badger to your toolbar$END_SPAN_TAG$ for easy access to the \"$DISABLE_FOR_SITE$\" button.",
+        "description": "Intro page paragraph in Chrome",
+        "placeholders": {
+            "start_span_tag": {
+                "content": "<b>"
+            },
+            "disable_for_site": {
+                "content": "$1",
+                "example": "Disable for this site"
+            },
+            "end_span_tag": {
+                "content": "</b>"
+            }
+        }
+    },
+    "intro_pin_instructions": {
+        "message": "To pin Privacy Badger's icon, click on the puzzle piece icon in your browser toolbar. Then, click on the pin icon next to Privacy Badger.",
+        "description": "Alt text for pinning instructions image on intro page in Chrome"
+    },
+    "intro_animation_button_stop": {
+        "message": "Stop animation",
+        "description": "Intro page button to stop the pinning instructions animation"
+    },
+    "intro_animation_button_play": {
+        "message": "Play animation",
+        "description": "Intro page button to play the pinning instructions animation"
+    },
+    "intro_disable_header": {
+        "message": "One tip before you enjoy better browsing",
+        "description": "Subheading on intro page for the section explaining the disable button in Firefox"
+    },
+    "intro_disable_button_context": {
+        "message": "Privacy Badger is all set to protect you from hidden trackers. But blocking trackers sometimes breaks websites.",
+        "description": "First paragraph of the disable button section of intro page"
+    },
+    "intro_disable_button": {
+        "message": "Privacy Badger가 페이지를 파손하고 있다고 생각되면 (예를 들어 비디오가 재생되지 않는 등) $START_HTML$‘$DISABLE_FOR_SITE$’ 버튼을 클릭하여 해당 사이트에 대한 Privacy Badger를 해제할 수 있습니다.$END_HTML$",
+        "description": "Disable button explainer on intro, options and popup pages",
+        "placeholders": {
+            "start_html": {
+                "content": "$1",
+                "example": "<b>"
+            },
+            "disable_for_site": {
+                "content": "$2",
+                "example": "Disable for this site"
+            },
+            "end_html": {
+                "content": "$3",
+                "example": "</b>"
+            }
+        }
+    },
+    "intro_features_header": {
+        "message": "Privacy Badger protects your browsing from trackers.",
+        "description": "Intro page header introducing Privacy Badger features section"
+    },
+    "intro_features_subheader": {
+        "message": "Learn how.",
+        "description": "Intro page subheader introducing Privacy Badger features section"
     },
     "intro_welcome": {
-        "message": "Privacy Badger는 자동으로 보이지 않는 추적기를 차단하는 방법을 배웁니다. 잠시 시간을 내서 어떻게 동작하는지 알아보세요.",
+        "message": "Privacy Badger automatically learns to block hidden trackers. Take a minute to see how.",
         "description": "Intro page welcome paragraph."
     },
     "intro_next_button": {
@@ -328,12 +427,8 @@
         "description": "Intro page paragraph."
     },
     "intro_not_an_adblocker_paragraph2": {
-        "message": "Invisible tracking happens in all sorts of ways; ads are just the visible tip of the iceberg. Privacy Badger doesn't block ads unless they happen to be tracking you.",
+        "message": "Hidden tracking happens in all sorts of ways; ads are just the visible tip of the iceberg. Privacy Badger doesn't block ads unless they happen to be tracking you.",
         "description": "Intro page paragraph"
-    },
-    "next_section": {
-        "message": "다음 섹션",
-        "description": "Image alt. text on a couple of \"scroll down\" arrow buttons on the intro page."
     },
     "intro_open_popup": {
         "message": "Try opening Privacy Badger's popup",
@@ -343,10 +438,6 @@
         "message": "Browser toolbar with the Privacy Badger icon circled",
         "description": "Alt text for toolbar icon image, which is shown below the intro_open_popup header."
     },
-    "intro_disable_button": {
-        "message": "Privacy Badger가 페이지를 파손하고 있다고 생각되면 (예를 들어 비디오가 재생되지 않는 등) ‘이 사이트에 대해 Privacy Badger를 사용하지 않도록 설정’ 버튼을 클릭하여 해당 사이트에 대한 Privacy Badger를 해제할 수 있습니다.",
-        "description": "Intro page paragraph. The quoted string ('Disable') should match the verb used for the 'popup_disable_for_site' message."
-    },
     "intro_donate_heading": {
         "message": "프라이버시는 팀 활동입니다!",
         "description": "Part of the 'donate' section on the intro page."
@@ -355,49 +446,29 @@
         "message": "Privacy Badger를 사용하면 개인 정보 보호를 위해 <a href='https://www.eff.org/' target='_blank'>Electronic Frontier Foundation</a>및 수백만 명의 다른 사용자와 함께합니다. 우리는 온라인에서 당신의 권리를 위해 싸우는 비영리 단체입니다. 참여해 주셔서 감사합니다!",
         "description": "Part of the 'donate' section on the intro page."
     },
+    "intro_donate_subheading": {
+        "message": "Help us by donating",
+        "description": "Subheader above the Donate button on the intro page"
+    },
     "donate_to_eff": {
         "message": "EFF에게 기부",
-        "description": "A button on the intro page, and a link in the popup footer."
-    },
-    "intro_donate_subheading": {
-        "message": "기부 또는 툴에 대한 지원을 공유함으로써 저희를 도와주세요.",
-        "description": "Shown below the Donate button on the intro page."
-    },
-    "intro_link_policy": {
-        "message": "개인 정보 보호 정책",
-        "description": "Shown at the bottom of the intro page."
-    },
-    "intro_pin_nudge": {
-        "message": "First, $START_SPAN_TAG$pin Privacy Badger to your toolbar$END_SPAN_TAG$ for easy access to the \"$DISABLE_FOR_SITE$\" button.",
-        "description": "Part of a Chrome-only overlay on the intro page",
-        "placeholders": {
-            "start_span_tag": {
-                "content": "<span id='pin-nudge-cta'>"
-            },
-            "disable_for_site": {
-                "content": "$1",
-                "example": "Disable for this site"
-            },
-            "end_span_tag": {
-                "content": "</span>"
-            }
-        }
-    },
-    "intro_pin_instructions": {
-        "message": "To pin Privacy Badger's icon, click on the puzzle piece icon in your browser toolbar. Then, click on the pin icon next to Privacy Badger.",
-        "description": "Alt text for pinning instructions image. Shown on the Chrome-only overlay of the intro page."
+        "description": "A button on the intro page"
     },
     "share_button_title_facebook": {
         "message": "페이스북에 공유",
         "description": "Text shown when you hover over the social sharing buttons on the intro page."
     },
-    "share_button_title_twitter": {
-        "message": "트위터에 공유",
-        "description": "Text shown when you hover over the social sharing buttons on the intro page."
-    },
     "share_button_title_mastodon": {
         "message": "Share on Mastodon",
         "description": "Text shown when you hover over the social sharing buttons on the intro page."
+    },
+    "share_button_title_bluesky": {
+        "message": "Share on Bluesky",
+        "description": "Text shown when you hover over the social sharing buttons on the intro page."
+    },
+    "intro_link_policy": {
+        "message": "개인 정보 보호 정책",
+        "description": "Shown at the bottom of the intro page."
     },
     "options_title": {
         "message": "Privacy Badger 옵션",
@@ -543,8 +614,17 @@
         }
     },
     "options_domain_list_no_trackers": {
-        "message": "Privacy Badger가 아직 <a target='_blank' tabindex=-1 title='i18n_what_is_a_tracker' class='tooltip' href='https://www.eff.org/privacybadger#faq-What-is-a-third-party-tracker?'>추적 도메인</a>을 감지하지 못했습니다. 계속 탐색하세요!",
-        "description": "Shown on the Tracking Domains tab on the options page if all tracking domains have been removed."
+        "message": "Privacy Badger가 아직 $LINK_START$추적 도메인$LINK_END$을 감지하지 못했습니다. 계속 탐색하세요!",
+        "description": "Shown on the Tracking Domains tab on the options page if all tracking domains have been removed.",
+        "placeholders": {
+            "link_start": {
+                "content": "$1",
+                "example": "<a href='http://example.com'>"
+            },
+            "link_end": {
+                "content": "</a>"
+            }
+        }
     },
     "what_is_a_tracker": {
         "message": "추적기란?",

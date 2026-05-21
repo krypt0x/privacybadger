@@ -4,8 +4,8 @@
         "description": "The name of this extension."
     },
     "description": {
-        "message": "Privacy Badger lærer automatisk at blokere usynlige trackere.",
-        "description": "Extension description sometimes used by extension stores. See also 'intro_welcome', 'share_base_message' and 'intro_learns' messages."
+        "message": "Lærer automatisk at blokere skjulte sporinger. Fra digital rettighedsnonprofit EFF for at stoppe virksomheder i at udspionere dig.",
+        "description": "Extension description used by browsers and extension store websites. LIMITED TO 132 CHARACTERS. See also 'intro_welcome', 'share_base_message' and 'intro_learns_paragraph' messages."
     },
     "canvas_fingerprinting": {
         "message": "canvas-fingeraftryk",
@@ -32,27 +32,31 @@
         "description": "Shown in the popup for special browser pages such as the New Tab page and 'about:' pages."
     },
     "popup_first_run_header": {
-        "message": "Great job opening the popup!",
+        "message": "Godt gået at åbne popoppen!",
         "description": "Heading in the popup when opened from the intro page."
     },
     "popup_disabled_site_header": {
-        "message": "Privacy Badger er deaktiveret på dette websted",
+        "message": "Privacy Badger er deaktiveret på dette netsted",
         "description": "Shown in the popup on disabled sites."
     },
     "popup_disable_for_site": {
-        "message": "Deaktiver for dette websted",
+        "message": "Deaktiver for dette netsted",
         "description": "Button in the popup."
     },
     "popup_enable_for_site": {
-        "message": "Aktiver for dette websted",
+        "message": "Aktiver for dette netsted",
         "description": "Button in the popup, visible if Privacy Badger is disabled on the current site."
     },
     "report_broken_site": {
-        "message": "Rapportér ødelagt websted",
+        "message": "Rapportér ødelagt netsted",
         "description": "Button in the popup and title of the error reporting form overlay."
     },
+    "popup_donate_to_eff": {
+        "message": "Donér til EFF—en nonprofit der forsvarer digitalt privatliv",
+        "description": "A link in the popup footer."
+    },
     "popup_review_pb": {
-        "message": "Enjoying Privacy Badger? Leave a review!",
+        "message": "Kan du lide Privacy Badger? Giv en anmeldelse!",
         "description": "A link in the popup footer shown 30% of the time instead of 'Donate to EFF'."
     },
     "version": {
@@ -165,6 +169,16 @@
         "message": "Dette domæne lover ikke at spore dig",
         "description": "Tooltip shown over an EFF's DNT policy-compliant domain name in the list of domains in the popup or under the Tracking Domains tab on the options page."
     },
+    "domain_slider_label": {
+        "message": "Indstillinger for $DOMAIN$",
+        "description": "Screenreader-accessible label for domain sliders",
+        "placeholders": {
+            "domain": {
+                "content": "$1",
+                "example": "example.com"
+            }
+        }
+    },
     "domain_slider_block_tooltip": {
         "message": "Bloker helt",
         "description": "Tooltip shown over the leftmost part of a domain slider. This is an action (\"click here to ...\"), not a status."
@@ -194,7 +208,7 @@
         "description": "Popup domain slider list header text. Separates blocked domains from domains that haven't yet been seen perform tracking on enough sites."
     },
     "intro_not_an_adblocker_paragraph": {
-        "message": "Privacy Badger starts blocking once it sees the same tracker on three different websites. Three strikes and it's out!",
+        "message": "Privacy Badger starter sin blokering når den ser den samme sporing på tre forskellige netsteder. Tre forseelser og det er ud!",
         "description": "Tooltip for the 'not_yet_blocked_header' message"
     },
     "non_tracker": {
@@ -239,7 +253,7 @@
     },
     "share_title": {
         "message": "Del med dine venner",
-        "description": "Title of the Share popup overlay."
+        "description": "Title of the Share overlay in the popup; also subheader above social sharing buttons on the intro page"
     },
     "share_tracker_header": {
         "message": "Privacy Badger blokerede $COUNT$ potentielle trackere på $DOMAIN$:",
@@ -256,7 +270,7 @@
         }
     },
     "share_base_message": {
-        "message": "Privacy Badger (privacybadger.org) er en browserudvidelse som automatisk lærer at blokere usynlige trackere. Privacy Badger er lavet af Electronic Frontier Foundation, en nonprofit-organisation, der kæmper for dine rettigheder online.",
+        "message": "Privacy Badger (privacybadger.org) er en browserudvidelse der automatisk lærer at blokere skjulte sporinger. Privacy Badger laves af Electronic Frontier Foundation, en nonprofit der kæmper for dine rettigheder online.",
         "description": "The base message that is always included in the share message."
     },
     "copy_button_initial": {
@@ -284,23 +298,108 @@
         }
     },
     "popup_info_youtube": {
-        "message": "Ads not blocked? YouTube not working? It's probably not because of Privacy Badger.",
+        "message": "Er reklamer ikke blokeret! Virker YouTube ikke? Det er sikkert ikke på grund af Privacy Badger.",
         "description": "Message in the popup when users visit YouTube.com"
     },
     "extension_error_text": {
-        "message": "<a href='https://www.eff.org/privacybadger#faq-I-found-a-bug!-What-do-I-do-now?' target='_blank'>Fortæl os</a> om følgende fejl:",
-        "description": "Shown in the popup when there is an extension error we want to encourage the user to tell us about."
+        "message": "$LINK_START$Fortæl os$LINK_END$ om følgende fejl:",
+        "description": "Shown in the popup when there is an extension error we want to encourage the user to tell us about.",
+        "placeholders": {
+            "link_start": {
+                "content": "$1",
+                "example": "<a href='http://example.com'>"
+            },
+            "link_end": {
+                "content": "</a>"
+            }
+        }
     },
     "firstRun_title": {
         "message": "Tak for at installere Privacy Badger!",
-        "description": "Title and header of the intro page."
+        "description": "Title of intro page"
     },
-    "intro_by_eff": {
-        "message": "Et projekt fra Electronic Frontier Foundation",
-        "description": "Message in the header of the intro page."
+    "intro_eff_header": {
+        "message": "A privacy tool by $START_HTML$EFF$END_HTML$, a member-supported nonprofit",
+        "description": "Message in the header of intro page",
+        "placeholders": {
+            "start_html": {
+                "content": "$1",
+                "example": "<b>"
+            },
+            "end_html": {
+                "content": "$2",
+                "example": "</b>"
+            }
+        }
+    },
+    "intro_nag_header": {
+        "message": "Almost done!",
+        "description": "Intro page subheading in Chrome (also in macOS app for Safari)"
+    },
+    "intro_pin_nudge": {
+        "message": "$START_SPAN_TAG$Lås Privacy Badger til din værktøjsbjælke$END_SPAN_TAG$ for nem adgang til knappen \"$DISABLE_FOR_SITE$\".",
+        "description": "Intro page paragraph in Chrome",
+        "placeholders": {
+            "start_span_tag": {
+                "content": "<b>"
+            },
+            "disable_for_site": {
+                "content": "$1",
+                "example": "Disable for this site"
+            },
+            "end_span_tag": {
+                "content": "</b>"
+            }
+        }
+    },
+    "intro_pin_instructions": {
+        "message": "For at låse Privacy Badgers ikon, klik på puslespilsbrikikonet i din browsers værktøjsbjælke. Klik dernæst på låseikonet ved siden af Privacy Badger.",
+        "description": "Alt text for pinning instructions image on intro page in Chrome"
+    },
+    "intro_animation_button_stop": {
+        "message": "Stop animation",
+        "description": "Intro page button to stop the pinning instructions animation"
+    },
+    "intro_animation_button_play": {
+        "message": "Play animation",
+        "description": "Intro page button to play the pinning instructions animation"
+    },
+    "intro_disable_header": {
+        "message": "One tip before you enjoy better browsing",
+        "description": "Subheading on intro page for the section explaining the disable button in Firefox"
+    },
+    "intro_disable_button_context": {
+        "message": "Privacy Badger is all set to protect you from hidden trackers. But blocking trackers sometimes breaks websites.",
+        "description": "First paragraph of the disable button section of intro page"
+    },
+    "intro_disable_button": {
+        "message": "Hvis du tror at Privacy Badger ødelægger en side (f.eks. en video spiller ikke), $START_HTML$kan du klikke på \"$DISABLE_FOR_SITE$\"-knappen for at slå Privacy Badger fra på det netsted.$END_HTML$",
+        "description": "Disable button explainer on intro, options and popup pages",
+        "placeholders": {
+            "start_html": {
+                "content": "$1",
+                "example": "<b>"
+            },
+            "disable_for_site": {
+                "content": "$2",
+                "example": "Disable for this site"
+            },
+            "end_html": {
+                "content": "$3",
+                "example": "</b>"
+            }
+        }
+    },
+    "intro_features_header": {
+        "message": "Privacy Badger protects your browsing from trackers.",
+        "description": "Intro page header introducing Privacy Badger features section"
+    },
+    "intro_features_subheader": {
+        "message": "Learn how.",
+        "description": "Intro page subheader introducing Privacy Badger features section"
     },
     "intro_welcome": {
-        "message": "Privacy Badger lærer automatisk at blokere usynlige sporinger. Brug et minut på at se hvordan.",
+        "message": "Privacy Badger lærer automatisk at blokere skjulte sporinger. Bug et minut på at se hvordan.",
         "description": "Intro page welcome paragraph."
     },
     "intro_next_button": {
@@ -312,11 +411,11 @@
         "description": "Intro page paragraph heading."
     },
     "intro_beyond_ads_paragraph": {
-        "message": "Privacy Badger sends the <a href='https://globalprivacycontrol.org/' target='_blank'>Global Privacy Control signal</a>, to opt you out of data sharing and selling, and the <a href='https://www.eff.org/issues/do-not-track' target='_blank'>Do Not Track signal</a> to tell companies not to track you.",
+        "message": "Privacy Badger sender signalet <a href='https://globalprivacycontrol.org/' target='_blank'>Global Privatlivskontrol</a>, for at fravælge deling og salg af dine data, og signalet <a href='https://www.eff.org/issues/do-not-track' target='_blank'>Spor Ikke</a> for at bede virksomheder om ikke at spore dig.",
         "description": "Intro page paragraph"
     },
     "intro_beyond_ads_paragraph2": {
-        "message": "If they ignore these signals, Privacy Badger will learn to block them—whether they are advertisers or trackers of other kinds.",
+        "message": "Hvis de ignorerer disse signaler, vil Privacy Badger lære at blokere dem—uanset om de reklamerer eller sporer på andre måder.",
         "description": "Intro page paragraph"
     },
     "intro_not_an_adblocker": {
@@ -324,28 +423,20 @@
         "description": "Intro page paragraph heading."
     },
     "intro_learns_paragraph": {
-        "message": "Privacy Badger automatically discovers trackers based on their behavior.",
+        "message": "Privacy Badger opdager automatisk sporinger baseret på deres opførsel.",
         "description": "Intro page paragraph."
     },
     "intro_not_an_adblocker_paragraph2": {
-        "message": "Invisible tracking happens in all sorts of ways; ads are just the visible tip of the iceberg. Privacy Badger doesn't block ads unless they happen to be tracking you.",
+        "message": "Skjult sporing sker på mange måder; reklamer er blot den synlige top af isbjerget. Privacy Badger blokerer ikke reklamer med mindre de sporer dig.",
         "description": "Intro page paragraph"
     },
-    "next_section": {
-        "message": "næste sektion",
-        "description": "Image alt. text on a couple of \"scroll down\" arrow buttons on the intro page."
-    },
     "intro_open_popup": {
-        "message": "Try opening Privacy Badger's popup",
+        "message": "Prøv at åbne Privacy Badgers popop",
         "description": "Shown above an image of the Privacy Badger icon circled on the browser toolbar."
     },
     "intro_open_popup_alt": {
-        "message": "Browser toolbar with the Privacy Badger icon circled",
+        "message": "Browserværktøjsbjælke med Privacy Badgers ikon indcirklet",
         "description": "Alt text for toolbar icon image, which is shown below the intro_open_popup header."
-    },
-    "intro_disable_button": {
-        "message": "Hvis du tror at Privacy Badger ødelægger en side (f.eks. en video spiller ikke), kan du klikke på \"Deaktiver\"-knappen for at slå Privacy Badger fra på det netsted.",
-        "description": "Intro page paragraph. The quoted string ('Disable') should match the verb used for the 'popup_disable_for_site' message."
     },
     "intro_donate_heading": {
         "message": "Privatliv er en gruppesport!",
@@ -355,49 +446,29 @@
         "message": "Når du bruger Privacy Badger, tilslutter du dig <a href='https://www.eff.org/' target='_blank'>Electronic Frontier Foundation</a> og millioner af andre brugere i kampen for privatliv. Vi er en nonprofit organisation der kæmper for dine rettigheder online. Tak for at slutte dig til os!",
         "description": "Part of the 'donate' section on the intro page."
     },
-    "donate_to_eff": {
-        "message": "Doner til EFF",
-        "description": "A button on the intro page, and a link in the popup footer."
-    },
     "intro_donate_subheading": {
-        "message": "Hjælp os ved at donere og dele din støtte til vores væktøjer",
-        "description": "Shown below the Donate button on the intro page."
+        "message": "Hjælp os ved at donere",
+        "description": "Subheader above the Donate button on the intro page"
     },
-    "intro_link_policy": {
-        "message": "Privatlivspolitik",
-        "description": "Shown at the bottom of the intro page."
-    },
-    "intro_pin_nudge": {
-        "message": "First, $START_SPAN_TAG$pin Privacy Badger to your toolbar$END_SPAN_TAG$ for easy access to the \"$DISABLE_FOR_SITE$\" button.",
-        "description": "Part of a Chrome-only overlay on the intro page",
-        "placeholders": {
-            "start_span_tag": {
-                "content": "<span id='pin-nudge-cta'>"
-            },
-            "disable_for_site": {
-                "content": "$1",
-                "example": "Disable for this site"
-            },
-            "end_span_tag": {
-                "content": "</span>"
-            }
-        }
-    },
-    "intro_pin_instructions": {
-        "message": "To pin Privacy Badger's icon, click on the puzzle piece icon in your browser toolbar. Then, click on the pin icon next to Privacy Badger.",
-        "description": "Alt text for pinning instructions image. Shown on the Chrome-only overlay of the intro page."
+    "donate_to_eff": {
+        "message": "Donér til EFF",
+        "description": "A button on the intro page"
     },
     "share_button_title_facebook": {
         "message": "Del på Facebook",
         "description": "Text shown when you hover over the social sharing buttons on the intro page."
     },
-    "share_button_title_twitter": {
-        "message": "Del på Twitter",
-        "description": "Text shown when you hover over the social sharing buttons on the intro page."
-    },
     "share_button_title_mastodon": {
         "message": "Del på Mastodon",
         "description": "Text shown when you hover over the social sharing buttons on the intro page."
+    },
+    "share_button_title_bluesky": {
+        "message": "Del på Bluesky",
+        "description": "Text shown when you hover over the social sharing buttons on the intro page."
+    },
+    "intro_link_policy": {
+        "message": "Privatlivspolitik",
+        "description": "Shown at the bottom of the intro page."
     },
     "options_title": {
         "message": "Privacy Badger Indstillinger",
@@ -408,11 +479,11 @@
         "description": "Options page tab heading"
     },
     "options_disable_tip_title": {
-        "message": "How to disable Privacy Badger without leaving the site",
+        "message": "Sådan deaktiveres Privacy Badger uden at forlade netstedet",
         "description": "Title of tip container on Disabled Sites tab"
     },
     "options_disable_tip_alt": {
-        "message": "First, click on Privacy Badger's icon in your browser toolbar. Then, click the \"$DISABLE_FOR_SITE$\" button.",
+        "message": "Først, klik på Privacy Badgers ikon i din browsers værktøjsbjælke. Klik dernæst på knappen \"$DISABLE_FOR_SITE$\".",
         "description": "Alt text for image inside tip container on Disabled Sites tab",
         "placeholders": {
             "disable_for_site": {
@@ -422,11 +493,11 @@
         }
     },
     "disabled_for_these_domains": {
-        "message": "Privacy Badger is disabled on the following sites. This means that Privacy Badger will not block anything when you visit the sites listed here, and it will not send the Do Not Track or Global Privacy Control signals.",
+        "message": "Privacy Badger er deaktiveret på følgende netsteder. Det betyder at Privacy Badger ikke blokerer noget når du besøger netstederne listet her, og den vil ikke sende signalerne Spor Ikke eller Global Privatlivskontrol.",
         "description": "Intro text on the Disabled Sites options page tab"
     },
     "add_domain_button": {
-        "message": "Add site",
+        "message": "Tilføj netsted",
         "description": "Button on the Disabled Sites options page tab"
     },
     "remove_button": {
@@ -446,7 +517,7 @@
         "description": "Checkbox label in general settings."
     },
     "options_enable_dnt_checkbox": {
-        "message": "Send websites the \"<a href='https://globalprivacycontrol.org/' target='_blank'>Global Privacy Control</a>\" and \"<a href='https://www.eff.org/issues/do-not-track' target='_blank'>Do Not Track</a>\" signals",
+        "message": "Send signalerne \"<a href='https://globalprivacycontrol.org/' target='_blank'>Global Privatlivskontrol</a>\" og \"<a href='https://www.eff.org/issues/do-not-track' target='_blank'>Spor Ikke</a>\" til netsteder",
         "description": "Checkbox label for toggling GPC and DNT signals, found in general settings."
     },
     "options_dnt_policy_setting": {
@@ -454,35 +525,35 @@
         "description": "Checkbox label in general settings."
     },
     "options_privacy_settings": {
-        "message": "Privacy",
+        "message": "Privatliv",
         "description": "Subheading in general settings."
     },
     "options_disable_hyperlink_auditing": {
-        "message": "Prevent sites from tracking which links you click (\"hyperlink auditing\")",
+        "message": "Forhindrer netsteder i at spore hvilke links du klikker på (\"hyperlink auditing\")",
         "description": "Checkbox label in general settings."
     },
     "options_disable_network_prediction": {
-        "message": "Disable prefetching",
+        "message": "Deaktiver forhåndshentning",
         "description": "Checkbox label in general settings."
     },
     "options_disable_google_nav_error_service": {
-        "message": "Disable sending web addresses you visit to Google. This disables suggestions for similar pages when a page can't be found.",
+        "message": "Deaktiver afsendelse af netadresser du besøger til Google. Dette deaktiverer forslag til lignende sider når en side ikke kan findes.",
         "description": "(Chrome only) Checkbox label in general settings."
     },
     "options_disable_floc": {
-        "message": "Disable Google's \"Privacy Sandbox\" ad tracking",
+        "message": "Deaktiver Googles reklamesporing \"Privatlivs-sandboxing\"",
         "description": "Checkbox label in general settings. For what this disables, see https://www.eff.org/deeplinks/2024/07/why-privacy-badger-opts-you-out-googles-privacy-sandbox"
     },
     "options_advanced_settings": {
-        "message": "Advanced",
+        "message": "Avanceret",
         "description": "Subheading in general settings."
     },
     "options_learn_setting": {
-        "message": "Learn to block new trackers from your browsing",
+        "message": "Lær at blokere nye sporinger fra din browsning",
         "description": "Checkbox label in general settings."
     },
     "local_learning_warning": {
-        "message": "Enabling learning may make you more identifiable to websites",
+        "message": "Aktivering af læring kan gøre dig nemmere at identificere for netsteder",
         "description": "Tooltip in general settings."
     },
     "options_show_nontracking_domains_checkbox": {
@@ -506,19 +577,19 @@
         "description": "Introduction to the Widget Replacement tab on the options page"
     },
     "options_widget_exceptions_header": {
-        "message": "Widget Exceptions",
+        "message": "Widgetundtagelser",
         "description": "Header text on the Widget Replacement tab"
     },
     "options_hide_social_widgets": {
-        "message": "Block but don't replace the following widgets:",
+        "message": "Blokér men udskift ikke følgende widgets:",
         "description": "Label for a form on the Widget Replacement tab"
     },
     "options_widget_site_exceptions_header": {
-        "message": "Site Exceptions",
+        "message": "Netstedsundtagelser",
         "description": "Header text on the Widget Replacement tab"
     },
     "options_widget_site_exceptions_label": {
-        "message": "Always allow widgets on these sites:",
+        "message": "Tillad altid widgets på disse netsteder:",
         "description": "Label for a form on the Widget Replacement tab"
     },
     "options_domain_list_tab": {
@@ -526,7 +597,7 @@
         "description": "This is an options page tab heading."
     },
     "options_domain_list_trackers": {
-        "message": "Privacy Badger has decided to block $COUNT$ potential $TRACKER_LINK_START$tracking domains$TRACKER_LINK_END$ so far",
+        "message": "Privacy Badger har besluttet at blokere $COUNT$ potentielle $TRACKER_LINK_START$sporingsdomæner$TRACKER_LINK_END$ indtil nu",
         "description": "Shown on the Tracking Domains tab on the options page after Privacy Badger learned to block one or more domains",
         "placeholders": {
             "count": {
@@ -543,8 +614,17 @@
         }
     },
     "options_domain_list_no_trackers": {
-        "message": "Privacy Badger har ikke opdaget nogle <a target='_blank' tabindex=-1 title='i18n_what_is_a_tracker' class='tooltip' href='https://www.eff.org/privacybadger#faq-What-is-a-third-party-tracker?'>sporingsdomæner</a> endnu. Fortsæt med at browse!",
-        "description": "Shown on the Tracking Domains tab on the options page if all tracking domains have been removed."
+        "message": "Privacy Badger har ikke opdaget nogle $LINK_START$sporingsdomæner$LINK_END$ endnu. Fortsæt med at browse!",
+        "description": "Shown on the Tracking Domains tab on the options page if all tracking domains have been removed.",
+        "placeholders": {
+            "link_start": {
+                "content": "$1",
+                "example": "<a href='http://example.com'>"
+            },
+            "link_end": {
+                "content": "</a>"
+            }
+        }
     },
     "what_is_a_tracker": {
         "message": "Hvad er en sporing?",
@@ -571,7 +651,7 @@
         "description": "Dropdown control setting on the Tracking Domains options page tab."
     },
     "options_domain_filter_dnt": {
-        "message": "compliant with EFF's DNT policy",
+        "message": "i overensstemmelse med EFFs politik \"Spor Ikke\"",
         "description": "Dropdown control setting on the Tracking Domains options page tab."
     },
     "options_domain_status_filter": {
@@ -595,11 +675,11 @@
         "description": "Checkbox label on the Tracking Domains tab. Should match wording used in the 'not_yet_blocked_header' message. Only visible when 'learn to block new trackers' is enabled."
     },
     "options_hide_in_seed": {
-        "message": "Hide domains present in the latest pre-trained list",
+        "message": "Skjul domæner der findes i den seneste forhåndstrænede liste",
         "description": "Checkbox label on the Tracking Domains tab. Only visible when 'learn to block new trackers' is enabled."
     },
     "options_domain_list_sites": {
-        "message": "$DOMAIN$ was seen tracking on the following sites:",
+        "message": "$DOMAIN$ udførte sporing på følgende netsteder:",
         "description": "Part of a tooltip available for each domain in the tracking domains list on the options page.",
         "placeholders": {
             "domain": {
@@ -645,7 +725,7 @@
         "description": ""
     },
     "import_successful": {
-        "message": "Sporingsliste og opsætning successfuldt opdateret!",
+        "message": "Sporingsliste og opsætning succesfuldt opdateret!",
         "description": ""
     },
     "sync_intro": {
@@ -673,11 +753,11 @@
         "description": "Message displayed to the user after failing to download cloud data."
     },
     "upload_cloud_success": {
-        "message": "Data successfully uploaded to the cloud",
+        "message": "Data succesfuldt lagt op i skyen",
         "description": "Message displayed to the user after successfully uploading local data."
     },
     "upload_cloud_failure": {
-        "message": "Data could not be uploaded to the cloud",
+        "message": "Data kunne ikke lægges op i skyen",
         "description": "Message displayed to the user after failing to upload local data."
     },
     "download_cloud_no_data": {
@@ -721,19 +801,19 @@
         "description": "Part of a reminder to visit the intro page. Shown in popup until the user clicks on the reminder link or browses through the intro page."
     },
     "learning_prompt_text1": {
-        "message": "Privacy Badger will no longer learn from your browsing by default.",
+        "message": "Privacy Badger vil ikke længere lære fra din browsning som standard.",
         "description": "First part of a prompt to visit the blog."
     },
     "learning_prompt_text2": {
-        "message": "Click below to learn more.",
+        "message": "Klik nedenfor for at lære mere.",
         "description": "Second part of a prompt to visit the blog."
     },
     "learning_prompt_button": {
-        "message": "Learn how Privacy Badger is changing",
+        "message": "Lær hvordan Privacy Badger ændrer sig",
         "description": "Button text, part of a prompt to visit the blog."
     },
     "deprecated_setting": {
-        "message": "The following setting has been deprecated and will be removed in a future Privacy Badger update:",
+        "message": "Følgende indstilling er ved at blive udfaset og vil blive fjernet i en fremtidig opdatering af Privacy Badger:",
         "description": "Followed by the label of the deprecated setting (for example: 'Prevent WebRTC...')"
     },
     "learn_more_link": {

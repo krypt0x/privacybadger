@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import functools
 import json
 import os
 import re
@@ -36,7 +35,8 @@ except ImportError:
 SEL_DEFAULT_WAIT_TIMEOUT = 30
 
 BROWSER_TYPES = ['chrome', 'firefox', 'edge']
-BROWSER_NAMES = ['google-chrome', 'google-chrome-stable', 'google-chrome-beta', 'firefox', 'microsoft-edge', 'microsoft-edge-beta']
+BROWSER_NAMES = ['google-chrome', 'google-chrome-stable', 'google-chrome-beta',
+                 'firefox', 'microsoft-edge', 'microsoft-edge-beta']
 
 
 class WindowNotFoundException(Exception):
@@ -163,8 +163,19 @@ class Shim:
     @contextmanager
     def chrome_manager(self):
         opts = ChromeOptions()
-        opts.add_argument("--load-extension=" + self.extension_path)
+
+        # support tests in Chrome with MV2 PB while this flag remains available
+        opts.add_argument("--enable-features=AllowLegacyMV2Extensions")
+
         opts.binary_location = self.browser_path
+        opts.enable_bidi = True
+        opts.enable_webextensions = True
+
+        # work around https://issues.chromium.org/issues/409441960
+        opts.add_experimental_option('enableExtensionTargets', True)
+
+        # https://github.com/GoogleChromeLabs/chromium-bidi/issues/3281
+        opts.set_capability("unhandledPromptBehavior", "ignore");
 
         # TODO not yet in Firefox (w/o hacks anyway):
         # https://github.com/mozilla/geckodriver/issues/284#issuecomment-456073771
@@ -173,10 +184,10 @@ class Shim:
         for i in range(5):
             try:
                 driver = webdriver.Chrome(options=opts)
-            except WebDriverException as e:
+                driver.webextension.install(self.extension_path)
+            except WebDriverException as ex:
                 if i == 0: print("")
-                print("Chrome WebDriver initialization failed:")
-                print(str(e) + "Retrying ...")
+                print(f"ChromeDriver initialization failed: {ex}")
             else:
                 break
 
@@ -188,16 +199,24 @@ class Shim:
     @contextmanager
     def edge_manager(self):
         opts = EdgeOptions()
-        opts.add_argument("--load-extension=" + self.extension_path)
+
         opts.binary_location = self.browser_path
+        opts.enable_bidi = True
+        opts.enable_webextensions = True
+
+        # work around https://issues.chromium.org/issues/409441960
+        opts.add_experimental_option('enableExtensionTargets', True)
+
+        # https://github.com/GoogleChromeLabs/chromium-bidi/issues/3281
+        opts.set_capability("unhandledPromptBehavior", "ignore");
 
         for i in range(5):
             try:
                 driver = webdriver.Edge(options=opts)
-            except WebDriverException as e:
+                driver.webextension.install(self.extension_path)
+            except WebDriverException as ex:
                 if i == 0: print("")
-                print("Edge WebDriver initialization failed:")
-                print(str(e) + "Retrying ...")
+                print(f"EdgeDriver initialization failed ({i+1}/5): {ex}", end='')
             else:
                 break
 
@@ -208,45 +227,47 @@ class Shim:
 
     @contextmanager
     def firefox_manager(self):
+        opts = FirefoxOptions()
+
+        opts.binary_location = self.browser_path
+        opts.enable_bidi = True
+        opts.enable_webextensions = True
+
+        # https://github.com/mozilla/geckodriver/issues/2241#issuecomment-3984861843
+        opts.set_capability("unhandledPromptBehavior", "ignore");
+
+        # make extension ID constant across runs
+        opts.set_preference('extensions.webextensions.uuids', '{"%s": "%s"}' % (
+            self.info['extension_id'], self.info['uuid']))
+
+        # needed for test_referrer_header()
+        # https://bugzilla.mozilla.org/show_bug.cgi?id=1720294
+        opts.set_preference('network.http.referer.disallowCrossSiteRelaxingDefault', False)
+
+        # disable tracker cookie blocking as it breaks cookie tests
+        # that use trackersimulator.org, a "known tracker",
+        # and disable cookie site isolation, as it breaks the cookie
+        # tracking detection test
+        opts.set_preference("network.cookie.cookieBehavior", 0)
+
+        # disable JSON viewer as it breaks parsing JSON pages
+        opts.set_preference("devtools.jsonview.enabled", False)
+
+        # to produce a trace-level geckodriver.log,
+        # set the log_output argument to FirefoxService() to "./geckodriver.log"
+        # and uncomment the line below
+        #opts.log.level = "trace"
+
         for i in range(5):
             try:
-                opts = FirefoxOptions()
-
-                opts.binary_location = self.browser_path
-
-                # make extension ID constant across runs
-                opts.set_preference('extensions.webextensions.uuids', '{"%s": "%s"}' % (
-                    self.info['extension_id'], self.info['uuid']))
-
-                # needed for test_referrer_header()
-                # https://bugzilla.mozilla.org/show_bug.cgi?id=1720294
-                opts.set_preference('network.http.referer.disallowCrossSiteRelaxingDefault', False)
-
-                # disable tracker cookie blocking as it breaks cookie tests
-                # that use trackersimulator.org, a "known tracker",
-                # and disable cookie site isolation, as it breaks the cookie
-                # tracking detection test
-                opts.set_preference("network.cookie.cookieBehavior", 0)
-
-                # disable JSON viewer as it breaks parsing JSON pages
-                opts.set_preference("devtools.jsonview.enabled", False)
-
-                # to produce a trace-level geckodriver.log,
-                # remove the log_output argument to FirefoxService()
-                # and uncomment the line below
-                #opts.log.level = "trace"
-
                 service = FirefoxService(log_output=os.path.devnull)
                 driver = webdriver.Firefox(options=opts, service=service)
-
-            except WebDriverException as e:
+                driver.webextension.install(self.extension_path)
+            except WebDriverException as ex:
                 if i == 0: print("")
-                print("Firefox WebDriver initialization failed:")
-                print(str(e) + "Retrying ...")
+                print(f"Firefox WebDriver initialization failed ({i+1}/5): {ex}", end='')
             else:
                 break
-
-        driver.install_addon(self.extension_path, temporary=True)
 
         try:
             yield driver
@@ -282,18 +303,6 @@ def retry_until(fun, tester=None, times=3, msg=None):
     return result
 
 
-def convert_exceptions_to_false(fun, silent=False):
-    def converter(fun, silent):
-        try:
-            result = fun()
-        except Exception as e:
-            if not silent:
-                print("\nCaught exception:", str(e))
-            return False
-        return result
-    return functools.partial(converter, fun, silent)
-
-
 class PBSeleniumTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -318,6 +327,10 @@ class PBSeleniumTest(unittest.TestCase):
         self.test_url = self.base_url + "tests/index.html"
 
     def run(self, result=None):
+        # disable Selenium sending your IP to a third-party company
+        # https://www.selenium.dev/documentation/selenium_manager/#data-collection
+        os.environ['SE_AVOID_STATS'] = "true"
+
         with self.manager() as driver:
             self.init(driver)
 
@@ -328,6 +341,7 @@ class PBSeleniumTest(unittest.TestCase):
                 "chrome.runtime.sendMessage({"
                 "  type: 'isBadgerInitialized'"
                 "}, r => done(r));", execute_async=True)
+
             # also disable the welcome page
             self.driver.execute_async_script(
                 "let done = arguments[arguments.length - 1];"
@@ -344,6 +358,7 @@ class PBSeleniumTest(unittest.TestCase):
                 "     chrome.tabs.remove(welcome_tab.id, done);"
                 "   });"
                 "});")
+
             super().run(result)
 
     def is_firefox_nightly(self):
@@ -428,6 +443,10 @@ class PBSeleniumTest(unittest.TestCase):
             return dr.execute_script(script, *script_args)
 
         return WebDriverWait(self.driver, timeout).until(execute_script, message)
+
+    def wait_for_any_text(self, selector, timeout=SEL_DEFAULT_WAIT_TIMEOUT):
+        return WebDriverWait(self.driver, timeout).until(
+            lambda d: d.find_element(By.CSS_SELECTOR, selector).text.strip())
 
     def wait_for_text(self, selector, text, timeout=SEL_DEFAULT_WAIT_TIMEOUT):
         return WebDriverWait(self.driver, timeout).until(
@@ -523,6 +542,16 @@ class PBSeleniumTest(unittest.TestCase):
     def cookieblock_domain(self, domain):
         self.add_domain(domain, "cookieblock")
 
+    def add_site_override(self, domain, site_domain):
+        self.load_url(self.options_url)
+        self.driver.execute_async_script(
+            "let done = arguments[arguments.length - 1];"
+            "chrome.runtime.sendMessage({"
+            "  type: 'addSiteOverride',"
+            "  domain: arguments[0],"
+            "  site_domain: arguments[1]"
+            "}, done);", domain, site_domain)
+
     def disable_badger_on_site(self, url):
         self.load_url(self.options_url)
         self.wait_for_script("return window.OPTIONS_INITIALIZED")
@@ -583,12 +612,13 @@ class PBSeleniumTest(unittest.TestCase):
         with the associated tabid. Then the correct status information will be displayed
         in the popup."""
 
-        self.open_window()
-        self.load_url(self.popup_url)
-        self.wait_for_script("return window.POPUP_INITIALIZED")
+        for _ in range(5):
+            self.open_window()
+            self.load_url(self.popup_url)
+            self.wait_for_script("return window.POPUP_INITIALIZED")
 
-        # get the popup populated with status information for the correct url
-        self.js("""
+            # get the popup populated with status information for the correct url
+            self.js("""
 /**
  * @param {String} [url]
  * @param {Boolean} [show_reminder]
@@ -616,8 +646,13 @@ class PBSeleniumTest(unittest.TestCase):
   });
 }(arguments[0], arguments[1]));""", target_url, show_reminder)
 
-        # wait for popup to be ready
-        self.wait_for_script("return window.DONE_REFRESHING && window.SLIDERS_DONE")
+            try:
+                # wait for popup to be ready
+                self.wait_for_script("return window.DONE_REFRESHING && window.SLIDERS_DONE")
+            except TimeoutException:
+                continue
+            else:
+                break
 
     def get_tracker_state(self):
         """Parse the UI to group all third party domains into their respective action states."""

@@ -15,7 +15,8 @@
  * along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-body {
+/* popup only (not options page) */
+body#main {
   box-sizing: border-box;
 
   background: #fefefe;
@@ -30,11 +31,18 @@ body {
   max-width: 100%;  /* FF android */
   min-height: 300px;
 }
+
 @media screen and (min--moz-device-pixel-ratio:0) {
-    body {
-        min-width: 200px; /* FF android */
+    /* popup only (not options page) */
+    body#main {
         width: 430px;     /* FF desktop */
     }
+}
+
+/* Override min-width 430px, which is only necessary for Chrome and causes the popup to be larger than most phone screens */
+/* Using a @media (max-width) query would affect Chrome Desktop as well. */
+body#main.is-android {
+    min-width: 200px;
 }
 
 /* popup only (not options page) */
@@ -66,6 +74,7 @@ button {
     height: 40px;
     overflow: hidden;
     line-height: normal;
+    position: relative; /* so that we can abs position child els (removeDomain) */
 }
 .clicker:not(#not-yet-blocked-header):not(#non-trackers-header) {
     direction: ltr;
@@ -120,21 +129,24 @@ button {
     width: 20px;
     height: 20px;
     position: relative;
-    left: 340px;
+    left: 120px;
     bottom: 15px;
 }
 .userset .honeybadgerPowered {
-    display: block;
+    display: inline-block;
     background: url('/icons/badger-pin.png') no-repeat;
 }
 
-a.removeOrigin {
-    float: right;
-    margin-right: 10px;
+a.removeDomain {
+    display: none;
+    margin-right: 15px;
     width: 10px;
     text-decoration: none;
+    position: absolute;
+    right: 0;
+    top: 6px;
 }
-a.removeOrigin:hover {
+a.removeDomain:hover {
     color: red !important;
 }
 
@@ -193,8 +205,8 @@ a.removeOrigin:hover {
     margin-inline-end: 3px;
 }
 
-/* body#main to avoid applying this to options page */
-body#main #blockedResourcesContainer, #special-browser-page, #disabled-site-message, #first-run-page {
+/* popup only (not options page) */
+body#main #blockedResourcesContainer, #special-browser-page, #disabled-site-message, #first-run-page, #popup-content {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -217,6 +229,10 @@ button.cta-button, a.cta-button {
 }
 button.cta-button:hover, a.cta-button:hover {
     background-color: #f58728;
+}
+button.cta-button:focus-visible, a.cta-button:focus-visible {
+    border: 2px solid #333;
+    outline: none;
 }
 
 .clickerContainer {
@@ -304,12 +320,13 @@ button.cta-button:hover, a.cta-button:hover {
     font-size: 16px;
     margin: 0;
 }
-/* body#main to avoid applying this to options page */
+/* popup only (not options page) */
 body#main #pbInstructions a, #firstparty-protections-container a, #donate a {
     text-decoration: underline;
     color: black;
     font-weight: bold;
 }
+/* popup only (not options page) */
 body#main #pbInstructions a:hover, #firstparty-protections-container a:hover, #donate a:hover {
     color: #ec9329;
 }
@@ -371,6 +388,10 @@ body#main #pbInstructions a:hover, #firstparty-protections-container a:hover, #d
 .pbButton:hover:enabled {
     border: 2px solid #F06A0A;
 }
+.pbButton:focus-visible {
+    border: 2px solid #F06A0A;
+    outline: none;
+}
 .pbButton:disabled {
     background-color: #ccc;
     color: #666;
@@ -394,6 +415,7 @@ body#main #pbInstructions a:hover, #firstparty-protections-container a:hover, #d
   left: 0;
   width: 100%;
   height: 100%;
+  min-height: 300px;
   display: block;
   font-size: 0.8em;
   z-index: -1;
@@ -402,13 +424,21 @@ body#main #pbInstructions a:hover, #firstparty-protections-container a:hover, #d
   box-sizing: border-box;
   color: #ccc;
   background: url("/skin/background.png");
-  transition: opacity .1s ease;
+  /* Delay visibility change to show opacity transition when overlay is closed */
+  transition: visibility 0s 0.1s, opacity 0.1s ease;
   overflow-y: auto;
+  visibility: hidden;
 }
 div.overlay.active {
   z-index: 31;
   opacity: 1;
+  visibility: visible;
+  transition: opacity 0.1s ease;
 }
+div#popup-content.hidden {
+    visibility: hidden;
+}
+
 #error-input {
     display: block;
     width: 98%;
@@ -493,18 +523,56 @@ a.overlay-close:hover {
     border: none;
 }
 
-.tooltipster-badger-breakage-note.tooltipster-sidetip .tooltipster-box {
+.breakage-note-tooltip {
+    position: absolute;
+    z-index: 999999;
+    /* Firefox Android workaround: must define position before measuring tooltip height for position calculations */
+    top: 0;
+    left: 0;
+    visibility: hidden;
+    direction: ltr; /* to match .clicker:not(#not-yet-blocked-header):not(#non-trackers-header) */
+}
+
+.breakage-note-tooltip .tooltip-box {
     background-color: #F06A0A;
-    padding: 10px 0;
-}
-.tooltipster-badger-breakage-note.tooltipster-sidetip .tooltipster-content {
     color: #fefefe;
-    cursor: pointer;
     font-size: 15px;
+    line-height: 1.2;
+    border-radius: 7px;
+    padding: 16px 12px;
+    display: flex;
 }
-.tooltipster-badger-breakage-note.tooltipster-sidetip .tooltipster-arrow-background {
-    border-top-color: #F06A0A;
+
+.breakage-note-tooltip .dismiss-tooltip {
+    background: none;
+    border: none;
+    color: #fefefe;
+    font-size: 25px;
+    font-weight: bold;
+    line-height: 1;
     cursor: pointer;
+    margin-left: 8px;
+    padding: 0;
+    position: relative;
+    top: -8px;
+    align-self: flex-start;
+}
+
+.breakage-note-tooltip .dismiss-tooltip:hover {
+    color: #ddd;
+}
+
+.breakage-note-tooltip .tooltip-arrow {
+    position: absolute;
+}
+
+.breakage-note-tooltip .tooltip-arrow-inner {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background-color: #F06A0A;
+    transform: rotate(45deg);
+    top: -8px;
 }
 
 #firstparty-protections-container, #youtube-message-container {
@@ -569,15 +637,15 @@ a.overlay-close:hover {
         margin-left: 150px;
     }
 
+    .honeybadgerPowered {
+        left: 105px;
+    }
+
     .key {
         left: 150px;
     }
     .key img {
         margin-left: 12px;
-    }
-
-    .honeybadgerPowered {
-        left: 255px;
     }
 
     #share {
@@ -586,6 +654,20 @@ a.overlay-close:hover {
     }
     #options {
         margin-right: 0px;
+    }
+}
+
+/* Space out icons on narrow Android screens */
+@media screen and (max-width: 500px){
+    body#main.is-android #corner-buttons {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        flex: 1;
+    }
+
+    body#main.is-android #badger-title-div {
+        flex: unset;
     }
 }
 
@@ -603,8 +685,12 @@ a.overlay-close:hover {
     a.cta-button:hover {
         color: #fff;
     }
+    button.cta-button:focus-visible, a.cta-button:focus-visible {
+        border: 2px solid #fff;
+    }
 
-    body, #instruction, .key {
+    /* popup only (not options page) */
+    body#main, #instruction, .key {
         background-color: #333;
         color: #ddd;
     }
@@ -617,7 +703,7 @@ a.overlay-close:hover {
     }
 
     button,
-    /* body#main to avoid applying this to options page */
+    /* popup only (not options page) */
     body#main #pbInstructions a,
     #firstparty-protections-container a,
     #donate a,
@@ -682,6 +768,7 @@ a.overlay-close:hover {
         background-color: #333;
         border: solid 2px #ddd;
     }
+
     .userset .honeybadgerPowered {
         filter: invert(100%);
     }

@@ -15,12 +15,18 @@ QUnit.module("tabData", {
     this.chromeTabsGet = chrome.tabs.get;
     chrome.tabs.get = (tab_id, callback) => {
       return callback({
-        active: true
+        active: true,
+        id: this.tabId
       });
     };
+
+    // Edge Beta and Firefox workaround for issues stubbing setBadgeBackgroundColor
+    this.setBadgeBackgroundColor = chrome.browserAction.setBadgeBackgroundColor;
+    chrome.browserAction.setBadgeBackgroundColor = () => {};
   },
 
   afterEach: function () {
+    chrome.browserAction.setBadgeBackgroundColor = this.setBadgeBackgroundColor;
     chrome.tabs.get = this.chromeTabsGet;
     badger.tabData.forget(this.tabId);
   }
@@ -237,13 +243,9 @@ function() {
   QUnit.module('updateBadge', {
     beforeEach: function() {
       this.setBadgeText = sinon.stub(chrome.browserAction, "setBadgeText");
-
-      // another Firefox workaround: setBadgeText gets stubbed fine but setBadgeBackgroundColor doesn't
-      this.setBadgeBackgroundColor = chrome.browserAction.setBadgeBackgroundColor;
     },
     afterEach: function() {
       this.setBadgeText.restore();
-      chrome.browserAction.setBadgeBackgroundColor = this.setBadgeBackgroundColor;
     },
   });
 
@@ -285,6 +287,21 @@ function() {
     assert.notOk(called, "setBadgeBackgroundColor does not get called");
 
     done();
+  });
+
+  QUnit.module('getTrackers()');
+
+  QUnit.test("Trackers are not returned by reference", function (assert) {
+    let DOMAIN = "example.com",
+      expected = {};
+    expected[DOMAIN] = constants.BLOCK;
+
+    badger.logThirdParty(this.tabId, DOMAIN, constants.BLOCK);
+
+    let trackers = badger.tabData.getTrackers(this.tabId);
+    trackers["eff.org"] = constants.NO_TRACKING;
+
+    assert.deepEqual(badger.tabData.getTrackers(this.tabId), expected);
   });
 
 });

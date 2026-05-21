@@ -10,7 +10,7 @@ if [ $# -ne 1 ] ; then
 fi
 TARGET="$1"
 
-LATEST_SDK_VERSION=8.5.0
+LATEST_SDK_VERSION=10.1.0
 WEB_EXT=../node_modules/.bin/web-ext
 PATCHER=../scripts/patch_manifest.py
 
@@ -36,8 +36,11 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-echo "Changing author value"
+echo "Fixing author value for Firefox"
 $PATCHER ../checkout/src/manifest.json 'set' 'author' 'privacybadger-owner@eff.org'
+
+echo "Removing Chrome's storage.managed_schema"
+$PATCHER ../checkout/src/manifest.json 'del' 'storage'
 
 echo "Removing Chrome's update_url"
 $PATCHER ../checkout/src/manifest.json 'del' 'update_url'

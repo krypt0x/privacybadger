@@ -4,8 +4,8 @@
         "description": "The name of this extension."
     },
     "description": {
-        "message": "Privacy Badger לומד באופן אוטומטי לחסום עוקבנים בלתי נראים.",
-        "description": "Extension description sometimes used by extension stores. See also 'intro_welcome', 'share_base_message' and 'intro_learns' messages."
+        "message": "לומד באופן אוטומטי לחסום עוקבנים מוסתרים. נוצר על ידי ארגון ללא מטרות רווח מוביל EFF כדי למנוע מחברות לרגל אחריך.",
+        "description": "Extension description used by browsers and extension store websites. LIMITED TO 132 CHARACTERS. See also 'intro_welcome', 'share_base_message' and 'intro_learns_paragraph' messages."
     },
     "canvas_fingerprinting": {
         "message": "לקיחת טביעת אצבע קנבס",
@@ -51,8 +51,12 @@
         "message": "דווח על אתר שבור",
         "description": "Button in the popup and title of the error reporting form overlay."
     },
+    "popup_donate_to_eff": {
+        "message": "תרום אל EFF — ארגון ללא מטרות רווח שמגן על פרטיות דיגיטלית",
+        "description": "A link in the popup footer."
+    },
     "popup_review_pb": {
-        "message": "Enjoying Privacy Badger? Leave a review!",
+        "message": "נהנה מן Privacy Badger? השאר ביקורת!",
         "description": "A link in the popup footer shown 30% of the time instead of 'Donate to EFF'."
     },
     "version": {
@@ -165,6 +169,16 @@
         "message": "תחום זה מבטיח לא לעקוב אחריך",
         "description": "Tooltip shown over an EFF's DNT policy-compliant domain name in the list of domains in the popup or under the Tracking Domains tab on the options page."
     },
+    "domain_slider_label": {
+        "message": "Settings for $DOMAIN$",
+        "description": "Screenreader-accessible label for domain sliders",
+        "placeholders": {
+            "domain": {
+                "content": "$1",
+                "example": "example.com"
+            }
+        }
+    },
     "domain_slider_block_tooltip": {
         "message": "חסום לגמרי",
         "description": "Tooltip shown over the leftmost part of a domain slider. This is an action (\"click here to ...\"), not a status."
@@ -239,7 +253,7 @@
     },
     "share_title": {
         "message": "ספר לחבריך",
-        "description": "Title of the Share popup overlay."
+        "description": "Title of the Share overlay in the popup; also subheader above social sharing buttons on the intro page"
     },
     "share_tracker_header": {
         "message": "Privacy Badger חסם $COUNT$ עוקבנים פוטנציאליים בתחום $DOMAIN$:",
@@ -256,7 +270,7 @@
         }
     },
     "share_base_message": {
-        "message": "Privacy Badger (privacybadger.org) הוא הרחבת דפדפן אשר לומדת באופן אוטומטי לחסום עוקבנים בלתי נראים. Privacy Badger נוצר על ידי הקרן של החזית האלקטרונית, ארגון ללא מטרות רווח שנלחם על זכויותיך באופן מקוון.",
+        "message": "Privacy Badger (privacybadger.org) הוא תוסף דפדפן שלומד באופן אוטומטי לחסום עוקבנים מוסתרים. Privacy Badger נוצר על ידי הקרן של החזית האלקטרונית, ארגון ללא מטרות רווח שנלחם על זכויותיך באופן מקוון.",
         "description": "The base message that is always included in the share message."
     },
     "copy_button_initial": {
@@ -288,19 +302,104 @@
         "description": "Message in the popup when users visit YouTube.com"
     },
     "extension_error_text": {
-        "message": "אנא <a href='https://www.eff.org/privacybadger#faq-I-found-a-bug!-What-do-I-do-now?' target='_blank'>ספר לנו</a> על השגיאה הבאה:",
-        "description": "Shown in the popup when there is an extension error we want to encourage the user to tell us about."
+        "message": "אנא $LINK_START$ספר לנו$LINK_END$ על השגיאה הבאה:",
+        "description": "Shown in the popup when there is an extension error we want to encourage the user to tell us about.",
+        "placeholders": {
+            "link_start": {
+                "content": "$1",
+                "example": "<a href='http://example.com'>"
+            },
+            "link_end": {
+                "content": "</a>"
+            }
+        }
     },
     "firstRun_title": {
         "message": "תודה על התקנת Privacy Badger!",
-        "description": "Title and header of the intro page."
+        "description": "Title of intro page"
     },
-    "intro_by_eff": {
-        "message": "מיזם של הקרן של החזית האלקטרונית",
-        "description": "Message in the header of the intro page."
+    "intro_eff_header": {
+        "message": "A privacy tool by $START_HTML$EFF$END_HTML$, a member-supported nonprofit",
+        "description": "Message in the header of intro page",
+        "placeholders": {
+            "start_html": {
+                "content": "$1",
+                "example": "<b>"
+            },
+            "end_html": {
+                "content": "$2",
+                "example": "</b>"
+            }
+        }
+    },
+    "intro_nag_header": {
+        "message": "Almost done!",
+        "description": "Intro page subheading in Chrome (also in macOS app for Safari)"
+    },
+    "intro_pin_nudge": {
+        "message": "$START_SPAN_TAG$הצמד את Privacy Badger אל סרגל הכלים שלך$END_SPAN_TAG$ עבור גישה קלה אל הכפתור \"$DISABLE_FOR_SITE$\".",
+        "description": "Intro page paragraph in Chrome",
+        "placeholders": {
+            "start_span_tag": {
+                "content": "<b>"
+            },
+            "disable_for_site": {
+                "content": "$1",
+                "example": "Disable for this site"
+            },
+            "end_span_tag": {
+                "content": "</b>"
+            }
+        }
+    },
+    "intro_pin_instructions": {
+        "message": "כדי להצמיד את האיקון של Privacy Badger, לחץ על איקון של חתיכת הפאזל בסרגל הכלים של הדפדפן שלך. לאחר מכן, לחץ על האיקון הצמד ליד Privacy Badger.",
+        "description": "Alt text for pinning instructions image on intro page in Chrome"
+    },
+    "intro_animation_button_stop": {
+        "message": "Stop animation",
+        "description": "Intro page button to stop the pinning instructions animation"
+    },
+    "intro_animation_button_play": {
+        "message": "Play animation",
+        "description": "Intro page button to play the pinning instructions animation"
+    },
+    "intro_disable_header": {
+        "message": "One tip before you enjoy better browsing",
+        "description": "Subheading on intro page for the section explaining the disable button in Firefox"
+    },
+    "intro_disable_button_context": {
+        "message": "Privacy Badger is all set to protect you from hidden trackers. But blocking trackers sometimes breaks websites.",
+        "description": "First paragraph of the disable button section of intro page"
+    },
+    "intro_disable_button": {
+        "message": "אם אתה חושב כי Privacy Badger שובר עמוד (סרטון לא מתנגן, לדוגמה), $START_HTML$אתה יכול ללחוץ על הכפתור '$DISABLE_FOR_SITE$' כדי לכבות את Privacy Badger עבור אותו אתר.$END_HTML$",
+        "description": "Disable button explainer on intro, options and popup pages",
+        "placeholders": {
+            "start_html": {
+                "content": "$1",
+                "example": "<b>"
+            },
+            "disable_for_site": {
+                "content": "$2",
+                "example": "Disable for this site"
+            },
+            "end_html": {
+                "content": "$3",
+                "example": "</b>"
+            }
+        }
+    },
+    "intro_features_header": {
+        "message": "Privacy Badger protects your browsing from trackers.",
+        "description": "Intro page header introducing Privacy Badger features section"
+    },
+    "intro_features_subheader": {
+        "message": "Learn how.",
+        "description": "Intro page subheader introducing Privacy Badger features section"
     },
     "intro_welcome": {
-        "message": "Privacy Badger לומד באופן אוטומטי לחסום עוקבנים בלתי נראים. קח דקה כדי לראות כיצד.",
+        "message": "Privacy Badger לומד באופן אוטומטי לחסום עוקבנים מוסתרים. קח דקה כדי לראות כיצד.",
         "description": "Intro page welcome paragraph."
     },
     "intro_next_button": {
@@ -316,7 +415,7 @@
         "description": "Intro page paragraph"
     },
     "intro_beyond_ads_paragraph2": {
-        "message": "If they ignore these signals, Privacy Badger will learn to block them—whether they are advertisers or trackers of other kinds.",
+        "message": "אם הם מתעלמים מסימנים אלו, Privacy Badger ילמד לחסום אותם — בין אם הם מפרסמים או עוקבנים מסוגים אחרים.",
         "description": "Intro page paragraph"
     },
     "intro_not_an_adblocker": {
@@ -328,24 +427,16 @@
         "description": "Intro page paragraph."
     },
     "intro_not_an_adblocker_paragraph2": {
-        "message": "Invisible tracking happens in all sorts of ways; ads are just the visible tip of the iceberg. Privacy Badger doesn't block ads unless they happen to be tracking you.",
+        "message": "מעקב מוסתר קורה בכל מיני דרכים; פרסומות הן רק הקצה הגלוי של הקרחון. Privacy Badger לא חוסם פרסומות אלא אם הן עוקבות אחריך.",
         "description": "Intro page paragraph"
-    },
-    "next_section": {
-        "message": "הקטע הבא",
-        "description": "Image alt. text on a couple of \"scroll down\" arrow buttons on the intro page."
     },
     "intro_open_popup": {
         "message": "נסה לפתוח את החלון הקופץ של Privacy Badger",
         "description": "Shown above an image of the Privacy Badger icon circled on the browser toolbar."
     },
     "intro_open_popup_alt": {
-        "message": "Browser toolbar with the Privacy Badger icon circled",
+        "message": "סרגל כלים של דפדפן עם איקון Privacy Badger מוקף",
         "description": "Alt text for toolbar icon image, which is shown below the intro_open_popup header."
-    },
-    "intro_disable_button": {
-        "message": "אם אתה חושב כי Privacy Badger שובר עמוד (סרטון לא מתנגן, לדוגמה), אתה יכול ללחוץ על הכפתור 'השבת' כדי לכבות את Privacy Badger עבור אותו אתר.",
-        "description": "Intro page paragraph. The quoted string ('Disable') should match the verb used for the 'popup_disable_for_site' message."
     },
     "intro_donate_heading": {
         "message": "פרטיות היא ספורט קבוצתי!",
@@ -355,49 +446,29 @@
         "message": "כאשר אתה משתמש ב־Privacy Badger אתה מצטרף אל <a href='https://www.eff.org/' target='_blank'>הקרן של החזית האלקטרונית</a> ואל מיליוני משתמשים אחרים בלחימה למען פרטיות. אנחנו ארגון ללא מטרות רווח הנלחם על זכויותיך באופן מקוון. תודה שהצטרפת אלינו!",
         "description": "Part of the 'donate' section on the intro page."
     },
+    "intro_donate_subheading": {
+        "message": "עזור לנו ע״י תרומה",
+        "description": "Subheader above the Donate button on the intro page"
+    },
     "donate_to_eff": {
         "message": "תרום אל EFF",
-        "description": "A button on the intro page, and a link in the popup footer."
-    },
-    "intro_donate_subheading": {
-        "message": "עזור לנו ע״י תרומה ושיתוף של תמיכתך בכלים שלנו",
-        "description": "Shown below the Donate button on the intro page."
-    },
-    "intro_link_policy": {
-        "message": "מדיניות פרטיות",
-        "description": "Shown at the bottom of the intro page."
-    },
-    "intro_pin_nudge": {
-        "message": "First, $START_SPAN_TAG$pin Privacy Badger to your toolbar$END_SPAN_TAG$ for easy access to the \"$DISABLE_FOR_SITE$\" button.",
-        "description": "Part of a Chrome-only overlay on the intro page",
-        "placeholders": {
-            "start_span_tag": {
-                "content": "<span id='pin-nudge-cta'>"
-            },
-            "disable_for_site": {
-                "content": "$1",
-                "example": "Disable for this site"
-            },
-            "end_span_tag": {
-                "content": "</span>"
-            }
-        }
-    },
-    "intro_pin_instructions": {
-        "message": "To pin Privacy Badger's icon, click on the puzzle piece icon in your browser toolbar. Then, click on the pin icon next to Privacy Badger.",
-        "description": "Alt text for pinning instructions image. Shown on the Chrome-only overlay of the intro page."
+        "description": "A button on the intro page"
     },
     "share_button_title_facebook": {
         "message": "שתף ב־Facebook",
         "description": "Text shown when you hover over the social sharing buttons on the intro page."
     },
-    "share_button_title_twitter": {
-        "message": "שתף ב־Twitter",
-        "description": "Text shown when you hover over the social sharing buttons on the intro page."
-    },
     "share_button_title_mastodon": {
         "message": "שתף ב־Mastodon",
         "description": "Text shown when you hover over the social sharing buttons on the intro page."
+    },
+    "share_button_title_bluesky": {
+        "message": "שתף ב־Bluesky",
+        "description": "Text shown when you hover over the social sharing buttons on the intro page."
+    },
+    "intro_link_policy": {
+        "message": "מדיניות פרטיות",
+        "description": "Shown at the bottom of the intro page."
     },
     "options_title": {
         "message": "אפשרויות Privacy Badger",
@@ -408,11 +479,11 @@
         "description": "Options page tab heading"
     },
     "options_disable_tip_title": {
-        "message": "How to disable Privacy Badger without leaving the site",
+        "message": "איך להשבית את Privacy Badger בלי לעזוב את האתר",
         "description": "Title of tip container on Disabled Sites tab"
     },
     "options_disable_tip_alt": {
-        "message": "First, click on Privacy Badger's icon in your browser toolbar. Then, click the \"$DISABLE_FOR_SITE$\" button.",
+        "message": "תחילה, לחץ על האיקון של Privacy Badger בסרגל הכלים של הדפדפן שלך. לאחר מכן, לחץ על הכפתור \"$DISABLE_FOR_SITE$\".",
         "description": "Alt text for image inside tip container on Disabled Sites tab",
         "placeholders": {
             "disable_for_site": {
@@ -510,7 +581,7 @@
         "description": "Header text on the Widget Replacement tab"
     },
     "options_hide_social_widgets": {
-        "message": "Block but don't replace the following widgets:",
+        "message": "חסום אבל אל תחליף את היישומונים הבאים:",
         "description": "Label for a form on the Widget Replacement tab"
     },
     "options_widget_site_exceptions_header": {
@@ -543,8 +614,17 @@
         }
     },
     "options_domain_list_no_trackers": {
-        "message": "Privacy Badger לא גילה <a target='_blank' tabindex=-1 title='i18n_what_is_a_tracker' class='tooltip' href='https://www.eff.org/privacybadger#faq-What-is-a-third-party-tracker?'>תחומי מעקב</a> עדין. המשך לגלוש!",
-        "description": "Shown on the Tracking Domains tab on the options page if all tracking domains have been removed."
+        "message": "Privacy Badger לא גילה $LINK_START$תחומי מעקב$LINK_END$ עדין. המשך לגלוש!",
+        "description": "Shown on the Tracking Domains tab on the options page if all tracking domains have been removed.",
+        "placeholders": {
+            "link_start": {
+                "content": "$1",
+                "example": "<a href='http://example.com'>"
+            },
+            "link_end": {
+                "content": "</a>"
+            }
+        }
     },
     "what_is_a_tracker": {
         "message": "מהו עוקבן?",

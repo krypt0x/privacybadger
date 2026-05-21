@@ -29,6 +29,31 @@ import webrequest from "./webrequest.js";
 import utils from "./utils.js";
 
 /**
+ * Checks for availability of firstPartyDomain chrome.cookies API parameter.
+ * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/cookies/getAll#Parameters
+ *
+ * firstPartyDomain is required when privacy.websites.firstPartyIsolate is enabled,
+ * and is in Firefox since Firefox 59. (firstPartyIsolate is in Firefox since 58).
+ *
+ * We don't care whether firstPartyIsolate is enabled, but rather whether
+ * firstPartyDomain is supported. Assuming firstPartyDomain is supported,
+ * setting it to null in chrome.cookies.getAll() produces the same result
+ * regardless of the state of firstPartyIsolate.
+ *
+ * firstPartyDomain is not currently supported in Chrome.
+ */
+function testCookiesFirstPartyDomain() {
+  try {
+    chrome.cookies.getAll({
+      firstPartyDomain: null
+    }, function () {});
+  } catch (ex) {
+    return false;
+  }
+  return true;
+}
+
+/**
  * Privacy Badger constructor.
  *
  * @param {Boolean} from_qunit don't intercept requests when run by unit tests
@@ -40,6 +65,15 @@ function Badger(from_qunit) {
   self.startTime = new Date();
   self.isFirstRun = false;
   self.isUpdate = false;
+  self.isAndroid = false;
+
+  if (chrome.runtime.getPlatformInfo) {
+    chrome.runtime.getPlatformInfo((info) => {
+      if (info && info.os == "android") {
+        self.isAndroid = true;
+      }
+    });
+  }
 
   (function () {
     let manifestJson = chrome.runtime.getManifest();
@@ -114,11 +148,7 @@ function Badger(from_qunit) {
 
     if (self.criticalError == "Privacy Badger failed to initialize") {
       delete self.criticalError;
-      chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
-        if (tabs[0]) {
-          self.updateBadge(tabs[0].id);
-        }
-      });
+      self.updateBadge();
     }
 
     if (!from_qunit) {
@@ -126,30 +156,6 @@ function Badger(from_qunit) {
     }
   }
 
-  /**
-   * Checks for availability of firstPartyDomain chrome.cookies API parameter.
-   * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/cookies/getAll#Parameters
-   *
-   * firstPartyDomain is required when privacy.websites.firstPartyIsolate is enabled,
-   * and is in Firefox since Firefox 59. (firstPartyIsolate is in Firefox since 58).
-   *
-   * We don't care whether firstPartyIsolate is enabled, but rather whether
-   * firstPartyDomain is supported. Assuming firstPartyDomain is supported,
-   * setting it to null in chrome.cookies.getAll() produces the same result
-   * regardless of the state of firstPartyIsolate.
-   *
-   * firstPartyDomain is not currently supported in Chrome.
-   */
-  function testCookiesFirstPartyDomain() {
-    try {
-      chrome.cookies.getAll({
-        firstPartyDomain: null
-      }, function () {});
-    } catch (ex) {
-      return false;
-    }
-    return true;
-  }
 } /* end of Badger constructor */
 
 Badger.prototype = {
@@ -489,7 +495,7 @@ Badger.prototype = {
   },
 
   /**
-   * @returns {Set}
+   * @returns {Set<String>}
    */
   getAllWidgetDomains() {
     let self = this,
@@ -556,7 +562,103 @@ Badger.prototype = {
   },
 
   /**
-   * Initializes PB's remotely configurable settings from local copy on disk.
+   * Fetches, parses and validates remotely configurable settings.
+   * Then, updates the fetched settings in memory and storage.
+   *
+   * @param {String} url The URL to fetch settings from.
+   *
+   * @returns {Promise}
+   */
+  ingestPbconfig: async function (url) {
+    let self = this;
+
+    let response, data;
+
+    try {
+      response = await fetch(url, { cache: "no-store" });
+    } catch (err) {
+      console.error("Problem fetching pbconfig:", err);
+      throw new Error("Failed to fetch pbconfig");
+    }
+    if (!response.ok) {
+      console.error("Problem fetching pbconfig: %s response", response.status);
+      throw new Error("Failed to fetch pbconfig");
+    }
+
+    try {
+      data = await response.json();
+    } catch (err) {
+      console.error(err);
+      throw new Error("Failed to parse pbconfig JSON");
+    }
+
+    // validate the response
+    if (!data.yellowlist || !data.yellowlist.length || !data.yellowlist.every || !data.yellowlist.every(domain => {
+      // all domains must contain at least one dot
+      if (domain.indexOf('.') == -1) {
+        return false;
+      }
+
+      // validate character set
+      //
+      // regex says:
+      // - domain starts with lowercase English letter or Arabic numeral
+      // - following that, it contains one or more
+      // letter/numeral/dot/dash characters
+      // - following the previous two requirements, domain ends with a letter
+      //
+      // TODO both overly restrictive and inaccurate
+      // but that's OK for now, we manage the list
+      if (!/^[a-z0-9][a-z0-9.-]+[a-z]$/.test(domain)) {
+        return false;
+      }
+
+      return true;
+    })) {
+      throw new Error("Invalid yellowlist response");
+    }
+
+    self.storage.updateYellowlist(data.yellowlist);
+
+    self.storage.updateDntHashes(data.dnt_policy_hashes);
+
+    if (utils.hasOwn(data, 'sitefixes')) {
+      // temporary exception list for sites
+      // where sending DNT/GPC signals causes major breakages
+      if (utils.hasOwn(data.sitefixes, 'gpc')) {
+        let gpcExceptions = {};
+        for (let site of data.sitefixes.gpc) {
+          gpcExceptions[site] = true;
+        }
+        self.getPrivateSettings().setItem('gpcDisabledSites', gpcExceptions);
+      }
+
+      // site-specific overrides
+      let sitefixes = {};
+
+      for (let kind of ['ignore', 'yellowlist']) {
+        if (!data.sitefixes[kind]) {
+          continue;
+        }
+        for (let pattern of Object.keys(data.sitefixes[kind])) {
+          for (let site_host of data.sitefixes[kind][pattern]) {
+            if (!sitefixes[site_host]) {
+              sitefixes[site_host] = {};
+            }
+            if (!sitefixes[site_host][kind]) {
+              sitefixes[site_host][kind] = [];
+            }
+            sitefixes[site_host][kind].push(pattern);
+          }
+        }
+      }
+
+      self.getPrivateSettings().setItem('sitefixes', sitefixes);
+    }
+  },
+
+  /**
+   * Initializes remotely configurable settings from local copy on disk.
    *
    * @returns {Promise}
    */
@@ -569,24 +671,7 @@ Badger.prototype = {
       return;
     }
 
-    let response, data;
-
-    try {
-      response = await fetch(constants.PBCONFIG_LOCAL_URL);
-    } catch (err) {
-      console.error(err);
-      throw new Error("Failed to fetch local pbconfig");
-    }
-
-    try {
-      data = await response.json();
-    } catch (err) {
-      console.error(err);
-      throw new Error("Failed to parse local pbconfig JSON");
-    }
-
-    self.storage.updateYellowlist(data.yellowlist);
-    self.storage.updateDntHashes(data.dnt_policy_hashes);
+    await self.ingestPbconfig(constants.PBCONFIG_LOCAL_URL);
 
     if (!self.getPrivateSettings().getItem('doneLoadingYellowlist')) {
       self.storage.forceSync('action_map', function () {
@@ -627,8 +712,7 @@ Badger.prototype = {
   },
 
   /**
-   * Fetches the latest pbconfig from eff.org, and updates
-   * the yellowlist and DNT policy hashes.
+   * Updates remotely configurable settings from eff.org.
    *
    * @returns {Promise}
    */
@@ -638,59 +722,7 @@ Badger.prototype = {
     // schedule the next update for long-running extension environments
     setTimeout(self.updatePbconfig.bind(self), utils.oneDay());
 
-    let response, data;
-
-    try {
-      response = await fetch(constants.PBCONFIG_REMOTE_URL, { cache: "no-store" });
-    } catch (err) {
-      console.error("Problem fetching pbconfig:", err);
-      throw new Error("Failed to fetch remote pbconfig");
-    }
-    if (!response.ok) {
-      console.error("Problem fetching pbconfig: %s response", response.status);
-      throw new Error("Failed to fetch remote pbconfig");
-    }
-
-    try {
-      data = await response.json();
-    } catch (err) {
-      console.error(err);
-      throw new Error("Failed to parse pbconfig JSON");
-    }
-
-    // validate the response
-    if (!data.yellowlist || !data.yellowlist.length || !data.yellowlist.every || !data.yellowlist.every(domain => {
-      // all domains must contain at least one dot
-      if (domain.indexOf('.') == -1) {
-        return false;
-      }
-
-      // validate character set
-      //
-      // regex says:
-      // - domain starts with lowercase English letter or Arabic numeral
-      // - following that, it contains one or more
-      // letter/numeral/dot/dash characters
-      // - following the previous two requirements, domain ends with a letter
-      //
-      // TODO both overly restrictive and inaccurate
-      // but that's OK for now, we manage the list
-      if (!/^[a-z0-9][a-z0-9.-]+[a-z]$/.test(domain)) {
-        return false;
-      }
-
-      return true;
-    })) {
-      throw new Error("Invalid yellowlist response");
-    }
-
-    self.storage.updateYellowlist(data.yellowlist);
-    log("Updated yellowlist from remote");
-
-    if (self.isCheckingDNTPolicyEnabled()) {
-      self.storage.updateDntHashes(data.dnt_policy_hashes);
-      log("Updated DNT policy hashes from remote");
-    }
+    await self.ingestPbconfig(constants.PBCONFIG_REMOTE_URL);
 
     // refresh next update time to help avoid updating on every restart
     self.getPrivateSettings().setItem('nextPbconfigUpdateTime',
@@ -834,9 +866,11 @@ Badger.prototype = {
       doneLoadingSeed: false,
       doneLoadingYellowlist: false,
       firstRunTimerFinished: true,
+      gpcDisabledSites: {},
       ignoredSiteBases: [],
       nextPbconfigUpdateTime: 0,
       showLearningPrompt: false,
+      sitefixes: {}
     };
     for (let key of Object.keys(privateDefaultSettings)) {
       if (!privateStore.hasItem(key)) {
@@ -887,8 +921,8 @@ Badger.prototype = {
 
   /**
    * Returns the count of tracking domains for a tab.
-   * @param {Integer} tab_id browser tab ID
-   * @returns {Integer} tracking domains count
+   * @param {Number} tab_id browser tab ID
+   * @returns {Number} tracking domains count
    */
   getTrackerCount: function (tab_id) {
     let trackers = this.tabData.getTrackers(tab_id),
@@ -910,17 +944,20 @@ Badger.prototype = {
   },
 
   /**
-   * Update page action badge with current count.
-   * @param {Integer} tab_id browser tab ID
+   * Updates browser action badge.
+   *
+   * @param {Number} [tab_id] the tab to update the badge for; defaults to active tab
    */
-  updateBadge: function (tab_id) {
+  updateBadge: function (tab_id = null) {
     if (!FirefoxAndroid.hasBadgeSupport) {
       return;
     }
 
     let self = this;
 
-    chrome.tabs.get(tab_id, function (tab) {
+    function _update(tab) {
+      tab_id = tab.id;
+
       if (chrome.runtime.lastError) {
         // don't set on background (prerendered) tabs to avoid Chrome errors
         return;
@@ -958,7 +995,24 @@ Badger.prototype = {
 
       chrome.browserAction.setBadgeBackgroundColor({tabId: tab_id, color: "#ec9329"});
       chrome.browserAction.setBadgeText({tabId: tab_id, text: count + ""});
-    });
+    }
+
+    if (tab_id === null) {
+      chrome.tabs.query({
+        active: true
+      }, function (tabs) {
+        for (let tab of tabs) {
+          _update(tab);
+        }
+      });
+
+    } else {
+      chrome.tabs.get(tab_id, function (tab) {
+        if (tab) {
+          _update(tab);
+        }
+      });
+    }
   },
 
   /**
@@ -1022,17 +1076,15 @@ Badger.prototype = {
    * @returns {Boolean}
    */
   isDntSignalEnabled: function (site_host) {
-    if (!this.getSettings().getItem("sendDNTSignal")) {
+    let self = this;
+
+    if (!self.getSettings().getItem("sendDNTSignal")) {
       return false;
     }
-    // temp. exception list for sites
-    // where sending DNT/GPC signals causes major breakages
+
     // TODO indicate when this happens in the UI somehow
-    const gpcDisabledWebsites = {
-      'www.costco.com': true,
-      'fivethirtyeight.com': true,
-    };
-    return !utils.hasOwn(gpcDisabledWebsites, site_host);
+    let gpcExceptions = self.getPrivateSettings().getItem("gpcDisabledSites");
+    return !utils.hasOwn(gpcExceptions, site_host);
   },
 
   isCheckingDNTPolicyEnabled: function() {
@@ -1056,7 +1108,7 @@ Badger.prototype = {
   /**
    * Returns the current list of disabled sites.
    *
-   * @returns {Array} site domains where Privacy Badger is disabled
+   * @returns {Array<String>} site domains where Privacy Badger is disabled
    */
   getDisabledSites: function () {
     return this.getSettings().getItem("disabledSites");
@@ -1086,16 +1138,15 @@ Badger.prototype = {
   hasLocalStorageSupercookie: function (lsItems) {
     var LOCALSTORAGE_ENTROPY_THRESHOLD = 33, // in bits
       estimatedEntropy = 0,
-      lsKey = "",
-      lsItem = "";
-    for (lsKey in lsItems) {
+      key = "";
+    for (key in lsItems) {
       // send both key and value to entropy estimation
-      lsItem = lsItems[lsKey];
-      log("Checking localstorage item", lsKey, lsItem);
-      estimatedEntropy += utils.estimateMaxEntropy(lsKey + lsItem);
+      let item = lsItems[key];
+      log("Checking localstorage item", key, item);
+      estimatedEntropy += utils.estimateMaxEntropy(key + item);
       if (estimatedEntropy > LOCALSTORAGE_ENTROPY_THRESHOLD) {
         log("Found high-entropy localStorage: ", estimatedEntropy,
-          " bits, key: ", lsKey);
+          " bits, key: ", key);
         return true;
       }
     }
@@ -1122,7 +1173,7 @@ Badger.prototype = {
    * Records third party FQDNs to tabData for use in the popup,
    * and if necessary updates the badge.
    *
-   * @param {Integer} tab_id the tab we are on
+   * @param {Number} tab_id the tab we are on
    * @param {String} fqdn the third party domain to add
    * @param {String} action the action we are taking
    */
@@ -1158,7 +1209,7 @@ Badger.prototype = {
 
   /**
    * Enables or disables page action icon according to options.
-   * @param {Integer} tab_id The tab ID to set the badger icon for
+   * @param {Number} tab_id The tab ID to set the badger icon for
    * @param {String} tab_url The tab URL to set the badger icon for
    */
   updateIcon: function (tab_id, tab_url) {
@@ -1172,13 +1223,15 @@ Badger.prototype = {
     if (!utils.isRestrictedUrl(tab_url) &&
         self.isPrivacyBadgerEnabled(extractHostFromURL(tab_url))) {
       iconFilename = {
-        19: chrome.runtime.getURL("icons/badger-19.png"),
-        38: chrome.runtime.getURL("icons/badger-38.png")
+        16: chrome.runtime.getURL("icons/badger-16.png"),
+        32: chrome.runtime.getURL("icons/badger-32.png"),
+        64: chrome.runtime.getURL("icons/badger-64.png")
       };
     } else {
       iconFilename = {
-        19: chrome.runtime.getURL("icons/badger-19-disabled.png"),
-        38: chrome.runtime.getURL("icons/badger-38-disabled.png")
+        16: chrome.runtime.getURL("icons/badger-16-disabled.png"),
+        32: chrome.runtime.getURL("icons/badger-32-disabled.png"),
+        64: chrome.runtime.getURL("icons/badger-64-disabled.png")
       };
     }
 
@@ -1190,10 +1243,10 @@ Badger.prototype = {
 /**************************** Listeners ****************************/
 
 function startBackgroundListeners() {
-  chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  chrome.tabs.onUpdated.addListener(function(tab_id, changeInfo, tab) {
     if (badger.INITIALIZED && changeInfo.status == "loading" && tab.url) {
       badger.updateIcon(tab.id, tab.url);
-      badger.updateBadge(tabId);
+      badger.updateBadge(tab_id);
     }
   });
 

@@ -15,8 +15,6 @@
  * along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-env browser, jquery */
-
 window.POPUP_INITIALIZED = false;
 window.SLIDERS_DONE = false;
 
@@ -44,18 +42,22 @@ const DOMAIN_TOOLTIP_CONF = {
 function getLink() {
   let linkRotation = [
     {
-      url: constants.REVIEW_LINKS[constants.BROWSER] || constants.REVIEW_LINKS.chrome, // Default to Chrome if unknown
+      url: "https://supporters.eff.org/donate/support-privacy-badger",
+      text: "popup_donate_to_eff",
+      icon: "ui-icon-heart",
+      odds: 1.0
+    }
+  ];
+  if (utils.hasOwn(constants.REVIEW_LINKS, constants.BROWSER)) {
+    linkRotation[0].odds = 0.7;
+
+    linkRotation.push({
+      url: constants.REVIEW_LINKS[constants.BROWSER],
       text: "popup_review_pb",
       icon: "ui-icon-star",
       odds: 0.3 // Odds of all links should add up to 1
-    },
-    {
-      url: "https://supporters.eff.org/donate/support-privacy-badger",
-      text: "donate_to_eff",
-      icon: "ui-icon-heart",
-      odds: 0.7
-    }
-  ];
+    });
+  }
 
   let rand = Math.random();
   let cumulative_odds = 0;
@@ -185,6 +187,10 @@ function showNagMaybe() {
 function init() {
   showNagMaybe();
 
+  if (POPUP_DATA.isAndroid) {
+    $("body").addClass("is-android");
+  }
+
   $("#activate_site_btn").on("click", activateOnSite);
   $("#deactivate_site_btn").on("click", deactivateOnSite);
 
@@ -198,9 +204,9 @@ function init() {
   });
 
   $("#error").on("click", function() {
-    $('#overlay').toggleClass('active');
+    showOverlay("#overlay");
     // Show YouTube message on error reporting form
-    if (POPUP_DATA.tabHost === "www.youtube.com") {
+    if (POPUP_DATA.tabHost === "www.youtube.com" || POPUP_DATA.tabHost === "m.youtube.com") {
       $('#report-youtube-message').html(chrome.i18n.getMessage("popup_info_youtube") + " " + chrome.i18n.getMessage('learn_more_link', ['<a target=_blank href="https://privacybadger.org/#Is-Privacy-Badger-breaking-YouTube">privacybadger.org</a>']));
       $("#report-youtube-message-container").show();
     }
@@ -240,24 +246,26 @@ function init() {
   }
 
   // show YouTube message if the current tab is YouTube
-  if (POPUP_DATA.enabled && POPUP_DATA.tabHost === "www.youtube.com") {
+  if (POPUP_DATA.enabled && (POPUP_DATA.tabHost === "www.youtube.com" || POPUP_DATA.tabHost === "m.youtube.com")) {
     $('#youtube-message').html(chrome.i18n.getMessage("popup_info_youtube") + " " + chrome.i18n.getMessage('learn_more_link', ['<a target=_blank href="https://privacybadger.org/#Is-Privacy-Badger-breaking-YouTube">privacybadger.org</a>']));
     $("#youtube-message-container").show();
   }
 
-  // improve on Firefox's built-in options opening logic
-  if (typeof browser == "object" && typeof browser.runtime.getBrowserInfo == "function") {
-    browser.runtime.getBrowserInfo().then(function (info) {
-      if (info.name == "Firefox") {
-        $("#options").on("click", function (e) {
-          e.preventDefault();
-          openPage(chrome.runtime.getURL("/skin/options.html"));
-        });
-        $("#help").on("click", function (e) {
-          e.preventDefault();
-          openPage(this.getAttribute('href'));
-        });
-      }
+  // avoid options (Edge and Firefox) and help (Firefox) pages
+  // opening inside the popup overlay on Android
+  //
+  // also avoid the popup staying open
+  // after clicking options/help on desktop Firefoxes
+  if (POPUP_DATA.isAndroid || constants.BROWSER == "firefox") {
+    $("#options").on("click", function (e) {
+      e.preventDefault();
+      openPage(chrome.runtime.getURL("/skin/options.html"));
+    });
+  }
+  if (constants.BROWSER == "firefox") {
+    $("#help").on("click", function (e) {
+      e.preventDefault();
+      openPage(this.getAttribute('href'));
     });
   }
 
@@ -267,7 +275,7 @@ function init() {
   });
   $("#share-close").on("click", function (e) {
     e.preventDefault();
-    $("#share-overlay").toggleClass('active', false);
+    hideOverlay("#share-overlay");
   });
   $("#copy-button").on("click", function() {
     $("#share-output").select();
@@ -304,7 +312,7 @@ function openPage(url) {
     try {
       chrome.tabs.create(tabProps);
     } catch (e) {
-      // TODO workaround for pre-57 Firefox
+      // workaround for Firefox on Android
       delete tabProps.openerTabId;
       chrome.tabs.create(tabProps);
     }
@@ -324,10 +332,10 @@ function clearSavedErrorText() {
  * Close the error reporting overlay
  */
 function closeOverlay() {
-  $('#overlay').toggleClass('active', false);
   $("#report-success").hide();
   $("#report-fail").hide();
   $("#error-input").val("");
+  hideOverlay("#overlay");
 }
 
 /**
@@ -453,7 +461,7 @@ function deactivateOnSite() {
  * Open the share overlay
  */
 function share() {
-  $("#share-overlay").toggleClass('active');
+  showOverlay("#share-overlay");
   let share_msg = chrome.i18n.getMessage("share_base_message");
 
   // only add language about found trackers if we actually found trackers
@@ -506,6 +514,7 @@ function toggleBlockedResourcesHandler(e) {
     $("#collapse-blocked-resources").show();
     $("#expand-blocked-resources").hide();
     $("#blockedResources").slideDown();
+    $("#tracker-list-header").attr("aria-expanded", true);
     chrome.runtime.sendMessage({
       type: "updateSettings",
       data: { showExpandedTrackingSection: true }
@@ -514,6 +523,7 @@ function toggleBlockedResourcesHandler(e) {
     $("#collapse-blocked-resources").hide();
     $("#expand-blocked-resources").show();
     $("#blockedResources").slideUp();
+    $("#tracker-list-header").attr("aria-expanded", false);
     chrome.runtime.sendMessage({
       type: "updateSettings",
       data: { showExpandedTrackingSection: false }
@@ -542,7 +552,7 @@ function toggleFirstPartyInfoHandler() {
 function revertDomainControl(event) {
   event.preventDefault();
 
-  let domain = $(event.target).parent().data('origin');
+  let domain = $(event.target).parent().parent().data('origin');
 
   chrome.runtime.sendMessage({
     type: "revertDomainControl",
@@ -557,39 +567,105 @@ function revertDomainControl(event) {
  * Tooltip that explains how to enable signing into websites with Google.
  */
 function createBreakageNote(domain, i18n_message_key) {
-  let $slider_allow = $(`#blockedResourcesInner label[for="allow-${domain.replace(/\./g, '-')}"]`);
-
-  // first remove the Allow tooltip so that future tooltipster calls
-  // return the tooltip we want (the breakage note, not Allow)
-  $slider_allow.tooltipster('destroy').tooltipster({
-    autoClose: false,
-    content: chrome.i18n.getMessage(i18n_message_key),
-    functionReady: function (tooltip) {
-      // close on tooltip click/tap
-      $(tooltip.elementTooltip()).on('click', function (e) {
-        e.preventDefault();
-        tooltip.hide();
-      });
-      // also when Report Broken Site or Share overlays get activated
-      $('#error, #share').off('click.breakage-note').on('click.breakage-note', function (e) {
-        e.preventDefault();
-        tooltip.hide();
-      });
-    },
-    interactive: true,
-    position: ['top'],
-    trigger: 'custom',
-    theme: 'tooltipster-badger-breakage-note'
-
-  // now restore the Allow tooltip
-  }).tooltipster(Object.assign({}, DOMAIN_TOOLTIP_CONF, {
-    content: chrome.i18n.getMessage('domain_slider_allow_tooltip'),
-    multiple: true
-  }));
-
-  if (POPUP_DATA.settings.seenComic && !POPUP_DATA.showLearningPrompt && !POPUP_DATA.criticalError) {
-    $slider_allow.tooltipster('show');
+  if (!POPUP_DATA.settings.seenComic || POPUP_DATA.showLearningPrompt || POPUP_DATA.criticalError) {
+    return;
   }
+
+  let $clicker = $(`.clicker[data-origin="${domain}"]`);
+  let $switchContainer = $clicker.find('.switch-container');
+
+  // Create tooltip HTML
+  let $tooltip = $(`
+   <div class="breakage-note-tooltip" role="tooltip">
+     <div class="tooltip-box">
+       <div class="tooltip-content">${chrome.i18n.getMessage(i18n_message_key)}</div>
+       <button class="dismiss-tooltip" aria-label="${chrome.i18n.getMessage("report_close")}">×</button>
+     </div>
+     <div class="tooltip-arrow">
+       <div class="tooltip-arrow-inner"></div>
+     </div>
+   </div>`);
+
+  // Cannot insert inside blockedResourcesInner because it'll be cut off
+  $('#blockedResourcesInner').before($tooltip);
+
+  let switchOffset = $switchContainer.offset();
+  let switch_width = $switchContainer.outerWidth();
+  let switch_height = $switchContainer.outerHeight();
+  let arrow_width = $tooltip.find('.tooltip-arrow-inner').outerWidth();
+  let tooltip_height = $tooltip.outerHeight();
+
+  // Tooltip should be above the the switch container
+  $tooltip.css({
+    top: (switchOffset.top - tooltip_height - switch_height) + 'px',
+    left: '0px',
+    visibility: 'visible',
+  });
+
+  // Arrow should point to the allow toggle of the slider
+  let arrow_left = switchOffset.left + (switch_width * 5/6) - (arrow_width / 2);
+  $tooltip.find('.tooltip-arrow').css('left', arrow_left + 'px');
+
+  let intObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        $tooltip.show(); // show tooltip when slider is visible
+        suppressOverlapping();
+      } else {
+        $tooltip.hide(); // hide tooltip when slider is not visible
+        restoreSuppressed();
+      }
+    });
+  }, { threshold: 0 });
+  intObserver.observe($switchContainer[0]);
+
+  // Collect originally focusable elements we suppress
+  let suppressed = [];
+  function suppressOverlapping() {
+    // Ensure that obscured elements will not receive keyboard focus
+    // (https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html)
+    let tooltipRect = $tooltip[0].getBoundingClientRect();
+    for (let el of document.querySelectorAll(htmlUtils.focusableSelectors)) {
+      // ignore invisible elements
+      if (el.style.display == 'none' || (el.offsetWidth == 0 && el.offsetHeight == 0) || window.getComputedStyle(el).visibility == 'hidden') {
+        continue;
+      }
+      let elRect = el.getBoundingClientRect();
+      // Treat elements as obscured if at least 50% of its height overlaps with the tooltip
+      let overlaps = (elRect.bottom > (tooltipRect.top + (elRect.height * 0.5))) && (elRect.top < (tooltipRect.bottom - (elRect.height * 0.5)));
+      if (overlaps && !$tooltip[0].contains(el)) {
+        suppressed.push({ el, originalTabIndex: el.getAttribute('tabindex') });
+        el.setAttribute('tabindex', '-1');
+      }
+    }
+  }
+  // Restore ability to tab navigate to hidden elements once breakage note is closed
+  function restoreSuppressed() {
+    suppressed.forEach(({ el, originalTabIndex }) => {
+      if (originalTabIndex === null) {
+        el.removeAttribute('tabindex');
+      } else {
+        el.setAttribute('tabindex', originalTabIndex);
+      }
+    });
+    suppressed = [];
+  }
+
+  // Close button handler
+  $tooltip.find('.dismiss-tooltip').on('click', function(e) {
+    e.preventDefault();
+    restoreSuppressed();
+    intObserver.disconnect();
+    $tooltip.fadeOut(200);
+  });
+
+  // Also close when Report Broken Site or Share overlays get activated
+  $('#error, #share').off('click.breakage-note').on('click.breakage-note', function (e) {
+    e.preventDefault();
+    restoreSuppressed();
+    intObserver.disconnect();
+    $tooltip.remove();
+  });
 }
 
 /**
@@ -612,6 +688,11 @@ function refreshPopup() {
       // disable Disable/Report buttons
       $('#deactivate_site_btn').prop('disabled', true);
       $('#error').prop('disabled', true);
+
+      // hide donate/rate/etc. to max. attention on disable button tip
+      $('#donate').text("");
+      $('#version').hide();
+
     } else {
       // show the "nothing to do here" message
       $('#special-browser-page').show();
@@ -623,6 +704,7 @@ function refreshPopup() {
 
     // activate tooltips
     $('.tooltip').tooltipster();
+    htmlUtils.triggerTooltipsOnFocus();
 
     window.SLIDERS_DONE = true;
 
@@ -651,7 +733,7 @@ function refreshPopup() {
   }
   // show error layout if the user was writing an error report
   if (utils.hasOwn(POPUP_DATA, 'errorText') && POPUP_DATA.errorText) {
-    $('#overlay').toggleClass('active');
+    showOverlay("#overlay");
   }
 
   // show sliders when sliders were shown last,
@@ -669,11 +751,13 @@ function refreshPopup() {
     $('#expand-blocked-resources').hide();
     $('#collapse-blocked-resources').show();
     $('#blockedResources').show();
+    $("#tracker-list-header").attr("aria-expanded", true);
 
   } else {
     $('#expand-blocked-resources').show();
     $('#collapse-blocked-resources').hide();
     $('#blockedResources').hide();
+    $("#tracker-list-header").attr("aria-expanded", false);
   }
 
   let domainsArr = [];
@@ -693,6 +777,7 @@ function refreshPopup() {
 
     // activate tooltips
     $('.tooltip').tooltipster();
+    htmlUtils.triggerTooltipsOnFocus();
 
     window.SLIDERS_DONE = true;
 
@@ -769,6 +854,7 @@ function refreshPopup() {
 
   // activate tooltips
   $('.tooltip').tooltipster();
+  htmlUtils.triggerTooltipsOnFocus();
 
   if (POPUP_DATA.trackerCount === 0) {
     // show "no trackers" message
@@ -789,7 +875,7 @@ function refreshPopup() {
     $('#instructions-many-trackers').html(chrome.i18n.getMessage(
       "popup_instructions", [
         POPUP_DATA.trackerCount,
-        "<a target='_blank' title='" + htmlUtils.escape(chrome.i18n.getMessage("what_is_a_tracker")) + "' class='tooltip' href='https://privacybadger.org/#What-is-a-third-party-tracker'>"
+        "<a target='_blank' title='" + htmlUtils.escape(chrome.i18n.getMessage("what_is_a_tracker")) + "' aria-description='" + htmlUtils.escape(chrome.i18n.getMessage("what_is_a_tracker")) + "' class='tooltip' href='https://privacybadger.org/#What-is-a-third-party-tracker'>"
       ]
     )).find(".tooltip").tooltipster();
   }
@@ -799,15 +885,11 @@ function refreshPopup() {
 
     let $printable = $(printable.splice(0, CHUNK).join(""));
 
-    // Hide elements for removing domains (controlled from the options page).
-    // Popup shows what's loaded for the current page so it doesn't make sense
-    // to have removal ability here.
-    $printable.find('.removeOrigin').hide();
-
     $printable.appendTo('#blockedResourcesInner');
 
     // activate tooltips
     $printable.find('.tooltip:not(.tooltipstered)').tooltipster(DOMAIN_TOOLTIP_CONF);
+
     if ($printable.hasClass('breakage-note')) {
       let domain = $printable[0].dataset.origin;
       createBreakageNote(domain, BREAKAGE_NOTE_DOMAINS[domain]);
@@ -818,6 +900,10 @@ function refreshPopup() {
     } else {
       $('#not-yet-blocked-header').tooltipster();
       $('#non-trackers-header').tooltipster();
+      htmlUtils.triggerTooltipsOnFocus();
+      htmlUtils.triggerTooltipsOnFocus('.dnt-compliant a', (trigger) => $(trigger).closest('.tooltip'));
+      // Workaround for slider tooltips: the input receives keyboard focus, but the tooltip must be attached to the corresponding label to appear in the correct place
+      htmlUtils.triggerTooltipsOnFocus('.switch-toggle input', (trigger) => `label.tooltip[for="${trigger.id}"]`);
       window.SLIDERS_DONE = true;
     }
   }
@@ -894,6 +980,32 @@ function getTab(callback) {
  */
 function setPopupData(data) {
   POPUP_DATA = data;
+}
+
+let $lastFocused;
+function showOverlay(overlay_id) {
+  // Store last focused element to return to after closing overlay via tab navigation
+  $lastFocused = $(document.activeElement);
+
+  $(overlay_id).toggleClass('active');
+  $('#popup-content').toggleClass('hidden');
+
+  // Focus on the first focusable element, per ARIA guidance for dialogs/modals
+  // https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/
+  let $focusables = $(overlay_id).find(htmlUtils.focusableSelectors);
+  if ($focusables.length) {
+    $focusables[0].focus();
+  }
+}
+function hideOverlay(overlay_id) {
+  $(overlay_id).toggleClass('active', false);
+  $('#popup-content').toggleClass('hidden', false);
+
+  // Return focus to the element that invoked it,
+  // per ARIA guidance for dialogs/modals
+  if ($lastFocused && $lastFocused.length) {
+    $lastFocused.focus();
+  }
 }
 
 $(function () {

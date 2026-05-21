@@ -1,6 +1,53 @@
 Privacy Badger changelog
 ========================
 
+2026.2.20
+* Improved blocking trackers in Chrome and Chromium-based browsers.
+Previously, due to now addressed limitations in Manifest V3 Chromium,
+Privacy Badger sometimes failed to block domains that should have been
+blocked, and blocked domains that should have been ignored.
+* Fixed various site breakages
+* Improved Traditional Chinese, German, Italian and Japanese translations
+
+2025.12.9
+* Fixed various screen reader and keyboard navigation bugs.
+If you have feedback on how to make Privacy Badger more accessible,
+please let us know!
+* Fixed enforcement for "CNAME cloaked" trackers in Chrome and Chromium-based
+browsers. Prominent trackers like Adobe sometimes hide their tracking domains
+behind CNAME alias domains that belong to the website being visited.
+Privacy Badger should once again properly block known aliases in Chrome.
+* Fixed various site breakages
+* Improved Arabic, Traditional Chinese, German, Japanese, Brazilian Portuguese
+and European Portuguese translations
+
+2025.9.5
+Bug fix update to fix "cookieblocking" (domain toggle set to yellow)
+not working in Chrome, Edge and Opera
+
+2025.9.2
+* Privacy Badger is now available on Microsoft Edge for Android
+* Fixed the popup showing "Nothing to do on this page"
+instead of what actually happened in Chrome sometimes
+* Fixed various site breakages. Notably, we can now relax blocking for
+specific tracking domains on specific sites, instead of only globally.
+This lets us fix more broken sites than ever before, since we can now
+work around breakages involving highly prominent tracking domains that
+we wouldn't be OK partially unblocking globally.
+* Improved Danish, Finnish, Greek, Hebrew, Italian, Polish,
+Portuguese, Russian and Swedish translations
+
+2025.5.30
+* Fixed the popup failing to open in Chrome sometimes
+* Fixed various site breakages
+* Improved Swedish and Ukrainian translations
+
+2025.5.14
+* Fixed various display bugs on Android
+* Fixed even more "Privacy Badger failed to initialize" errors in Firefox
+* Fixed various site breakages
+* Improved Esperanto, Polish, Portuguese and Russian translations
+
 2025.3.27
 * Added an "Enjoying Privacy Badger? Leave a review!" link
 to the popup, shown sometimes instead of the "Donate to EFF" link
@@ -87,14 +134,14 @@ tracker data on installation in Firefox
 * Improved translations (Hebrew, Brazilian Portuguese, Swedish, Ukrainian)
 
 2023.12.1
-* Improved widget replacement for embedded Tweets
+* Improved widget replacement for embedded tweets
 * Fixed blocking WebSocket connections to blocked domains
 * Fixed various site breakages
 * Added Galician translations in Firefox
 * Improved translations (Traditional Chinese, Greek, Japanese)
 
 2023.10.31
-* Added widget replacement for embedded Tweets.
+* Added widget replacement for embedded tweets.
 Privacy Badger replaces potentially useful widgets with placeholders.
 These replacements protect privacy while letting you restore the original
 widget whenever you want it or need it for the page to function.

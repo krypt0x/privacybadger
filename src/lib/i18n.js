@@ -18,13 +18,11 @@
  * along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-env browser, jquery */
-
 const LOCALE = chrome.i18n.getMessage('@@ui_locale').replace('-', '_'),
   ON_POPUP = (document.location.pathname == "/skin/popup.html");
 
 function localizeFaqLink() {
-  const LOCALIZED_HOMEPAGE_LOCALES = ['de', 'es', 'fr', 'sv', 'zh_CN'];
+  const LOCALIZED_HOMEPAGE_LOCALES = ['de', 'es', 'fr', 'ru', 'sv', 'zh_CN'];
   if (ON_POPUP && LOCALIZED_HOMEPAGE_LOCALES.includes(LOCALE)) {
     // update FAQ link to point to localized version
     $('#help').prop('href', `https://privacybadger.org/${LOCALE.replace('_', '-').toLowerCase()}/#faq`);
@@ -43,7 +41,7 @@ function setTextDirection() {
   }
 
   // https://www.w3.org/International/questions/qa-scripts#examples
-  // https://developer.chrome.com/docs/webstore/i18n/?csw=1#choosing-locales-to-support
+  // https://developer.chrome.com/docs/extensions/reference/api/i18n#locales
   // TODO duplicated in src/js/webrequest.js
   const RTL_LOCALES = ['ar', 'he', 'fa'];
   if (!RTL_LOCALES.includes(LOCALE)) {
@@ -59,6 +57,19 @@ function setTextDirection() {
     ['#fittslaw', '.overlay-close'].forEach((selector) => {
       toggle_css_value(selector, "float", "right", "left");
     });
+
+    // Workaround for tooltipster dynamically inserted after localization
+    let css = document.createElement("style");
+    css.textContent = `
+    .breakage-note-tooltip .dismiss-tooltip {
+      margin-left: unset;
+      margin-right: 8px;
+    }
+    /* part of workaround for .clicker rows being hardcoded to ltr */
+    .breakage-note-tooltip .tooltip-box {
+      direction: rtl;
+    }`;
+    document.body.appendChild(css);
 
   // options page
   } else if (document.location.pathname == "/skin/options.html") {
@@ -92,26 +103,13 @@ function setTextDirection() {
       marginLeft: '8px'
     });
   } else if (document.location.pathname == "/skin/firstRun.html") {
-    $('#pin-nudge').css({
-      right: 'unset',
-      left: '15px'
+    $('#eff-logo').css({
+      left: 'unset',
+      right: '1rem'
     });
-    if (window.navigator.userAgent.match(/OPR\//)) {
-      $('#pin-nudge-tail').css({
-        right: 'unset',
-        left: '10px'
-      });
-    } else {
-      $('#pin-nudge-tail').css({
-        right: 'unset',
-        left: '85px'
-      });
-      $('#pin-image').attr("src", "images/pinning-instructions-rtl.png");
-    }
-    $('#dismiss-nudge').css({
-      float: 'left',
-      right: 'unset',
-      left: '-5px'
+    $('#toggle-animation-icon').css({
+      marginRight: 'unset',
+      marginLeft: '5px',
     });
     $('#toolbar-icon').css("transform", "scaleX(-1)");
   }
@@ -132,6 +130,14 @@ function loadI18nStrings() {
     let placeholders = el.dataset.i18n_contents_placeholders;
     placeholders = (placeholders ? placeholders.split("@@") : []);
 
+    // placeholders could themselves be i18n locale strings
+    placeholders = placeholders.map(ph => {
+      if (ph.startsWith('i18n_')) {
+        ph = chrome.i18n.getMessage(ph.slice(5));
+      }
+      return ph;
+    });
+
     // replace contents
     el[prop] = chrome.i18n.getMessage(key, placeholders);
   }
@@ -142,6 +148,7 @@ function loadI18nStrings() {
     'placeholder',
     'title',
     'aria-label',
+    'aria-description',
   ];
 
   // get all the elements that contain one or more of these attributes

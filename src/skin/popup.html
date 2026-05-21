@@ -26,16 +26,47 @@
 <link type="text/css" media="screen" href="/lib/vendor/toggle-switch.css" rel="stylesheet" />
 <link type="text/css" media="screen" href="/skin/popup.css" rel="stylesheet" />
 
-<script type="text/javascript" src="/lib/vendor/jquery-3.7.0.js"></script>
+<script type="text/javascript" src="/lib/vendor/jquery-3.7.1.js"></script>
 <script type="text/javascript" src="/lib/vendor/tooltipster-4.2.6/tooltipster.bundle.js"></script>
 
 <script type="module" src="/lib/i18n.js"></script>
 <script type="module" src="/js/popup.js"></script>
 </head>
 <body id="main">
+
+<div id="overlay" class="overlay" role="dialog" aria-modal="true">
+  <div>
+    <a href="" id="report-close" class="i18n_report_close overlay-close" role="button"></a>
+    <h1 class="i18n_report_broken_site overlay-title"></h1>
+  </div>
+  <div id="report-youtube-message-container" style="display:none">
+    <div id="report-youtube-message"></div>
+  </div>
+  <label id="report-label" for="error-input" class="i18n_report_input_label"></label>
+  <textarea id="error-input" maxlength="300" rows=3 placeholder="i18n_error_input"></textarea>
+  <div id="report-controls">
+    <button id="report-button" class="i18n_report_button pbButton"></button>
+    <button id="report-cancel" class="i18n_report_cancel pbButton"></button>
+  </div>
+  <div id="report-success" class="i18n_report_success" style="display:none"></div>
+  <div id="report-fail" class="i18n_report_fail" style="display:none"></div>
+  <p id="report-terms" class="i18n_report_terms"></p>
+</div>
+
+<div id="share-overlay" class="overlay" role="dialog" aria-modal="true">
+  <div>
+    <a href="" id="share-close" class="i18n_report_close overlay-close" role="button"></a>
+    <h1 class="i18n_share_title overlay-title"></h1>
+  </div>
+  <textarea id="share-output" spellcheck="false"></textarea>
+  <button id="copy-button" class="i18n_copy_button_initial pbButton"></button>
+</div>
+
+<div id="popup-content">
+
   <div id="instruction-outer">
   </div>
-  <div id="instruction">
+  <div id="instruction" role="dialog" aria-modal="true">
     <a href="" id="fittslaw" role="button" aria-label="i18n_report_close">
       <img src="../icons/close.svg" alt="">
     </a>
@@ -54,7 +85,7 @@
     <div id="error-text" style="display:none">
       <div class="flex-wrapper">
         <img class="instruction-logo" src="/icons/badger-48.png" srcset="/icons/badger-128.png 2x" width="48" alt="">
-        <div class="i18n_extension_error_text"></div>
+        <div class="i18n_extension_error_text" data-i18n_contents_placeholders="<a href='https://privacybadger.org/#I-found-a-bug%21-What-do-I-do-now' target='_blank'>"></div>
       </div>
       <div style="color:#cc0000" id="error-message"></div>
     </div>
@@ -72,33 +103,6 @@
 
   </div><!-- end of div#instruction -->
 
-  <div id="overlay" class="overlay">
-    <div>
-      <a href="" id="report-close" class="i18n_report_close overlay-close" role="button"></a>
-      <h1 class="i18n_report_broken_site overlay-title"></h1>
-    </div>
-    <div id="report-youtube-message-container" style="display:none">
-      <div id="report-youtube-message"></div>
-    </div>
-    <label id="report-label" for="error-input" class="i18n_report_input_label"></label>
-    <textarea id="error-input" maxlength="300" rows=3 placeholder="i18n_error_input"></textarea>
-    <div id="report-controls">
-      <button id="report-button" class="i18n_report_button pbButton"></button>
-      <button id="report-cancel" class="i18n_report_cancel pbButton"></button>
-    </div>
-    <div id="report-success" class="i18n_report_success" style="display:none"></div>
-    <div id="report-fail" class="i18n_report_fail" style="display:none"></div>
-    <p id="report-terms" class="i18n_report_terms"></p>
-  </div>
-  <div id="share-overlay" class="overlay">
-    <div>
-      <a href="" id="share-close" class="i18n_report_close overlay-close" role="button"></a>
-      <h1 class="i18n_share_title overlay-title"></h1>
-    </div>
-    <textarea id="share-output" spellcheck="false"></textarea>
-    <button id="copy-button" class="i18n_copy_button_initial pbButton"></button>
-  </div>
-
 <div id="privacy-badger-header">
 
   <div id="badger-logo-div">
@@ -106,7 +110,7 @@
   </div>
 
   <div id="badger-title-div">
-    <a href="https://www.eff.org/" target="_blank"><img id='header-red-eff-logo' src="./images/EFF-red.svg" width="48" alt="" title="i18n_intro_by_eff" class="tooltip" data-tooltipster='{"distance":20,"maxWidth":180}'></a>
+    <a href="https://www.eff.org/" target="_blank"><img id='header-red-eff-logo' src="./images/EFF-red.svg" width="48" alt=""></a>
     <h2><span class="i18n_name"></span></h2>
   </div>
 
@@ -135,7 +139,7 @@
 
 <div id="blockedResourcesContainer">
   <div id="pbInstructions">
-    <button class="toggle-header" id="tracker-list-header" style="display:none">
+    <button class="toggle-header" id="tracker-list-header" style="display:none" aria-expanded="false" aria-controls="blockedResources">
       <span class="toggle-header-title" id="instructions-many-trackers"></span>
       <span class="toggle-header-icon">
         <span id="expand-blocked-resources" class="ui-icon ui-icon-caret-d" style="display:none"></span>
@@ -143,14 +147,14 @@
       </span>
     </button>
     <div class="basic-header" id="instructions-no-trackers" style="display:none">
-      <span class="i18n_popup_instructions_no_trackers" data-i18n_contents_placeholders="<a target='_blank' title='i18n_what_is_a_tracker' class='tooltip' href='https://privacybadger.org/#What-is-a-third-party-tracker'>"></span>
+      <span class="i18n_popup_instructions_no_trackers" data-i18n_contents_placeholders="<a target='_blank' aria-description='i18n_what_is_a_tracker' title='i18n_what_is_a_tracker' class='tooltip' href='https://privacybadger.org/#What-is-a-third-party-tracker'>"></span>
       <span id="no-third-parties" class="i18n_popup_blocked" style="display:none"></span>
     </div>
   </div>
   <div id="blockedResources" style="display:none">
     <div class="keyContainer">
       <div class="key">
-        <img src="/icons/UI-icons-red.svg" class="tooltip" title="i18n_tooltip_block"><img src="/icons/UI-icons-yellow.svg" class="tooltip" title="i18n_tooltip_cookieblock"><img src="/icons/UI-icons-green.svg" class="tooltip" title="i18n_tooltip_allow">
+        <img src="/icons/UI-icons-red.svg" class="tooltip" title="i18n_tooltip_block" alt="i18n_tooltip_block" tabindex="0"><img src="/icons/UI-icons-yellow.svg" class="tooltip" title="i18n_tooltip_cookieblock" alt="i18n_tooltip_cookieblock" tabindex="0"><img src="/icons/UI-icons-green.svg" class="tooltip" title="i18n_tooltip_allow" alt="i18n_tooltip_allow" tabindex="0">
       </div>
     </div>
     <div id="blockedResourcesInner" class="clickerContainer"></div>
@@ -164,7 +168,7 @@
 
 <div id="first-run-page" style="display:none">
   <p><b><span class="i18n_popup_first_run_header"></span></b></p>
-  <p><span class="i18n_intro_disable_button"></span></p>
+  <p><span class="i18n_intro_disable_button" data-i18n_contents_placeholders="@@i18n_popup_disable_for_site@@"></span></p>
 </div>
 
 <div id="disabled-site-message" style="display:none">
@@ -179,9 +183,12 @@
 
 <footer>
   <div id="donate">
-    <a id="cta-link" href="https://supporters.eff.org/donate/support-privacy-badger" target="_blank" style="text-decoration: none;"><span id="cta-icon" class="ui-icon" style="color:#ec1e1e"></span> <span id="cta-text" class="i18n_donate_to_eff" style="text-decoration: underline;"></span></a>
+    <a id="cta-link" href="https://supporters.eff.org/donate/support-privacy-badger" target="_blank" style="text-decoration: none;"><span id="cta-icon" class="ui-icon" style="color:#ec1e1e"></span> <span id="cta-text" class="i18n_popup_donate_to_eff" style="text-decoration: underline;"></span></a>
   </div>
   <div id="version" class="i18n_version"></div>
 </footer>
+
+</div><!-- end of div#popup-content -->
+
 </body>
 </html>

@@ -1,8 +1,9 @@
 body {
+    background: #fefefe;
+    color: #333;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 13px;
     line-height: 1.6;
-    width: 100%;
 }
 
 h1 {
@@ -187,12 +188,26 @@ p, #settingsForm {
     max-height: 400px; /* override popup.css */
 }
 
-/* domain more info tooltips */
+a.removeDomain {
+    display: inline-block; /* override popup.css */
+}
+
+/* domain "more info" tooltips */
 .origin-inner {
     cursor: pointer;
     text-decoration: underline dotted #505050;
     text-underline-offset: 2px;
+    border: 2px solid transparent; /* to avoid shifting on focus */
+    display: inline-block;
 }
+.origin-inner:focus-visible {
+    border: 2px solid #F06A0A;
+    outline: none; /* for Chrome */
+}
+div.switch-toggle {
+    margin-top: 2px; /* to align with domain names */
+}
+
 .tooltipster-badger-domain-more-info.tooltipster-sidetip .tooltipster-box {
     padding: 10px 0;
 }
@@ -324,6 +339,7 @@ header {
 }
 
 #disable-instructions-image {
+    max-width: 100%;
     width: 400px;
     border: 1px solid #ccc;
     border-radius: 2px;
@@ -353,15 +369,16 @@ header {
     .key {
         left: 345px;
     }
-
-    .honeybadgerPowered {
-        left: 470px;
-    }
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
         color-scheme: dark;
+    }
+
+    body {
+        background-color: #333;
+        color: #ddd;
     }
 
     h1 {
