@@ -57,7 +57,15 @@
     },
     "popup_review_pb": {
         "message": "Kan du lide Privacy Badger? Giv en anmeldelse!",
-        "description": "A link in the popup footer shown 30% of the time instead of 'Donate to EFF'."
+        "description": "A link in the popup footer shown sometimes instead of 'Donate to EFF'."
+    },
+    "popup_sweatshirt_promo": {
+        "message": "Vis din støtte med en ny Privacy Badger sweatshirt!",
+        "description": "A link in the popup footer shown sometimes instead of 'Donate to EFF'."
+    },
+    "popup_effector_signup": {
+        "message": "Få de seneste privatlivsnyheder fra EFF",
+        "description": "A link in the popup footer shown sometimes instead of 'Donate to EFF'."
     },
     "version": {
         "message": "version $VERSION_STRING$",
@@ -314,12 +322,44 @@
             }
         }
     },
+    "safari_popup_permissions_header": {
+        "message": "Yderligere tilladelser krævet for at blokere sporinger på alle netsteder",
+        "description": "Shown in the popup and intro page on Safari before being granted permissions to run on all websites"
+    },
+    "safari_popup_permissions_button": {
+        "message": "Tillad altid på alle websteder...",
+        "description": "This translation must match button text in Safari settings. Select the Extensions tab, then select Privacy Badger. This button is shown next to 'Edit Websites...' if Privacy Badger hasn't been granted permissions yet."
+    },
+    "safari_popup_permissions_instructions": {
+        "message": "Klik på knappen herunder for at åbne Safari-indstillinger, klik derefter $START_BOLD_TAG$\"$ALWAYS_ALLOW$\"$END_BOLD_TAG$",
+        "description": "Shown in the popup on Safari before being granted permissions for all websites",
+        "placeholders": {
+            "start_bold_tag": {
+                "content": "<b>"
+            },
+            "always_allow": {
+                "content": "$1",
+                "example": "Always Allow on Every Website..."
+            },
+            "end_bold_tag": {
+                "content": "</b>"
+            }
+        }
+    },
+    "safari_popup_settings_button": {
+        "message": "Åbn Safari-indstillinger",
+        "description": "Shown in popup and intro page on Safari (as well as Privacy Badger's macOS app)"
+    },
+    "safari_popup_permissions_privacy_policy": {
+        "message": "Privacy Badger vil aldrig indsamle eller dele data om din browsning",
+        "description": "Shown in the popup on Safari before being granted permissions for all websites"
+    },
     "firstRun_title": {
         "message": "Tak for at installere Privacy Badger!",
         "description": "Title of intro page"
     },
     "intro_eff_header": {
-        "message": "A privacy tool by $START_HTML$EFF$END_HTML$, a member-supported nonprofit",
+        "message": "Et privatlivsværktøj af $START_HTML$EFF$END_HTML$, en medlemsstøttet nonprofit",
         "description": "Message in the header of intro page",
         "placeholders": {
             "start_html": {
@@ -333,7 +373,7 @@
         }
     },
     "intro_nag_header": {
-        "message": "Almost done!",
+        "message": "Næsten færdig!",
         "description": "Intro page subheading in Chrome (also in macOS app for Safari)"
     },
     "intro_pin_nudge": {
@@ -361,15 +401,35 @@
         "description": "Intro page button to stop the pinning instructions animation"
     },
     "intro_animation_button_play": {
-        "message": "Play animation",
+        "message": "Afspil animation",
         "description": "Intro page button to play the pinning instructions animation"
     },
+    "safari_intro_settings_instructions": {
+        "message": "Klik på knappen herunder for at åbne Safari-indstillinger",
+        "description": "Intro page instruction on Safari before being granted permissions for all websites"
+    },
+    "safari_intro_permissions_instructions": {
+        "message": "Klik $START_SPAN_TAG$\"$ALWAYS_ALLOW$\"$END_SPAN_TAG$",
+        "description": "Instruction on intro page on Safari and macOS app that opens after installation",
+        "placeholders": {
+            "start_span_tag": {
+                "content": "<span class='bold'>"
+            },
+            "always_allow": {
+                "content": "$1",
+                "example": "Always Allow on Every Website..."
+            },
+            "end_span_tag": {
+                "content": "</span>"
+            }
+        }
+    },
     "intro_disable_header": {
-        "message": "One tip before you enjoy better browsing",
+        "message": "Et tip før du nyder bedre browsing",
         "description": "Subheading on intro page for the section explaining the disable button in Firefox"
     },
     "intro_disable_button_context": {
-        "message": "Privacy Badger is all set to protect you from hidden trackers. But blocking trackers sometimes breaks websites.",
+        "message": "Privacy Badger er klar til beskytte dig fra skjulte sporinger. Men at blokere sporinger ødelægger nogle gange netsteder.",
         "description": "First paragraph of the disable button section of intro page"
     },
     "intro_disable_button": {
@@ -391,20 +451,16 @@
         }
     },
     "intro_features_header": {
-        "message": "Privacy Badger protects your browsing from trackers.",
+        "message": "Privacy Badger beskytter din browsing fra sporinger.",
         "description": "Intro page header introducing Privacy Badger features section"
     },
     "intro_features_subheader": {
-        "message": "Learn how.",
+        "message": "Lær hvordan.",
         "description": "Intro page subheader introducing Privacy Badger features section"
     },
     "intro_welcome": {
         "message": "Privacy Badger lærer automatisk at blokere skjulte sporinger. Bug et minut på at se hvordan.",
         "description": "Intro page welcome paragraph."
-    },
-    "intro_next_button": {
-        "message": "Tag turen",
-        "description": "Intro page welcome button."
     },
     "intro_beyond_ads": {
         "message": "Fanger luskede sporinger",
@@ -865,5 +921,29 @@
     "allow_on_site": {
         "message": "Tillad altid på dette netsted",
         "description": "Button in the placeholder shown in place of certain third-party (video, audio, commenting) widgets. Clicking this button will always allow the widget to load on this particular site."
+    },
+    "safari_app_instructions_intro": {
+        "message": "Privacy Badger beskytter dig automatisk fra sporinger. $START_SPAN_TAG$Åbn Safari-indstillinger$END_SPAN_TAG$ for at aktivere den:",
+        "description": "Instructions on macOS app for Safari that opens after installation",
+        "placeholders": {
+            "start_span_tag": {
+                "content": "<span class='bold'>"
+            },
+            "end_span_tag": {
+                "content": "</span>"
+            }
+        }
+    },
+    "safari_app_checkbox_instructions": {
+        "message": "$START_SPAN_TAG$Afkryds boksen$END_SPAN_TAG$ ved siden af Privacy Badger",
+        "description": "Instructions on macOS app for Safari that opens after installation",
+        "placeholders": {
+            "start_span_tag": {
+                "content": "<span class='bold'>"
+            },
+            "end_span_tag": {
+                "content": "</span>"
+            }
+        }
     }
 }

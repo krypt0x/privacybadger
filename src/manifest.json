@@ -1,11 +1,14 @@
 {
-  "version": "2026.2.20",
+  "version": "2026.6.16",
   "author": {
     "email": "eff.software.projects@gmail.com"
   },
   "browser_specific_settings": {
     "gecko": {
       "id": "jid1-MnnxcxisBPnSXQ@jetpack",
+      "data_collection_permissions": {
+        "required": ["none"]
+      },
       "strict_min_version": "78.0"
     },
     "gecko_android": {

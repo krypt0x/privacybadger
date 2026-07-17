@@ -57,7 +57,15 @@
     },
     "popup_review_pb": {
         "message": "喜歡 Privacy Badger 嗎？留下評論吧！",
-        "description": "A link in the popup footer shown 30% of the time instead of 'Donate to EFF'."
+        "description": "A link in the popup footer shown sometimes instead of 'Donate to EFF'."
+    },
+    "popup_sweatshirt_promo": {
+        "message": "穿上新款 Privacy Badger 運動衫，展現你的支持！",
+        "description": "A link in the popup footer shown sometimes instead of 'Donate to EFF'."
+    },
+    "popup_effector_signup": {
+        "message": "取得來自電子前哨基金會的最新隱私權新聞",
+        "description": "A link in the popup footer shown sometimes instead of 'Donate to EFF'."
     },
     "version": {
         "message": "版本 $VERSION_STRING$",
@@ -314,12 +322,44 @@
             }
         }
     },
+    "safari_popup_permissions_header": {
+        "message": "需額外授權才能在所有網站上封鎖追蹤程式",
+        "description": "Shown in the popup and intro page on Safari before being granted permissions to run on all websites"
+    },
+    "safari_popup_permissions_button": {
+        "message": "一律在每個網站允許⋯",
+        "description": "This translation must match button text in Safari settings. Select the Extensions tab, then select Privacy Badger. This button is shown next to 'Edit Websites...' if Privacy Badger hasn't been granted permissions yet."
+    },
+    "safari_popup_permissions_instructions": {
+        "message": "點選下方按鈕以開啟 Safari 設定，然後點選$START_BOLD_TAG$「$ALWAYS_ALLOW$」$END_BOLD_TAG$",
+        "description": "Shown in the popup on Safari before being granted permissions for all websites",
+        "placeholders": {
+            "start_bold_tag": {
+                "content": "<b>"
+            },
+            "always_allow": {
+                "content": "$1",
+                "example": "Always Allow on Every Website..."
+            },
+            "end_bold_tag": {
+                "content": "</b>"
+            }
+        }
+    },
+    "safari_popup_settings_button": {
+        "message": "開啟 Safari 設定",
+        "description": "Shown in popup and intro page on Safari (as well as Privacy Badger's macOS app)"
+    },
+    "safari_popup_permissions_privacy_policy": {
+        "message": "Privacy Badger 絕不會蒐集或分享您的瀏覽資料",
+        "description": "Shown in the popup on Safari before being granted permissions for all websites"
+    },
     "firstRun_title": {
         "message": "感謝您安裝 Privacy Badger！",
         "description": "Title of intro page"
     },
     "intro_eff_header": {
-        "message": "A privacy tool by $START_HTML$EFF$END_HTML$, a member-supported nonprofit",
+        "message": "$START_HTML$電子前哨基金會$END_HTML$（由會員支援的非營利組織）製作的隱私工具",
         "description": "Message in the header of intro page",
         "placeholders": {
             "start_html": {
@@ -333,7 +373,7 @@
         }
     },
     "intro_nag_header": {
-        "message": "Almost done!",
+        "message": "快完成了！",
         "description": "Intro page subheading in Chrome (also in macOS app for Safari)"
     },
     "intro_pin_nudge": {
@@ -357,19 +397,39 @@
         "description": "Alt text for pinning instructions image on intro page in Chrome"
     },
     "intro_animation_button_stop": {
-        "message": "Stop animation",
+        "message": "停止動畫",
         "description": "Intro page button to stop the pinning instructions animation"
     },
     "intro_animation_button_play": {
-        "message": "Play animation",
+        "message": "播放動畫",
         "description": "Intro page button to play the pinning instructions animation"
     },
+    "safari_intro_settings_instructions": {
+        "message": "點選下方按鈕以開啟 Safari 設定",
+        "description": "Intro page instruction on Safari before being granted permissions for all websites"
+    },
+    "safari_intro_permissions_instructions": {
+        "message": "點選$START_SPAN_TAG$「$ALWAYS_ALLOW$」$END_SPAN_TAG$",
+        "description": "Instruction on intro page on Safari and macOS app that opens after installation",
+        "placeholders": {
+            "start_span_tag": {
+                "content": "<span class='bold'>"
+            },
+            "always_allow": {
+                "content": "$1",
+                "example": "Always Allow on Every Website..."
+            },
+            "end_span_tag": {
+                "content": "</span>"
+            }
+        }
+    },
     "intro_disable_header": {
-        "message": "One tip before you enjoy better browsing",
+        "message": "在您享受更流暢的瀏覽體驗之前，先給您一個小提示",
         "description": "Subheading on intro page for the section explaining the disable button in Firefox"
     },
     "intro_disable_button_context": {
-        "message": "Privacy Badger is all set to protect you from hidden trackers. But blocking trackers sometimes breaks websites.",
+        "message": "Privacy Badger 已準備就緒，能保護您免受隱藏追蹤器的侵害。但阻擋追蹤器有時會導致網站無法正常運作。",
         "description": "First paragraph of the disable button section of intro page"
     },
     "intro_disable_button": {
@@ -391,20 +451,16 @@
         }
     },
     "intro_features_header": {
-        "message": "Privacy Badger protects your browsing from trackers.",
+        "message": "Privacy Badger 可保護您的瀏覽活動免受追蹤器的干擾。",
         "description": "Intro page header introducing Privacy Badger features section"
     },
     "intro_features_subheader": {
-        "message": "Learn how.",
+        "message": "了解如何操作",
         "description": "Intro page subheader introducing Privacy Badger features section"
     },
     "intro_welcome": {
         "message": "Privacy Badger 會自動學習封鎖隱藏的追蹤器。花一分鐘來看背後的原理。",
         "description": "Intro page welcome paragraph."
-    },
-    "intro_next_button": {
-        "message": "查看教學",
-        "description": "Intro page welcome button."
     },
     "intro_beyond_ads": {
         "message": "捕捉鬼鬼祟祟的追蹤器",
@@ -447,7 +503,7 @@
         "description": "Part of the 'donate' section on the intro page."
     },
     "intro_donate_subheading": {
-        "message": "Help us by donating",
+        "message": "捐款協助我們",
         "description": "Subheader above the Donate button on the intro page"
     },
     "donate_to_eff": {
@@ -865,5 +921,29 @@
     "allow_on_site": {
         "message": "此網站上一律允許",
         "description": "Button in the placeholder shown in place of certain third-party (video, audio, commenting) widgets. Clicking this button will always allow the widget to load on this particular site."
+    },
+    "safari_app_instructions_intro": {
+        "message": "Privacy Badger 自動保護您免受追蹤程式追蹤。$START_SPAN_TAG$開啟 Safari 設定$END_SPAN_TAG$以啟動：",
+        "description": "Instructions on macOS app for Safari that opens after installation",
+        "placeholders": {
+            "start_span_tag": {
+                "content": "<span class='bold'>"
+            },
+            "end_span_tag": {
+                "content": "</span>"
+            }
+        }
+    },
+    "safari_app_checkbox_instructions": {
+        "message": "$START_SPAN_TAG$勾選$END_SPAN_TAG$ Privacy Badger 旁的方塊",
+        "description": "Instructions on macOS app for Safari that opens after installation",
+        "placeholders": {
+            "start_span_tag": {
+                "content": "<span class='bold'>"
+            },
+            "end_span_tag": {
+                "content": "</span>"
+            }
+        }
     }
 }

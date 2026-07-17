@@ -10,7 +10,7 @@ if [ $# -ne 1 ] ; then
 fi
 TARGET="$1"
 
-LATEST_SDK_VERSION=10.1.0
+LATEST_SDK_VERSION=10.4.0
 WEB_EXT=../node_modules/.bin/web-ext
 PATCHER=../scripts/patch_manifest.py
 
@@ -31,8 +31,8 @@ if ! $WEB_EXT --version | grep -q "$LATEST_SDK_VERSION"; then
   exit 1
 fi
 
-if [ $# -ne 1 ]; then
-  echo "Usage: $0 <version to release>"
+if [ -z "$AMO_API_KEY" ] || [ -z "$AMO_API_SECRET" ]; then
+  echo "Missing AMO API credentials"
   exit 1
 fi
 

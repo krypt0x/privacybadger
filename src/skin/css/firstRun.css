@@ -212,7 +212,7 @@ p {
 h1,
 h2,
 h3{
-  font-family:"ChunkFive",serif;
+  font-family:"NotoSans",serif;
   font-style:normal;
   font-weight:normal;
   color:inherit;
@@ -369,6 +369,10 @@ ul ul,ol ul,ul ol,ol ol {
     max-width: 3rem;
     margin-inline-end: 0.2rem;
 }
+.top-bar span {
+  margin: 0 4rem;
+  text-align: center;
+}
 @media print, screen and (min-width: 40em) {
     .top-bar img {
         margin-inline-end: 1rem;
@@ -379,6 +383,9 @@ ul ul,ol ul,ul ol,ol ol {
       font-size: 0.9rem;
       padding: 0.75rem 0.5rem 0.75rem;
     }
+    .top-bar span {
+      margin: 0 6rem;
+    }
 }
 .top-bar-title {
   flex:0 0 auto;
@@ -387,26 +394,6 @@ ul ul,ol ul,ul ol,ol ol {
 
 b {
     font-family: "OpenSans-Bold", sans-serif;
-}
-
-header {
-  display:flex;
-  flex-flow:row wrap;
-  background-color:#EC9329;
-}
-header img {
-  margin:1rem 0 0;
-  width:7rem;
-}
-@media print, screen and (min-width: 40em) {
-  header img {
-    margin:1rem 0 0;
-    width:12rem;
-  }
-}
-header .title-bar h1 {
-  color:white;
-  font-family:"ChunkFive",serif;
 }
 
 /* visibility classes */
@@ -544,8 +531,8 @@ header .title-bar h1 {
 
 /* fonts */
 @font-face {
-  font-family:'ChunkFive';
-  src:url("../fonts/Chunk.ttf") format("truetype");
+  font-family:'NotoSans';
+  src:url("../fonts/NotoSans-Black.ttf") format("truetype");
   font-weight:900;
   font-style:normal;
 }
@@ -646,9 +633,6 @@ body {
   margin-right: 5px;
 }
 
-#intro {
-  padding:2rem 0rem 4rem;
-}
 #pb-settings #toolbar-img-container {
   position: relative;
   margin-top: 0;
@@ -689,12 +673,8 @@ body {
   margin: 2rem 0 3rem;
   width: 100%;
 }
-@media print, screen and (min-width: 40em) {
-  #intro {
-    padding:4rem 0rem 14rem;
-  }
-}
-#toolbar-icon, #disable-instructions {
+
+#toolbar-icon {
   max-width: 550px;
   width: 90%;
 }

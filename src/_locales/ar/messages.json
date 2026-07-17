@@ -4,7 +4,7 @@
         "description": "The name of this extension."
     },
     "description": {
-        "message": "تعلم بادجر الخصوصية حظر أدوات التتبع الخفية تلقائيًا. صُمم من قبل مؤسسة الجبهة الإلكترونية، منظمة غير ربحية تعمل لايقاف تجسس الشركات",
+        "message": "تعلم بادجر الخصوصية حظر أدوات التتبع الخفية تلقائيًا. صُممته مؤسسة الجبهة الإلكترونية، وهي منظمة غير ربحية تعمل لايقاف تجسس الشركات",
         "description": "Extension description used by browsers and extension store websites. LIMITED TO 132 CHARACTERS. See also 'intro_welcome', 'share_base_message' and 'intro_learns_paragraph' messages."
     },
     "canvas_fingerprinting": {
@@ -52,12 +52,20 @@
         "description": "Button in the popup and title of the error reporting form overlay."
     },
     "popup_donate_to_eff": {
-        "message": "تبرع لمؤسسة الجبهة الإلكترونية (EFF) - وهي منظمة غير ربحية تدافع عن الخصوصية الرقمية",
+        "message": "تبرع/ي لمؤسسة الجبهة الإلكترونية (EFF) - وهي منظمة غير ربحية تدافع عن الخصوصية الرقمية",
         "description": "A link in the popup footer."
     },
     "popup_review_pb": {
         "message": "هل تستمتع/ي بـ\"بادجر الخصوصية\"؟ اترك/ي تقييمًا!",
-        "description": "A link in the popup footer shown 30% of the time instead of 'Donate to EFF'."
+        "description": "A link in the popup footer shown sometimes instead of 'Donate to EFF'."
+    },
+    "popup_sweatshirt_promo": {
+        "message": "أظهر/ي دعمك بقميص \"بادجر الخصوصية\" الجديد!",
+        "description": "A link in the popup footer shown sometimes instead of 'Donate to EFF'."
+    },
+    "popup_effector_signup": {
+        "message": "Get the latest privacy news from EFF",
+        "description": "A link in the popup footer shown sometimes instead of 'Donate to EFF'."
     },
     "version": {
         "message": "إصدار $VERSION_STRING$",
@@ -170,7 +178,7 @@
         "description": "Tooltip shown over an EFF's DNT policy-compliant domain name in the list of domains in the popup or under the Tracking Domains tab on the options page."
     },
     "domain_slider_label": {
-        "message": "Settings for $DOMAIN$",
+        "message": "الإعدادات لـ $DOMAIN$",
         "description": "Screenreader-accessible label for domain sliders",
         "placeholders": {
             "domain": {
@@ -232,7 +240,7 @@
         "description": ""
     },
     "report_button": {
-        "message": "ارسل التقرير",
+        "message": "ارسل/ي التقرير",
         "description": "Button text."
     },
     "report_cancel": {
@@ -314,12 +322,44 @@
             }
         }
     },
+    "safari_popup_permissions_header": {
+        "message": "Additional permissions required to block trackers on all websites",
+        "description": "Shown in the popup and intro page on Safari before being granted permissions to run on all websites"
+    },
+    "safari_popup_permissions_button": {
+        "message": "السماح دائمًا على كل موقع إلكتروني...",
+        "description": "This translation must match button text in Safari settings. Select the Extensions tab, then select Privacy Badger. This button is shown next to 'Edit Websites...' if Privacy Badger hasn't been granted permissions yet."
+    },
+    "safari_popup_permissions_instructions": {
+        "message": "Click the button below to open Safari settings, then click $START_BOLD_TAG$\"$ALWAYS_ALLOW$\"$END_BOLD_TAG$",
+        "description": "Shown in the popup on Safari before being granted permissions for all websites",
+        "placeholders": {
+            "start_bold_tag": {
+                "content": "<b>"
+            },
+            "always_allow": {
+                "content": "$1",
+                "example": "Always Allow on Every Website..."
+            },
+            "end_bold_tag": {
+                "content": "</b>"
+            }
+        }
+    },
+    "safari_popup_settings_button": {
+        "message": "Open Safari settings",
+        "description": "Shown in popup and intro page on Safari (as well as Privacy Badger's macOS app)"
+    },
+    "safari_popup_permissions_privacy_policy": {
+        "message": "Privacy Badger will never collect or share data about your browsing",
+        "description": "Shown in the popup on Safari before being granted permissions for all websites"
+    },
     "firstRun_title": {
         "message": "شكرا على تنصيب «بادجر الخصوصية»",
         "description": "Title of intro page"
     },
     "intro_eff_header": {
-        "message": "A privacy tool by $START_HTML$EFF$END_HTML$, a member-supported nonprofit",
+        "message": "أداة للخصوصية مقدمة من $START_HTML$ مؤسسة الجبهة الإلكترونية $END_HTML$، وهي منظمة غير ربحية تعتمد على دعم الأعضاء والعضوات",
         "description": "Message in the header of intro page",
         "placeholders": {
             "start_html": {
@@ -333,7 +373,7 @@
         }
     },
     "intro_nag_header": {
-        "message": "Almost done!",
+        "message": "تقريبا انتهيت",
         "description": "Intro page subheading in Chrome (also in macOS app for Safari)"
     },
     "intro_pin_nudge": {
@@ -357,19 +397,39 @@
         "description": "Alt text for pinning instructions image on intro page in Chrome"
     },
     "intro_animation_button_stop": {
-        "message": "Stop animation",
+        "message": "إيقاف التحريك",
         "description": "Intro page button to stop the pinning instructions animation"
     },
     "intro_animation_button_play": {
-        "message": "Play animation",
+        "message": "شغّل/ي التحريك",
         "description": "Intro page button to play the pinning instructions animation"
     },
+    "safari_intro_settings_instructions": {
+        "message": "Click the button below to open Safari settings",
+        "description": "Intro page instruction on Safari before being granted permissions for all websites"
+    },
+    "safari_intro_permissions_instructions": {
+        "message": "Click $START_SPAN_TAG$\"$ALWAYS_ALLOW$\"$END_SPAN_TAG$",
+        "description": "Instruction on intro page on Safari and macOS app that opens after installation",
+        "placeholders": {
+            "start_span_tag": {
+                "content": "<span class='bold'>"
+            },
+            "always_allow": {
+                "content": "$1",
+                "example": "Always Allow on Every Website..."
+            },
+            "end_span_tag": {
+                "content": "</span>"
+            }
+        }
+    },
     "intro_disable_header": {
-        "message": "One tip before you enjoy better browsing",
+        "message": "نصيحة واحدة قبل الاستمتاع بتجربة تصفح أفضل",
         "description": "Subheading on intro page for the section explaining the disable button in Firefox"
     },
     "intro_disable_button_context": {
-        "message": "Privacy Badger is all set to protect you from hidden trackers. But blocking trackers sometimes breaks websites.",
+        "message": "إن «بادجر الخصوصية» جاهز تماماً لحمايتك من أدوات التتبع الخفية، إلا أن حظر أدوات التتبع قد يؤدي أحياناً إلى تعطل المواقع الإلكترونية.",
         "description": "First paragraph of the disable button section of intro page"
     },
     "intro_disable_button": {
@@ -391,20 +451,16 @@
         }
     },
     "intro_features_header": {
-        "message": "Privacy Badger protects your browsing from trackers.",
+        "message": "يحمي \"بادجر الخصوصية\" تصفحك من أدوات التتبع.",
         "description": "Intro page header introducing Privacy Badger features section"
     },
     "intro_features_subheader": {
-        "message": "Learn how.",
+        "message": "تعلم/ي كيف.",
         "description": "Intro page subheader introducing Privacy Badger features section"
     },
     "intro_welcome": {
         "message": "بادجر الخصوصية يتعلم تلقائيًا حظر أدوات التتبع المخفية. خصص/ي دقيقة واحدة لتكتشف/ي كيف.",
         "description": "Intro page welcome paragraph."
-    },
-    "intro_next_button": {
-        "message": "خذ/ي جولة",
-        "description": "Intro page welcome button."
     },
     "intro_beyond_ads": {
         "message": "يمسك بالمتعقبات المتخفية",
@@ -419,7 +475,7 @@
         "description": "Intro page paragraph"
     },
     "intro_not_an_adblocker": {
-        "message": "لست حاجبًا للإعلانات",
+        "message": "ليس حاجبًا للإعلانات",
         "description": "Intro page paragraph heading."
     },
     "intro_learns_paragraph": {
@@ -443,15 +499,15 @@
         "description": "Part of the 'donate' section on the intro page."
     },
     "intro_donate1": {
-        "message": "باستخدامك «بادجر الخصوصية» تنضم/ين إلى <a href='https://www.eff.org/' target='_blank'>مؤسسة الجبهة الإلكترونية</a> و ملايين المستخدمين/ات في نضالهم/ن من أجل الخصوصية. نحن مؤسسة غير ربحية نناضل لحقوقك على الإنترنت. شكرًا لانضمامك إلينا.",
+        "message": "باستخدامك «بادجر الخصوصية» تنضم/ين إلى <a href='https://www.eff.org/' target='_blank'>مؤسسة الجبهة الإلكترونية</a> وملايين المستخدمين/ات في نضالهم/ن من أجل الخصوصية. نحن مؤسسة غير ربحية نناضل لحقوقك على الإنترنت. شكرًا لانضمامك إلينا.",
         "description": "Part of the 'donate' section on the intro page."
     },
     "intro_donate_subheading": {
-        "message": "ساعدنا/ينا بالتبر",
+        "message": "ساعدنا/ينا بالتبرع",
         "description": "Subheader above the Donate button on the intro page"
     },
     "donate_to_eff": {
-        "message": "تبرع إلى مؤسسة الجبهة الإلكترونية",
+        "message": "تبرع/ي إلى مؤسسة الجبهة الإلكترونية",
         "description": "A button on the intro page"
     },
     "share_button_title_facebook": {
@@ -569,19 +625,19 @@
         "description": "Tooltip in general settings."
     },
     "options_widget_replacement_tab": {
-        "message": "استبدال الـ Widget",
+        "message": "استبدال الأدوات المصغرة",
         "description": "Options page tab heading"
     },
     "options_widget_replacement_desc": {
-        "message": "عند حظر الأزرار الاجتماعية والأدوات الأخرى المفيدة المحتملة (الفيديو، الصوت والتعليقات) widgets، يمكن لـ «بادجر الخصوصية» استبدالها بعناصر يمكن النقر عليها للتفعيلها.",
+        "message": "عند حظر الأزرار الاجتماعية والأدوات الأخرى المفيدة المحتملة أدوات (الفيديو، الصوت والتعليقات)، يمكن لـ «بادجر الخصوصية» استبدالها بعناصر يمكن النقر عليها للتفعيلها.",
         "description": "Introduction to the Widget Replacement tab on the options page"
     },
     "options_widget_exceptions_header": {
-        "message": "إستثناءات الـ Widget",
+        "message": "إستثناءات الأدوات المصغرة",
         "description": "Header text on the Widget Replacement tab"
     },
     "options_hide_social_widgets": {
-        "message": "احظر/ي، ولكن لا تستبدل/ي الـwidgets التالية:",
+        "message": "احظر/ي، ولكن لا تستبدل/ي الأدوات المصغرة التالية:",
         "description": "Label for a form on the Widget Replacement tab"
     },
     "options_widget_site_exceptions_header": {
@@ -589,7 +645,7 @@
         "description": "Header text on the Widget Replacement tab"
     },
     "options_widget_site_exceptions_label": {
-        "message": "إسمح/ي دائماً للـ widgets على هذه المواقع:",
+        "message": "إسمح/ي دائماً للأدوات المصغرة على هذه المواقع:",
         "description": "Label for a form on the Widget Replacement tab"
     },
     "options_domain_list_tab": {
@@ -631,15 +687,15 @@
         "description": "Tooltip shown over the 'tracking domains' link under the Tracking Domains tab on the options page."
     },
     "options_domain_search": {
-        "message": "ابحث في النطاقات:",
+        "message": "ابحث/ي في النطاقات:",
         "description": "Label for a text input box on the Tracking Domains options page tab."
     },
     "options_domain_search_tooltip": {
-        "message": "لاستبعاد النطاقات، ضع ”-“ قبل عبارة البحث. فمثلا، ”‪.co -.com‬“ ستظهر نطاقات ‪.co‬ و ‪.co.uk‬ لكن لن تظهر نطاقات ‪.com‬ في نتائج البحث.",
+        "message": "لاستبعاد النطاقات، ضع/ي ”-“ قبل عبارة البحث. فمثلا، ”‪.co -.com‬“ ستظهر نطاقات ‪.co‬ و ‪.co.uk‬ لكن لن تظهر نطاقات ‪.com‬ في نتائج البحث.",
         "description": "Tooltip for an \"information\" icon next to the domain search input on the Tracking Domains options page tab."
     },
     "options_domain_type_filter": {
-        "message": "رشّح بالنوع:",
+        "message": "رشّح/ي بالنوع:",
         "description": "Label for a dropdown control on the Tracking Domains options page tab."
     },
     "options_domain_filter_all": {
@@ -655,7 +711,7 @@
         "description": "Dropdown control setting on the Tracking Domains options page tab."
     },
     "options_domain_status_filter": {
-        "message": "رشّح بالحالة:",
+        "message": "رشّح/ي بالحالة:",
         "description": "Label for a dropdown control on the Tracking Domains options page tab."
     },
     "options_domain_filter_block": {
@@ -671,7 +727,7 @@
         "description": "Dropdown control setting on the Tracking Domains options page tab."
     },
     "options_show_not_yet_blocked": {
-        "message": "أظهر المواقع التي لم يقرر «الغرير» الخاص بك حظرها",
+        "message": "أظهر/ي المواقع التي لم يقرر «بادجر» الخاص بك حظرها",
         "description": "Checkbox label on the Tracking Domains tab. Should match wording used in the 'not_yet_blocked_header' message. Only visible when 'learn to block new trackers' is enabled."
     },
     "options_hide_in_seed": {
@@ -789,11 +845,11 @@
         "description": "Pop-up triggered when the remove_all_data button is clicked"
     },
     "intro_text1": {
-        "message": "يحميك «بادجر الخصوصية» الآن.",
+        "message": "يقدم لك «بادجر الخصوصية» الحماية الآن.",
         "description": "First part of a reminder to visit the intro page. Shown in popup until the user clicks on the reminder link or browses through the intro page."
     },
     "intro_text2": {
-        "message": "لتتعرف على طريقة عمل «بادجر الخصوصية» انقر/ي أدناه للاطلاع على شرح مختصر.",
+        "message": "لتتعرف/ي على طريقة عمل «بادجر الخصوصية» انقر/ي أدناه للاطلاع على شرح مختصر.",
         "description": "Second part of a reminder to visit the intro page"
     },
     "first_run_text": {
@@ -865,5 +921,29 @@
     "allow_on_site": {
         "message": "السماح دائماً على هذا الموقع",
         "description": "Button in the placeholder shown in place of certain third-party (video, audio, commenting) widgets. Clicking this button will always allow the widget to load on this particular site."
+    },
+    "safari_app_instructions_intro": {
+        "message": "Privacy Badger automatically protects you from trackers. $START_SPAN_TAG$Open Safari settings$END_SPAN_TAG$ to turn it on:",
+        "description": "Instructions on macOS app for Safari that opens after installation",
+        "placeholders": {
+            "start_span_tag": {
+                "content": "<span class='bold'>"
+            },
+            "end_span_tag": {
+                "content": "</span>"
+            }
+        }
+    },
+    "safari_app_checkbox_instructions": {
+        "message": "$START_SPAN_TAG$Check the box$END_SPAN_TAG$ next to Privacy Badger",
+        "description": "Instructions on macOS app for Safari that opens after installation",
+        "placeholders": {
+            "start_span_tag": {
+                "content": "<span class='bold'>"
+            },
+            "end_span_tag": {
+                "content": "</span>"
+            }
+        }
     }
 }

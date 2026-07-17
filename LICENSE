@@ -1,7 +1,7 @@
 Privacy Badger
 Copyright © 2015 Electronic Frontier Foundation and other contributors
 
-Privacy Badger as a whole is presently Licensed GPL v3+, though many portions
+Privacy Badger as a whole is presently Licensed GPL v3 or later, though many portions
 of the code are dual-licensed under other free/open source licenses.
 
 CONTRIBUTORS AGREE TO FREE/OPEN SOURCE DUAL-LICENSING
@@ -93,10 +93,9 @@ All fonts from The League of Moveable Type are subject to the Open Font License 
 OpenSans
 https://www.apache.org/licenses/LICENSE-2.0
 
-jQuery Smooth Scroll - v2.2.0 - 2017-05-05
-https://github.com/kswedberg/jquery-smooth-scroll
-Copyright (c) 2017 Karl Swedberg
-Licensed MIT
+NotoSans
+Copyright 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic)
+This Font Software is licensed under the SIL Open Font License, Version 1.1: https://openfontlicense.org/open-font-license-official-text/
 
 Select2
 https://select2.org/

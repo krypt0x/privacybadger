@@ -8,6 +8,32 @@
         "DNT Policy v1.0 dos-line-endings": "c09f71363bb29d0250a1f5524eef36f9ab07669b",
         "DNT Policy v1.0 no-eof-newline": "7861462d500fbb6ccb74c614782f4937377bec76"
     },
+    "popup_promos": [
+        {
+            "url": "https://supporters.eff.org/donate/support-privacy-badger",
+            "text": "popup_donate_to_eff",
+            "icon": "ui-icon-heart",
+            "odds": 0.25
+        },
+        {
+            "url": null,
+            "text": "popup_review_pb",
+            "icon": "ui-icon-star",
+            "odds": 0.25
+        },
+        {
+            "url": "https://supporters.eff.org/donate/support-privacy-badger--crew",
+            "text": "popup_sweatshirt_promo",
+            "icon": "ui-icon-cart",
+            "odds": 0.25
+        },
+        {
+            "url": "https://eff.org/pbeff",
+            "text": "popup_effector_signup",
+            "icon": "ui-icon-mail-closed",
+            "odds": 0.25
+        }
+    ],
     "sitefixes": {
         "gpc": [
             "www.costco.com",
@@ -20,17 +46,8 @@
             "www.mazdausa.com"
         ],
         "ignore": {
-            "aa.com": [
-                "www.aa.com.br",
-                "www.aa.com.do",
-                "www.aavacations.com",
-                "www.americanairlines.co.cr",
-                "www.americanairlines.co.uk",
-                "www.americanairlines.fr"
-            ],
-            "axelspringer.de": [
-                "signin.auth.bild.de",
-                "signin.auth.welt.de"
+            "1gr.cz": [
+                "www.metro.cz"
             ],
             "bamgrid.com": [
                 "abc.com",
@@ -41,12 +58,55 @@
                 "www.disneyplus.com",
                 "www.hulu.com"
             ],
+            "berlingskemedia.net": [
+                "www.berlingske.dk",
+                "www.bt.dk",
+                "www.euroinvestor.dk",
+                "www.weekendavisen.dk"
+            ],
+            "blackhawknetwork.com": [
+                "gnc.cashstar.com",
+                "roblox.cashstar.com",
+                "meijer.giftcard.com",
+                "www.giftcards.com",
+                "www.myprepaidcenter.com"
+            ],
+            "boatsgroup.com": [
+                "www.boatsandoutboards.co.uk",
+                "www.boot24.com",
+                "www.yachtworld.com",
+                "www.yachtworld.fr"
+            ],
+            "centene.com": [
+                "member.wellcare.com"
+            ],
+            "dailymail.com": [
+                "www.thisismoney.co.uk"
+            ],
             "doubleclick.net": [
+                "adssettings.google.com",
                 "m.youtube.com",
                 "www.youtube.com"
             ],
+            "dpgmedia.net": [
+                "joe.be",
+                "qmusic.nl",
+                "www.streamz.be",
+                "www.vtmgo.be"
+            ],
+            "easebar.com": [
+                "draw.market",
+                "www.anantagame.com",
+                "www.fragpunk.com",
+                "www.marvelrivals.com",
+                "www.mumuplayer.com",
+                "www.wherewindsmeetgame.com"
+            ],
             "elevenlabs.io": [
                 "elevenreader.io"
+            ],
+            "epoch.cloud": [
+                "www.theepochtimes.com"
             ],
             "connect.facebook.net": [
                 "apps.facebook.com"
@@ -71,8 +131,10 @@
                 "www.livesport.com",
                 "www.livesport.cz"
             ],
-            "globo.com": [
-                "www.techtudo.com.br"
+            "fortinet.com": [
+              "www.fortisase.com",
+              "www.fortiguard.com",
+              "www.forticloud.com"
             ],
             "googleadservices.com": [
                 "m.youtube.com",
@@ -85,14 +147,33 @@
             "wegame.gtimg.com": [
                 "www.wegame.com.cn"
             ],
-            "hubspot.com": [
-                "app-na1.hubspotdocuments.com"
+            "hellofresh.com": [
+                "www.factormeals.de",
+                "www.hellofresh.at",
+                "www.hellofresh.ca",
+                "www.hellofresh.co.uk",
+                "www.hellofresh.com.au",
+                "www.hellofresh.de",
+                "www.hellofresh.fr",
+                "www.hellofresh.lu",
+                "www.hellofresh.nl",
+                "www.hellofresh.no"
             ],
-            "hubspot.net": [
-                "app-na1.hubspotdocuments.com"
+            "hindustantimes.com": [
+                "www.livemint.com"
             ],
             "intoday.in": [
                 "www.indiatoday.in"
+            ],
+            "ixbt.site": [
+                "www.ixbt.com",
+                "ixbt.games"
+            ],
+            "listrakbi.com": [
+                "t.lt02.net"
+            ],
+            "livemediahost.com": [
+                "www.camsoda.com"
             ],
             "livesportmedia.eu": [
                 "www.flashscore.at",
@@ -114,37 +195,31 @@
                 "www.livesport.com",
                 "www.livesport.cz"
             ],
-            "lottomaticagroup.com": [
-                "www.goldbet.it",
-                "www.lottomatica.it",
-                "www.planetwin365.it"
-            ],
-            "meteored.com": [
-                "www.tempo.pt"
-            ],
-            "osano.com": [
-                "my.datasubject.com"
+            "mmcdn.com": [
+                "www.chaturbate.lat",
+                "www.chaturgirl.com",
+                "www.xnxx-livecams.com"
             ],
             "phncdn.com": [
-                "pornhub.mainhub.com",
-                "de.redtube.com",
-                "fr.redtube.com",
-                "de.pornhub.org",
-                "www.pornhub.org",
-                "www.pornhubpremium.com",
-                "www.thumbzilla.com",
-                "www.youporn.com"
+                "www.itsrealamateurs.com",
+                "www.gaytube.com",
+                "www.tube8.com",
+                "www.tube8.fr"
             ],
             "riotgames.com": [
                 "valorantesports.com"
             ],
-            "assets.striiiipst.com": [
-                "stripchat.com",
-                "de.stripchat.com",
-                "fr.stripchat.com",
-                "sun-porno.com",
-                "xhamsterlive.com",
-                "de.xhamsterlive.com"
+            "samsung.com": [
+                "account.smartthings.com",
+                "api.smartthings.com"
+            ],
+            "teepublic.com": [
+                "sophielabelle.dashery.com",
+                "zoodrawsshop.dashery.com"
+            ],
+            "twitchcdn.net": [
+                "dashboard.twitch.tv",
+                "www.twitch.tv"
             ],
             "velocityweather.com": [
                 "baynews9.com",
@@ -179,13 +254,21 @@
                 "www.telecharge.com"
             ],
             "connatix.com": [
-                "www.accuweather.com"
+                "www.accuweather.com",
+                "nypost.com"
+            ],
+            "cquotient.com": [
+                "scottsmiraclegro.com"
             ],
             "js.datadome.co": [
                 "www.bestwestern.com"
             ],
             "demdex.net": [
                 "www.sbs.com.au"
+            ],
+            "digitalvideoplatform.com": [
+                "www.fox.com",
+                "www.foxla.com"
             ],
             "doubleclick.net": [
                 "www.crunchyroll.com",
@@ -196,9 +279,124 @@
                 "skmedix.pl"
             ],
             "pubads.g.doubleclick.net": [
-                "www.cbssports.com",
+                "graymedia.com",
                 "southpark.cc.com",
-                "www.wunderground.com"
+                "www.1011now.com",
+                "www.12onyourside.com",
+                "www.13abc.com",
+                "www.14news.com",
+                "www.21alivenews.com",
+                "www.25newsnow.com",
+                "www.29news.com",
+                "www.actionnews5.com",
+                "www.alaskasnewssource.com",
+                "www.atlantanewsfirst.com",
+                "www.azfamily.com",
+                "www.cbssports.com",
+                "www.cleveland19.com",
+                "www.dakotanewsnow.com",
+                "www.firstalert4.com",
+                "www.firstalert7.com",
+                "www.fox19.com",
+                "www.fox5vegas.com",
+                "www.fox8live.com",
+                "www.foxcarolina.com",
+                "www.hawaiinewsnow.com",
+                "www.kait8.com",
+                "www.kalb.com",
+                "www.kbtx.com",
+                "www.kcbd.com",
+                "www.kcrg.com",
+                "www.kctv5.com",
+                "www.keyc.com",
+                "www.kfvs12.com",
+                "www.kfyrtv.com",
+                "www.kgns.tv",
+                "www.kltv.com",
+                "www.knoe.com",
+                "www.knopnews2.com",
+                "www.kold.com",
+                "www.kolotv.com",
+                "www.kotatv.com",
+                "www.kplctv.com",
+                "www.kptv.com",
+                "www.ksla.com",
+                "www.ksnblocal4.com",
+                "www.ktiv.com",
+                "www.kttc.com",
+                "www.kwch.com",
+                "www.kwqc.com",
+                "www.kwtx.com",
+                "www.kxii.com",
+                "www.ky3.com",
+                "www.kyoutv.com",
+                "www.live5news.com",
+                "www.localnewslive.com",
+                "www.mysuncoast.com",
+                "www.newschannel10.com",
+                "www.northernnewsnow.com",
+                "www.uppermichiganssource.com",
+                "www.valleynewslive.com",
+                "www.wabi.tv",
+                "www.wafb.com",
+                "www.waff.com",
+                "www.wagmtv.com",
+                "www.walb.com",
+                "www.wave3.com",
+                "www.wbay.com",
+                "www.wbbjtv.com",
+                "www.wbko.com",
+                "www.wbng.com",
+                "www.wbrc.com",
+                "www.wbtv.com",
+                "www.wcax.com",
+                "www.wcjb.com",
+                "www.wctv.tv",
+                "www.wdam.com",
+                "www.wdbj7.com",
+                "www.wdtv.com",
+                "www.weau.com",
+                "www.webcenterfairbanks.com",
+                "www.wect.com",
+                "www.westernmassnews.com",
+                "www.wevv.com",
+                "www.wflx.com",
+                "www.wfsb.com",
+                "www.wgem.com",
+                "www.whsv.com",
+                "www.wibw.com",
+                "www.wifr.com",
+                "www.wilx.com",
+                "www.wistv.com",
+                "www.witn.com",
+                "www.wjhg.com",
+                "www.wkyt.com",
+                "www.wlbt.com",
+                "www.wlfi.com",
+                "www.wlox.com",
+                "www.wmbfnews.com",
+                "www.wmtv15news.com",
+                "www.wndu.com",
+                "www.wnem.com",
+                "www.wowt.com",
+                "www.wpganews.com",
+                "www.wrdw.com",
+                "www.wsaw.com",
+                "www.wsaz.com",
+                "www.wsfa.com",
+                "www.wsmv.com",
+                "www.wtap.com",
+                "www.wthitv.com",
+                "www.wtoc.com",
+                "www.wtok.com",
+                "www.wtva.com",
+                "www.wtvm.com",
+                "www.wtvy.com",
+                "www.wunderground.com",
+                "www.wvlt.tv",
+                "www.wvva.com",
+                "www.wwnytv.com",
+                "www.wymt.com"
             ],
             "securepubads.g.doubleclick.net": [
                 "13wham.com",
@@ -348,6 +546,9 @@
                 "www.uniladtech.com",
                 "www.zagreb.info"
             ],
+            "pub.doubleverify.com": [
+                "www.bbc.com"
+            ],
             "js-cdn.dynatrace.com": [
                 "www.fido.ca"
             ],
@@ -356,11 +557,13 @@
             ],
             "connect.facebook.net": [
                 "app.roamless.com",
+                "app.strengthlog.com",
                 "www.redfin.com",
                 "www.tiltonsauto.app"
             ],
             "featureassets.org": [
                 "u.cisco.com",
+                "growtherapy.com",
                 "www.kickstarter.com",
                 "domains.squarespace.com",
                 "secure.squarespace.com"
@@ -391,6 +594,9 @@
             "cdn.hubvisor.io": [
                 "www.leboncoin.fr"
             ],
+            "icfcdn.com": [
+                "streamen.com"
+            ],
             "intellimize.co": [
                 "www.talkspace.com"
             ],
@@ -418,9 +624,6 @@
             ],
             "litix.io": [
                 "www.crunchyroll.com"
-            ],
-            "mars.com": [
-                "www.snickers.com"
             ],
             "global.apis.naver.com": [
                 "weverse.io"
@@ -497,15 +700,20 @@
             "tremorhub.com": [
                 "www.sbs.com.au"
             ],
+            "p.toadmash.net": [
+                "www.target.com"
+            ],
             "uicdn.toast.com": [
                 "bunpro.jp"
             ],
             "twitch.tv": [
-                "crowd.gamesdonequick.com",
                 "lolesports.com"
             ],
             "platform.twitter.com": [
-                "7news.com.au"
+                "7news.com.au",
+                "thenightly.com.au",
+                "thewest.com.au",
+                "www.perthnow.com.au"
             ],
             "api.useinsider.com": [
                 "www.canningvale.com"
@@ -513,6 +721,10 @@
             "dev.visualwebsiteoptimizer.com": [
                 "www.dominos.jp",
                 "www.dominos.com.my"
+            ],
+            "vk.com": [
+                "mobile-review.com",
+                "rtde.org"
             ]
         }
     },
@@ -522,6 +734,7 @@
         "nosdn.127.net",
         "bnet.163.com",
         "c.dun.163.com",
+        "91app.com",
         "acast.com",
         "actionnetwork.org",
         "imagesrv.adition.com",
@@ -539,6 +752,7 @@
         "wwwimages.adobe.com",
         "xsdownload.adobe.com",
         "catalog-service.adobe.io",
+        "commerce.adobe.io",
         "edge-graph.adobe.io",
         "viewlicense.adobe.io",
         "assets.adobedtm.com",
@@ -574,6 +788,7 @@
         "fast.appcues.com",
         "apple.com",
         "appspot.com",
+        "arc-cdn.net",
         "cdn.arcade.software",
         "demo.arcade.software",
         "arcgis.com",
@@ -604,6 +819,7 @@
         "api.axept.io",
         "client.axept.io",
         "static.axept.io",
+        "node03.westeurope.cloudapp.azure.com",
         "dev.azure.com",
         "logic.azure.com",
         "webpubsub.azure.com",
@@ -672,6 +888,7 @@
         "services.brid.tv",
         "brightcove.com",
         "players.brightcove.net",
+        "brightspotcdn.com",
         "brm-core-0.brsrvr.com",
         "api.bsky.app",
         "cardyb.bsky.app",
@@ -711,6 +928,7 @@
         "ws.cnetcontent.com",
         "codepen.io",
         "codesandbox.io",
+        "cognigy.cloud",
         "cdn.cohesionapps.com",
         "make.cohesionapps.com",
         "25livepub.collegenet.com",
@@ -725,6 +943,7 @@
         "cdn.cookie-script.com",
         "consent.cookiebot.com",
         "consentcdn.cookiebot.com",
+        "consent.cookiefirst.com",
         "cookielaw.org",
         "cookie-cdn.cookiepro.com",
         "platform.cloud.coveo.com",
@@ -803,6 +1022,8 @@
         "cdn.embed.ly",
         "cdn.embedly.com",
         "i-cdn.embed.ly",
+        "enetscores.com",
+        "3ds.entersekt.com",
         "pp.ephapay.net",
         "episerver.net",
         "epoq.de",
@@ -829,6 +1050,7 @@
         "register.feefo.com",
         "filepicker.io",
         "filestackapi.com",
+        "assets.finn.no",
         "flipcause.com",
         "flippenterprise.net",
         "flixcdn.com",
@@ -840,6 +1062,7 @@
         "flattr.com",
         "flickr.com",
         "cdn.flowplayer.com",
+        "embed.flowplayer.com",
         "fontawesome.com",
         "fonts.com",
         "api.fontshare.com",
@@ -848,11 +1071,13 @@
         "solve-api.forethought.ai",
         "solve-widget.forethought.ai",
         "formstack.com",
+        "fourhoi.com",
         "fundraiseup.com",
         "fups.com",
         "futurecdn.net",
         "fwmrm.net",
         "geetest.com",
+        "geocomply.com",
         "geotrust.com",
         "getpocket.com",
         "cdn.getshogun.com",
@@ -949,6 +1174,7 @@
         "lusearchapi-na.hawksearch.com",
         "searchapi-na.hawksearch.com",
         "hcaptcha.com",
+        "helpshift.com",
         "herokuapp.com",
         "code.highcharts.com",
         "highwebmedia.com",
@@ -957,6 +1183,7 @@
         "cdn.hometogo.net",
         "cdn2.hometogo.net",
         "hootsuite.com",
+        "s.hs-data.com",
         "api.hsforms.com",
         "forms.hsforms.com",
         "forms-eu1.hsforms.com",
@@ -1009,11 +1236,13 @@
         "jquery.com",
         "jsdelivr.net",
         "content.jwplatform.com",
+        "broadcast-live-delivery-cdn.jwplayer.com",
         "cdn.jwplayer.com",
         "entitlements.jwplayer.com",
         "jwpsrv.com",
         "judge.me",
         "juicer.io",
+        "images.justwatch.com",
         "dapi.kakao.com",
         "developers.kakao.com",
         "kapi.kakao.com",
@@ -1037,6 +1266,7 @@
         "cfvod.irp2.ovp.kaltura.com",
         "upload.kaltura.com",
         "www.kaltura.com",
+        "widget.kapa.ai",
         "ssl.kaptcha.com",
         "global.ketchcdn.com",
         "kickstarter.com",
@@ -1053,8 +1283,10 @@
         "www.klaviyo.com",
         "brand-sdk.kmsmep.com",
         "brands.kmsmep.com",
+        "ko-fi.com",
         "kustomerapp.com",
         "player.kwikmotion.com",
+        "playerv9.kwikmotion.com",
         "kxcdn.com",
         "ddragon.leagueoflegends.com",
         "libsyn.com",
@@ -1076,6 +1308,7 @@
         "liveperson.com",
         "liveperson.net",
         "livestream.com",
+        "live-video.net",
         "lloydsbankinggroup.com",
         "lpsnmedia.net",
         "mp.lura.live",
@@ -1095,6 +1328,9 @@
         "medallia.com",
         "hbx.media.net",
         "mediawiki.org",
+        "assets.mediadelivery.net",
+        "iframe.mediadelivery.net",
+        "player.mediadelivery.net",
         "cdn-client.medium.com",
         "cdn-images-1.medium.com",
         "cdn-static-1.medium.com",
@@ -1186,11 +1422,16 @@
         "onlineaccess1.com",
         "onnetwork.tv",
         "secure-cf-c.ooyala.com",
+        "api.openai.com",
         "opendesktop.org",
         "openload.co",
         "openstreetmap.org",
         "auth.openweb.com",
         "cdn.optimizely.com",
+        "images1.cmp.optimizely.com",
+        "images2.cmp.optimizely.com",
+        "images3.cmp.optimizely.com",
+        "images4.cmp.optimizely.com",
         "oraclecloud.com",
         "consent.api.osano.com",
         "dsar-public.api.osano.com",
@@ -1200,15 +1441,18 @@
         "parastorage.com",
         "storage.pardot.com",
         "pathfactory.com",
+        "patreon.com",
         "payments-amazon.com",
         "paypal.com",
         "paypalobjects.com",
         "pendo.io",
+        "validate.perfdrive.com",
         "images.pexels.com",
         "piano.io",
         "pico.tools",
         "pinimg.com",
         "api.pinterest.com",
+        "pipedriveassets.com",
         "cdn.plaid.com",
         "production.plaid.com",
         "plex.tv",
@@ -1221,6 +1465,8 @@
         "poool.fr",
         "static.portal101.cn",
         "postimg.cc",
+        "content.powerapps.com",
+        "powerbi.com",
         "display.powerreviews.com",
         "images.powerreviews.com",
         "ui.powerreviews.com",
@@ -1288,6 +1534,7 @@
         "oauth.reddit.com",
         "www.reddit.com",
         "redefine.pl",
+        "redsara.es",
         "cdngeneral.rentcafe.com",
         "api.reviews.io",
         "assets.reviews.io",
@@ -1296,6 +1543,8 @@
         "rfksrv.com",
         "media.richrelevance.com",
         "recs.richrelevance.com",
+        "cdn.riddle.com",
+        "www.riddle.com",
         "c.riskified.com",
         "img.riskified.com",
         "runkit.com",
@@ -1315,6 +1564,7 @@
         "scribblelive.com",
         "scribd.com",
         "assets.scrippsdigital.com",
+        "ncsa.sdapi.io",
         "seamlessaccess.org",
         "www.searchanise.com",
         "searchunify.com",
@@ -1411,6 +1661,7 @@
         "homepagedesigner.telekom.de",
         "api.tenor.com",
         "media.tenor.com",
+        "api.termly.io",
         "app.termly.io",
         "textalk.se",
         "tfaforms.com",
@@ -1449,6 +1700,7 @@
         "ttvnw.net",
         "tumblr.com",
         "turnto.com",
+        "twilio.com",
         "twimg.com",
         "api.twisto.cz",
         "static.twisto.cz",
@@ -1503,6 +1755,7 @@
         "webflow.com",
         "webs.com",
         "websimages.com",
+        "cdn.prod.website-files.com",
         "website-start.de",
         "weebly.com",
         "cdn.weglot.com",

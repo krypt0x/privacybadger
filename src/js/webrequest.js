@@ -724,8 +724,10 @@ function recordFingerprinting(tab_id, msg) {
     script_host = badger.cnameDomains[script_host];
   }
 
-  // ignore first-party scripts
-  if (!utils.isThirdPartyDomain(script_host, document_host)) {
+  // did we observe this domain in webRequest for the tab?
+  // this effectively ignores first-party scripts
+  if (!utils.hasOwn(badger.tabData.getTrackers(tab_id), script_host)) {
+    console.warn("Ignoring fpReport on %s: %o", document_host, msg);
     return;
   }
 
@@ -1420,6 +1422,7 @@ function dispatcher(request, sender, sendResponse) {
         criticalError: badger.criticalError,
         isAndroid: badger.isAndroid,
         noTabData: true,
+        popupPromos: badger.getPrivateSettings().getItem("popupPromos"),
         settings: { seenComic: true },
       });
       break;
@@ -1456,6 +1459,7 @@ function dispatcher(request, sender, sendResponse) {
       isAndroid: badger.isAndroid,
       isOnFirstParty: utils.firstPartyProtectionsEnabled(tab_host),
       noTabData: false,
+      popupPromos: badger.getPrivateSettings().getItem("popupPromos"),
       trackers,
       settings: badger.getSettings().getItemClones(),
       showLearningPrompt: badger.getPrivateSettings().getItem("showLearningPrompt"),
